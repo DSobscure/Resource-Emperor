@@ -7,7 +7,7 @@ namespace REStructure.Items.Products
 {
     public abstract class MetalProduct : Product
     {
-        public MetalProduct() : base() { }
+        protected MetalProduct() : base() { }
         public MetalProduct(int itemCount) : base(itemCount)
         {
 

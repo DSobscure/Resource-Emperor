@@ -1,23 +1,23 @@
 ﻿using REProtocol;
 
-namespace REStructure.Items.Materials
+namespace REStructure.Items.Materials.PlantMaterials
 {
-    public class Coal : MineralMaterial
+    public class Cypress : PlantMaterial
     {
         static ItemID _id;
         static string _name;
         static string _description;
-        static MineralType _type;
+        static PlantType _type;
 
-        static Coal()
+        static Cypress()
         {
-            _id = ItemID.Coal;
-            _name = "煤礦";
+            _id = ItemID.Log;
+            _name = "檜木";
             _description = "";
-            _type = MineralType.Fossil;
+            _type = PlantType.Wood;
         }
-        protected Coal() : base() { }
-        public Coal(int itemCount) : base(itemCount) { }
+        protected Cypress() { }
+        public Cypress(int itemCount) : base(itemCount) { }
 
         public override ItemID id
         {
@@ -58,7 +58,7 @@ namespace REStructure.Items.Materials
             }
         }
 
-        public override MineralType type
+        public override PlantType type
         {
             get
             {
