@@ -1,24 +1,21 @@
-﻿using System;
-using REProtocol;
+﻿using REProtocol;
 
-namespace REStructure.Items.Materials
+namespace REStructure.Items.Products
 {
-    public class RawRubber : PlantMaterial
+    public class Rivet : Product
     {
         static ItemID _id;
         static string _name;
         static string _description;
-        static PlantType _type;
 
-        static RawRubber()
+        static Rivet()
         {
-            _id = ItemID.Rubber;
-            _name = "生橡膠";
+            _id = ItemID.Rivet;
+            _name = "鉚釘";
             _description = "";
-            _type = PlantType.Product;
         }
-        protected RawRubber() { }
-        public RawRubber(int itemCount) : base(itemCount) { }
+        protected Rivet() { }
+        public Rivet(int itemCount) : base(itemCount) { }
 
         public override ItemID id
         {
@@ -56,19 +53,6 @@ namespace REStructure.Items.Materials
             protected set
             {
                 _description = value;
-            }
-        }
-
-        public override PlantType type
-        {
-            get
-            {
-                return _type;
-            }
-
-            protected set
-            {
-                _type = value;
             }
         }
     }

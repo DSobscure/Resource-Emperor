@@ -16,7 +16,7 @@ namespace REStructure
         public ProduceMethodDictionary()
         {
             produceMethods = new Dictionary<ProduceMethodID, ProduceMethod>();
-            produceMethods.Add(ProduceMethodID.Iron, new ProduceMethod(new Item[] { new IronOre(1), new Coal(1), new Log(1), new Bamboo(1), new Water(1) },new Item[] { new Iron(1) },10));
+            produceMethods.Add(ProduceMethodID.Iron, new ProduceMethod(new Item[] { new IronOre(1), new Coal(1), new Log(1), new Bamboo(1), new Water(1) },new Item[] { new IronBlock(1) },10));
         }
 
         public ProduceMethod this[ProduceMethodID key]

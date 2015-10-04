@@ -147,7 +147,7 @@ namespace REStructure
                             break;
                         case ItemID.Rubber:
                             {
-                                items.Add(ItemID.Rubber, new Rubber(int.Parse(data[1])));
+                                items.Add(ItemID.Rubber, new RawRubber(int.Parse(data[1])));
                             }
                             break;
                         case ItemID.Clay:

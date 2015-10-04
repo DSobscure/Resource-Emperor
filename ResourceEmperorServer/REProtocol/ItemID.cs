@@ -13,7 +13,7 @@ namespace REProtocol
         Hemp = 10,
 
         Cotton = 20,
-        Rubber,
+        RawRubber,
 
         Clay = 30,
 
@@ -28,6 +28,32 @@ namespace REProtocol
         Brine = 70,
         Water,
 
-        Iron = 80
+        StoneAxe = 1000,
+        StonePiceAxe,
+        StoneShovel,
+
+        Timber = 2000,
+        StoneBlade,
+        HempRope,
+        Firewood,
+        WoodenAxle,
+        Barrel,
+        OakTimber,
+        CypressTimber,
+        Brick,
+        Charcoal,
+        Rubber,
+        IronBlock,
+        CopperBlock,
+        WroughIron,
+        Copper,
+        CircularSawBlade,
+        MetalGear,
+        Rivet,
+        IronBar,
+        IronPipe,
+        CopperSheet,
+        IronSheet,
+        Blade
     }
 }
