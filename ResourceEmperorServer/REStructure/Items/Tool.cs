@@ -5,15 +5,14 @@ namespace REStructure.Items
 {
     public abstract class Tool : Item
     {
-        public int durability { get; set; }
-        public int durabilityLimit { get; set; }
-        public int durabilityCost { get; set; }
+        public int durability { get;protected set; }
+        public int durabilityLimit { get;protected set; }
 
-        public Tool(int itemCount, int durability, int durabilityLimit, int durabilityCost) : base(itemCount)
+        protected Tool() { }
+        protected Tool(int itemCount, int durability, int durabilityLimit) : base(itemCount)
         {
             this.durability = durability;
             this.durabilityLimit = durabilityLimit;
-            this.durabilityCost = durabilityCost;
         }
     }
 }

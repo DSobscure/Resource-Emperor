@@ -1,6 +1,6 @@
 ﻿using REProtocol;
 
-namespace REStructure.Items.Materials.PlantMaterials
+namespace REStructure.Items.Materials
 {
     public class Cypress : PlantMaterial
     {

@@ -1,23 +1,21 @@
 ﻿using REProtocol;
 
-namespace REStructure.Items.Materials
+namespace REStructure.Items.Tools
 {
-    public class Oak : PlantMaterial
+    public class StoneAxe : Tool
     {
         static ItemID _id;
         static string _name;
         static string _description;
-        static PlantType _type;
 
-        static Oak()
+        static StoneAxe()
         {
-            _id = ItemID.Log;
-            _name = "橡木";
+            _id = ItemID.StoneAxe;
+            _name = "石斧";
             _description = "";
-            _type = PlantType.Wood;
         }
-        protected Oak() { }
-        public Oak(int itemCount) : base(itemCount) { }
+        public StoneAxe() { }
+        public StoneAxe(int itemCount, int durability, int durabilityLimit) : base(itemCount, durability, durabilityLimit) { }
 
         public override ItemID id
         {
@@ -44,7 +42,6 @@ namespace REStructure.Items.Materials
                 _name = value;
             }
         }
-
         public override string description
         {
             get
@@ -55,19 +52,6 @@ namespace REStructure.Items.Materials
             protected set
             {
                 _description = value;
-            }
-        }
-
-        public override PlantType type
-        {
-            get
-            {
-                return _type;
-            }
-
-            protected set
-            {
-                _type = value;
             }
         }
     }
