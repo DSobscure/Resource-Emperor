@@ -42,6 +42,10 @@ namespace REStructure
                 foreach (var item in this.materials)
                 {
                     inventory[item.id].Decrease(item.itemCount);
+                    if(inventory[item.id].itemCount == 0)
+                    {
+                        inventory.Remove(item.id);
+                    }
                 }
                 products = this.products;
                 return true;

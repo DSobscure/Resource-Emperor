@@ -10,7 +10,7 @@ namespace REStructure.Items.Tools
 
         static StonePickaxe()
         {
-            _id = ItemID.StonePiceAxe;
+            _id = ItemID.StonePickaxe;
             _name = "石鎬";
             _description = "";
         }

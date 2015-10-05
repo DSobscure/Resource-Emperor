@@ -31,7 +31,7 @@ namespace REProtocol
         Water,
 
         StoneAxe = 1000,
-        StonePiceAxe,
+        StonePickaxe,
         StoneShovel,
 
         Timber = 2000,

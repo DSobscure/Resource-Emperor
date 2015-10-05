@@ -177,7 +177,6 @@ public class ApplianceContentController : MonoBehaviour
                         {
                             PlayerGlobal.Player.inventory.Add(item.id, item.Clone() as Item);
                         }
-                        inventoryController.UpdateItem(item.id);
                     }
                     else if(result is Appliance)
                     {
@@ -190,6 +189,7 @@ public class ApplianceContentController : MonoBehaviour
                     }
                 }
                 SelectMethod(selectedProduceMethod.id);
+                inventoryController.ShowInventory();
             }
         }
     }
