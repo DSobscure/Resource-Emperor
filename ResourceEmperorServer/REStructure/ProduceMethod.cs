@@ -10,28 +10,47 @@ namespace REStructure
     {
         public ProduceMethodID id;
         public Item[] materials;
-        public Object[] products;
+        public object[] products;
         public int processTime;
         public string title;
 
-        public ProduceMethod(string title, Item[] materials, Object[] products, int processTime)
+        public ProduceMethod(ProduceMethodID id, string title, Item[] materials, object[] products, int processTime)
         {
+            this.id = id;
             this.title = title;
             this.materials = materials;
             this.products = products;
             this.processTime = processTime;
         }
 
-        public Object[] Process(Dictionary<ItemID,Item> materials)
+        public bool Sufficient(Inventory inventory)
         {
-            foreach(var item in this.materials)
+            foreach (var item in this.materials)
             {
-                if (!materials.ContainsKey(item.id) || materials[item.id].itemCount < item.itemCount)
+                if (!inventory.ContainsKey(item.id) || inventory[item.id].itemCount < item.itemCount)
                 {
-                    return null;
+                    return false;
                 }
             }
-            return (Object[])products.Clone();
+            return true;
+        }
+
+        public bool Process(Inventory inventory, out object[] products)
+        {
+            if(Sufficient(inventory))
+            {
+                foreach (var item in this.materials)
+                {
+                    inventory[item.id].Decrease(item.itemCount);
+                }
+                products = this.products;
+                return true;
+            }
+            else
+            {
+                products = null;
+                return false;
+            }
         }
     }
 }

@@ -12,6 +12,8 @@
         HTKiln,
         Cupola,
         SteelMold,
-        BlacksmithPlatform
+        BlacksmithPlatform,
+        Loom,
+        PaperMachine
     }
 }

@@ -70,5 +70,10 @@ namespace REStructure.Items.Materials
                 _type = value;
             }
         }
+
+        public override object Clone()
+        {
+            return new CopperOre(itemCount);
+        }
     }
 }

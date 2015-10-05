@@ -5,8 +5,8 @@ using UnityEngine.UI;
 
 public class LoginController : MonoBehaviour
 {
-    private string _account;
-    private string _password;
+    private string _account = "";
+    private string _password = "";
     [SerializeField]
     private Text loginResultText;
 
@@ -20,7 +20,8 @@ public class LoginController : MonoBehaviour
     }
     public void Login()
     {
-        PhotonGlobal.PS.Login(_account, _password);
+        if(_account.Length>0&& _password.Length>0)
+            PhotonGlobal.PS.Login(_account, _password);
     }
 
     void Start()

@@ -3,7 +3,7 @@ using REProtocol;
 
 namespace REStructure
 {
-    public abstract class Item : IComparable<Item> , IScalable
+    public abstract class Item : IComparable<Item> , IScalable , ICloneable
     {
         public abstract ItemID id { get; protected set; }
         public abstract string name { get; protected set; }
@@ -34,5 +34,7 @@ namespace REStructure
         {
             itemCount = 0;
         }
+
+        public abstract object Clone();
     }
 }

@@ -130,6 +130,16 @@ namespace REStructure
                                 items.Add(ItemID.Log, new Log(int.Parse(data[1])));
                             }
                             break;
+                        case ItemID.Oak:
+                            {
+                                items.Add(ItemID.Oak, new Oak(int.Parse(data[1])));
+                            }
+                            break;
+                        case ItemID.Cypress:
+                            {
+                                items.Add(ItemID.Cypress, new Cypress(int.Parse(data[1])));
+                            }
+                            break;
                         case ItemID.Bamboo:
                             {
                                 items.Add(ItemID.Bamboo, new Bamboo(int.Parse(data[1])));

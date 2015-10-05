@@ -18,8 +18,8 @@ namespace REStructure.Appliances
             _name = "木工車床";
             _methods = new Dictionary<ProduceMethodID, ProduceMethod>()
             {
-                { ProduceMethodID.WoodLathe__CypressTimber_WoodenAxle__Loom, new ProduceMethod("製作織布機", new Item[]{ new CypressTimber(10), new WoodenAxle(3) }, new Object[]{ new Loom() }, 600) },
-                { ProduceMethodID.WoodLathe__CypressTimber_WoodenAxle__PaperMachine, new ProduceMethod("製作造紙機", new Item[] { new CypressTimber(8), new WoodenAxle(2) }, new Object[] { new PaperMachine() }, 480) }
+                { ProduceMethodID.WoodLathe__CypressTimber_WoodenAxle__Loom, new ProduceMethod(ProduceMethodID.WoodLathe__CypressTimber_WoodenAxle__Loom, "製作織布機", new Item[]{ new CypressTimber(10), new WoodenAxle(3) }, new Object[]{ new Loom() }, 600) },
+                { ProduceMethodID.WoodLathe__CypressTimber_WoodenAxle__PaperMachine, new ProduceMethod(ProduceMethodID.WoodLathe__CypressTimber_WoodenAxle__PaperMachine, "製作造紙機", new Item[] { new CypressTimber(8), new WoodenAxle(2) }, new Object[] { new PaperMachine() }, 480) }
             };
         }
         public WoodLathe() { }

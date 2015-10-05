@@ -10,8 +10,8 @@ namespace REStructure.Items.Tools
 
         static StoneShovel()
         {
-            _id = ItemID.StoneAxe;
-            _name = "石斧";
+            _id = ItemID.StoneShovel;
+            _name = "石鏟";
             _description = "";
         }
         public StoneShovel() { }
@@ -53,6 +53,11 @@ namespace REStructure.Items.Tools
             {
                 _description = value;
             }
+        }
+
+        public override object Clone()
+        {
+            return new StoneShovel(itemCount,durability,durabilityLimit);
         }
     }
 }

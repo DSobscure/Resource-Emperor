@@ -11,7 +11,7 @@ namespace REStructure.Items.Materials
 
         static Cypress()
         {
-            _id = ItemID.Log;
+            _id = ItemID.Cypress;
             _name = "檜木";
             _description = "";
             _type = PlantType.Wood;
@@ -69,6 +69,11 @@ namespace REStructure.Items.Materials
             {
                 _type = value;
             }
+        }
+
+        public override object Clone()
+        {
+            return new Cypress(itemCount);
         }
     }
 }

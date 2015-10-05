@@ -18,9 +18,9 @@ namespace REStructure.Appliances
             _name = "石灶";
             _methods = new Dictionary<ProduceMethodID, ProduceMethod>()
             {
-                { ProduceMethodID.StoneStove__Log_Firewood__Charcoal, new ProduceMethod("製作木炭", new Item[]{ new Log(1), new Firewood(1) }, new Object[]{ new Charcoal(3) }, 60) },
-                { ProduceMethodID.StoneStove__Clay_Firewood__Brick, new ProduceMethod("製作磚塊", new Item[] { new Clay(1), new Firewood(1) }, new Object[] { new Brick(1) }, 60) },
-                { ProduceMethodID.StoneStove__Clay_StoneStove__LTKiln, new ProduceMethod("升級成低溫窯", new Item[] { new Clay(10) }, new Object[] { new LTKiln() } , 300) }
+                { ProduceMethodID.StoneStove__Log_Firewood__Charcoal, new ProduceMethod(ProduceMethodID.StoneStove__Log_Firewood__Charcoal, "製作木炭", new Item[]{ new Log(1), new Firewood(1) }, new Object[]{ new Charcoal(3) }, 60) },
+                { ProduceMethodID.StoneStove__Clay_Firewood__Brick, new ProduceMethod(ProduceMethodID.StoneStove__Clay_Firewood__Brick, "製作磚塊", new Item[] { new Clay(1), new Firewood(1) }, new Object[] { new Brick(1) }, 60) },
+                { ProduceMethodID.StoneStove__Clay_StoneStove__LTKiln, new ProduceMethod(ProduceMethodID.StoneStove__Clay_StoneStove__LTKiln, "升級成低溫窯", new Item[] { new Clay(10) }, new Object[] { new LTKiln() } , 300) }
             };
         }
         public StoneStove() { }

@@ -18,7 +18,7 @@ namespace REStructure.Appliances
             _name = "攪拌器";
             _methods = new Dictionary<ProduceMethodID, ProduceMethod>()
             {
-                { ProduceMethodID.Agitator__Clay_Rock__StoneStove, new ProduceMethod("製作石灶", new Item[]{ new Clay(5), new Rock(5) }, new Object[]{ new StoneStove() }, 180) }
+                { ProduceMethodID.Agitator__Clay_Rock__StoneStove, new ProduceMethod(ProduceMethodID.Agitator__Clay_Rock__StoneStove, "製作石灶", new Item[]{ new Clay(5), new Rock(5) }, new Object[]{ new StoneStove() }, 180) }
             };
         }
         public Agitator() { }

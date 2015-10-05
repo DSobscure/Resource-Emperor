@@ -18,8 +18,8 @@ namespace REStructure.Appliances
             _name = "低溫窯";
             _methods = new Dictionary<ProduceMethodID, ProduceMethod>()
             {
-                { ProduceMethodID.LTKiln__RawRubber_Firewood__Rubber, new ProduceMethod("製作橡膠", new Item[]{ new RawRubber(1), new Firewood(1) }, new Object[]{ new Rubber(1) }, 60) },
-                { ProduceMethodID.LTKiln__Clay_LTKiln__HTKiln, new ProduceMethod("升級成高溫窯", new Item[] { new Clay(10) }, new Object[] { new HTKiln() }, 600) }
+                { ProduceMethodID.LTKiln__RawRubber_Firewood__Rubber, new ProduceMethod(ProduceMethodID.LTKiln__RawRubber_Firewood__Rubber, "製作橡膠", new Item[]{ new RawRubber(1), new Firewood(1) }, new Object[]{ new Rubber(1) }, 60) },
+                { ProduceMethodID.LTKiln__Clay_LTKiln__HTKiln, new ProduceMethod(ProduceMethodID.LTKiln__Clay_LTKiln__HTKiln, "升級成高溫窯", new Item[] { new Clay(10) }, new Object[] { new HTKiln() }, 600) }
             };
         }
         public LTKiln() { }

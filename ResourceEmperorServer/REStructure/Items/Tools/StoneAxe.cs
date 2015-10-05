@@ -54,5 +54,10 @@ namespace REStructure.Items.Tools
                 _description = value;
             }
         }
+
+        public override object Clone()
+        {
+            return new StoneAxe(itemCount,durability,durabilityLimit);
+        }
     }
 }

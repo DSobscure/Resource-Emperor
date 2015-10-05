@@ -62,6 +62,14 @@ namespace REProtocol
 
         BlacksmithPlatform__Copper__CopperSheet,
         BlacksmithPlatform__WroughIron__IronSheet,
-        BlacksmithPlatform__WroughIron__Blade
+        BlacksmithPlatform__WroughIron__Blade,
+
+        Loom__Cotton__Cottonwool,
+        Loom__Cottonwool__CottonThread,
+        Loom__CottonThread__CottonRope,
+        Loom__CottonThread__CottonCloth,
+
+        PaperMachine__Log_Water__Paper,
+        PaperMachine__Bamboo_Water__Paper
     }
 }

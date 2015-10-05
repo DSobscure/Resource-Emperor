@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System;
 using REProtocol;
 
 namespace REStructure

@@ -11,7 +11,7 @@ namespace REStructure.Items.Materials
 
         static Oak()
         {
-            _id = ItemID.Log;
+            _id = ItemID.Oak;
             _name = "橡木";
             _description = "";
             _type = PlantType.Wood;
@@ -69,6 +69,11 @@ namespace REStructure.Items.Materials
             {
                 _type = value;
             }
+        }
+
+        public override object Clone()
+        {
+            return new Oak(itemCount);
         }
     }
 }

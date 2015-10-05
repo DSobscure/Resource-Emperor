@@ -59,5 +59,10 @@ namespace REStructure.Items.Products
                 _description = value;
             }
         }
+
+        public override object Clone()
+        {
+            return new Timber(itemCount);
+        }
     }
 }

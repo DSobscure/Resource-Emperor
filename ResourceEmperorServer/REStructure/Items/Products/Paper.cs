@@ -2,20 +2,20 @@
 
 namespace REStructure.Items.Products
 {
-    public class Blade : Product
+    public class Paper : Product
     {
         static ItemID _id;
         static string _name;
         static string _description;
 
-        static Blade()
+        static Paper()
         {
-            _id = ItemID.Blade;
-            _name = "刀片";
+            _id = ItemID.Paper;
+            _name = "紙";
             _description = "";
         }
-        protected Blade() { }
-        public Blade(int itemCount) : base(itemCount) { }
+        protected Paper() { }
+        public Paper(int itemCount) : base(itemCount) { }
 
         public override ItemID id
         {
@@ -58,7 +58,7 @@ namespace REStructure.Items.Products
 
         public override object Clone()
         {
-            return new Blade(itemCount);
+            return new Paper(itemCount);
         }
     }
 }

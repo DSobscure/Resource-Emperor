@@ -12,7 +12,7 @@ namespace REStructure.Items.Materials
         static Hemp()
         {
             _id = ItemID.Hemp;
-            _name = "大麻";
+            _name = "麻草";
             _description = "";
             _type = PlantType.Herb;
         }
@@ -69,6 +69,11 @@ namespace REStructure.Items.Materials
             {
                 _type = value;
             }
+        }
+
+        public override object Clone()
+        {
+            return new Hemp(itemCount);
         }
     }
 }

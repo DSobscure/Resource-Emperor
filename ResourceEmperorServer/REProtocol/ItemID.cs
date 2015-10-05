@@ -8,6 +8,8 @@ namespace REProtocol
     public enum ItemID
     {
         Log = 0,
+        Oak,
+        Cypress,
         Bamboo,
 
         Hemp = 10,
@@ -54,6 +56,11 @@ namespace REProtocol
         IronPipe,
         CopperSheet,
         IronSheet,
-        Blade
+        Blade,
+        Cottonwool,
+        CottonThread,
+        CottonRope,
+        CottonCloth,
+        Paper
     }
 }

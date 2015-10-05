@@ -17,9 +17,9 @@ namespace REStructure.Appliances
             _name = "鍛造平台";
             _methods = new Dictionary<ProduceMethodID, ProduceMethod>()
             {
-                { ProduceMethodID.BlacksmithPlatform__Copper__CopperSheet, new ProduceMethod("製作銅片", new Item[]{ new Copper(1) }, new Object[]{ new CopperSheet(1) }, 60) },
-                { ProduceMethodID.BlacksmithPlatform__WroughIron__IronSheet, new ProduceMethod("製作鐵皮", new Item[] { new WroughIron(1) }, new Object[] { new IronSheet(1) },60) },
-                { ProduceMethodID.BlacksmithPlatform__WroughIron__Blade, new ProduceMethod("製作刀片", new Item[] { new WroughIron(1) }, new Object[] { new Blade(1) } ,60) }
+                { ProduceMethodID.BlacksmithPlatform__Copper__CopperSheet, new ProduceMethod(ProduceMethodID.BlacksmithPlatform__Copper__CopperSheet, "製作銅片", new Item[]{ new Copper(1) }, new Object[]{ new CopperSheet(1) }, 60) },
+                { ProduceMethodID.BlacksmithPlatform__WroughIron__IronSheet, new ProduceMethod(ProduceMethodID.BlacksmithPlatform__WroughIron__IronSheet, "製作鐵皮", new Item[] { new WroughIron(1) }, new Object[] { new IronSheet(1) },60) },
+                { ProduceMethodID.BlacksmithPlatform__WroughIron__Blade, new ProduceMethod(ProduceMethodID.BlacksmithPlatform__WroughIron__Blade, "製作刀片", new Item[] { new WroughIron(1) }, new Object[] { new Blade(1) } ,60) }
             };
         }
         public BlacksmithPlatform() { }

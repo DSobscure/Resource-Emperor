@@ -22,12 +22,17 @@ namespace ResourceEmperorServer
 
                 Player = new REPlayer(playerUniqueID, (string)returnData[0], this);
                 Player.inventory = new Inventory();
-                Player.inventory.Add(ItemID.Bamboo, new Bamboo(20));
-                Player.inventory.Add(ItemID.Clay, new Clay(1));
-                Player.inventory.Add(ItemID.Cotton, new Cotton(1));
-                Player.inventory.Add(ItemID.IronOre, new IronOre(7));
-                Player.inventory.Add(ItemID.Rock, new Rock(1));
-                Player.inventory.Add(ItemID.Water, new Water(30));
+                Player.inventory.Add(ItemID.Log, new Log(1000));
+                Player.inventory.Add(ItemID.IronOre, new IronOre(1000));
+                Player.inventory.Add(ItemID.Rock, new Rock(1000));
+                Player.inventory.Add(ItemID.Hemp, new Hemp(1000));
+                Player.inventory.Add(ItemID.Oak, new Oak(1000));
+                Player.inventory.Add(ItemID.Cypress, new Cypress(1000));
+                Player.inventory.Add(ItemID.Clay, new Clay(1000));
+                Player.inventory.Add(ItemID.CopperOre, new CopperOre(1000));
+                Player.inventory.Add(ItemID.Coal, new Coal(1000));
+                Player.inventory.Add(ItemID.Water, new Water(1000));
+
 
                 server.WandererDictionary.Remove(guid);
                 server.PlayerDictionary.Add(playerUniqueID, Player);

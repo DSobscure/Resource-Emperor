@@ -18,11 +18,11 @@ namespace REStructure.Appliances
             _name = "鋼鐵鑄模";
             _methods = new Dictionary<ProduceMethodID, ProduceMethod>()
             {
-                { ProduceMethodID.SteelMold__WroughIron__CircularSawBlade, new ProduceMethod("製作圓鋸鋸片", new Item[]{ new WroughIron(1) }, new Object[]{ new CircularSawBlade(1) }, 120) },
-                { ProduceMethodID.SteelMold__WroughIron__MetalGear, new ProduceMethod("製作金屬齒輪", new Item[] { new WroughIron(1) }, new Object[] { new MetalGear(4) }, 120) },
-                { ProduceMethodID.SteelMold__WroughIron__Rivet, new ProduceMethod("製作鉚釘", new Item[] { new WroughIron(1) }, new Object[] { new Rivet(6) } , 120) },
-                { ProduceMethodID.SteelMold__WroughIron__IronBar, new ProduceMethod("製作鐵條", new Item[] { new WroughIron(1) }, new Object[] { new IronBar(1) } , 120) },
-                { ProduceMethodID.SteelMold__WroughIron__IronPipe, new ProduceMethod("製作鐵管", new Item[] { new WroughIron(1) }, new Object[] { new IronPipe(1) } , 120) }
+                { ProduceMethodID.SteelMold__WroughIron__CircularSawBlade, new ProduceMethod(ProduceMethodID.SteelMold__WroughIron__CircularSawBlade, "製作圓鋸鋸片", new Item[]{ new WroughIron(1) }, new Object[]{ new CircularSawBlade(1) }, 120) },
+                { ProduceMethodID.SteelMold__WroughIron__MetalGear, new ProduceMethod(ProduceMethodID.SteelMold__WroughIron__MetalGear, "製作金屬齒輪", new Item[] { new WroughIron(1) }, new Object[] { new MetalGear(4) }, 120) },
+                { ProduceMethodID.SteelMold__WroughIron__Rivet, new ProduceMethod(ProduceMethodID.SteelMold__WroughIron__Rivet, "製作鉚釘", new Item[] { new WroughIron(1) }, new Object[] { new Rivet(6) } , 120) },
+                { ProduceMethodID.SteelMold__WroughIron__IronBar, new ProduceMethod(ProduceMethodID.SteelMold__WroughIron__IronBar, "製作鐵條", new Item[] { new WroughIron(1) }, new Object[] { new IronBar(1) } , 120) },
+                { ProduceMethodID.SteelMold__WroughIron__IronPipe, new ProduceMethod(ProduceMethodID.SteelMold__WroughIron__IronPipe, "製作鐵管", new Item[] { new WroughIron(1) }, new Object[] { new IronPipe(1) } , 120) }
             };
         }
         public SteelMold() { }

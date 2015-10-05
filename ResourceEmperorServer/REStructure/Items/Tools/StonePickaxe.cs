@@ -10,8 +10,8 @@ namespace REStructure.Items.Tools
 
         static StonePickaxe()
         {
-            _id = ItemID.StoneAxe;
-            _name = "石斧";
+            _id = ItemID.StonePiceAxe;
+            _name = "石鎬";
             _description = "";
         }
         public StonePickaxe() { }
@@ -53,6 +53,11 @@ namespace REStructure.Items.Tools
             {
                 _description = value;
             }
+        }
+
+        public override object Clone()
+        {
+            return new StonePickaxe(itemCount,durabilityLimit,durabilityLimit);
         }
     }
 }
