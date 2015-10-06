@@ -7,11 +7,11 @@ using REStructure.Items.Tools;
 
 namespace REStructure.Appliances
 {
-    public class Machete : Appliance
+    public class Machete : Appliance , IUpgradable
     {
         static ApplianceID _id;
         static string _name;
-        static Dictionary<ProduceMethodID, ProduceMethod> _methods;
+        internal static Dictionary<ProduceMethodID, ProduceMethod> _methods;
 
         static Machete()
         {
@@ -68,6 +68,16 @@ namespace REStructure.Appliances
             {
                 _name = value;
             }
+        }
+
+        public bool UpgradeCheck(object target)
+        {
+            return target is WorkTable;
+        }
+
+        public object Upgrade()
+        {
+            return new WorkTable();
         }
     }
 }

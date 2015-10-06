@@ -8,6 +8,7 @@ using REProtocol;
 using RESerializable;
 using REStructure.Items.Materials;
 using REStructure;
+using Newtonsoft.Json;
 
 namespace ResourceEmperorServer
 {
@@ -38,8 +39,8 @@ namespace ResourceEmperorServer
                         {
                             Dictionary<byte, object> parameter = new Dictionary<byte, object>
                                         {
-                                            {(byte)LoginResponseItem.PlayerDataString,Player.Serialize().Serialize()},
-                                            {(byte)LoginResponseItem.InventoryDataString,Player.inventory.StringSerialize()}
+                                            {(byte)LoginResponseItem.PlayerDataString,JsonConvert.SerializeObject(Player.Serialize(),new JsonSerializerSettings { TypeNameHandling = TypeNameHandling.Auto })},
+                                            {(byte)LoginResponseItem.InventoryDataString,JsonConvert.SerializeObject(Player.inventory,new JsonSerializerSettings { TypeNameHandling = TypeNameHandling.Auto })}
                                         };
 
                             OperationResponse response = new OperationResponse(operationRequest.OperationCode, parameter)
@@ -83,9 +84,8 @@ namespace ResourceEmperorServer
         }
         private void TestTask(OperationRequest operationRequest)
         {
-            Inventory inventory = new Inventory();
-            inventory.StringDeserialize((string)operationRequest.Parameters[0]);
-            foreach(Item item in inventory.Values)
+            Inventory inventory = JsonConvert.DeserializeObject<Inventory>((string)operationRequest.Parameters[0], new JsonSerializerSettings { TypeNameHandling = TypeNameHandling.Auto });
+            foreach (Item item in inventory.Values)
             {
                 REServer.Log.Info(item.id + " " + item.name + " " + item.description + " " + item.itemCount);
             }

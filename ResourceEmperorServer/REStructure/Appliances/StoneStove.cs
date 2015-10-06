@@ -6,7 +6,7 @@ using REStructure.Items.Products;
 
 namespace REStructure.Appliances
 {
-    public class StoneStove : Appliance
+    public class StoneStove : Appliance , IUpgradable
     {
         static ApplianceID _id;
         static string _name;
@@ -62,6 +62,16 @@ namespace REStructure.Appliances
             {
                 _name = value;
             }
+        }
+
+        public bool UpgradeCheck(object target)
+        {
+            return target is LTKiln;
+        }
+
+        public object Upgrade()
+        {
+            return new LTKiln();
         }
     }
 }

@@ -5,6 +5,7 @@ using REProtocol;
 using REStructure.Items.Materials;
 using REStructure;
 using RESerializable;
+using Newtonsoft.Json;
 
 public partial class PhotonService : IPhotonPeerListener
 {
@@ -117,13 +118,13 @@ public partial class PhotonService : IPhotonPeerListener
             LoginEvent(
                 loginStatus: true,
                 debugMessage: "",
-                player: ((Dictionary<string, object>)operationResponse.Parameters[(byte)LoginResponseItem.PlayerDataString]).Deserialize<SerializablePlayer>(),
-                inventoryDataString: (string)operationResponse.Parameters[(byte)LoginResponseItem.InventoryDataString]);
+                player: JsonConvert.DeserializeObject<SerializablePlayer>((string)operationResponse.Parameters[(byte)LoginResponseItem.PlayerDataString], new JsonSerializerSettings { TypeNameHandling = TypeNameHandling.Auto }),
+                inventory: JsonConvert.DeserializeObject<Inventory>((string)operationResponse.Parameters[(byte)LoginResponseItem.InventoryDataString], new JsonSerializerSettings { TypeNameHandling = TypeNameHandling.Auto }));
         }
         else
         {
             DebugReturn(0, operationResponse.DebugMessage);
-            LoginEvent(false, operationResponse.DebugMessage,null,"");
+            LoginEvent(false, operationResponse.DebugMessage,null,null);
         }
     }
 

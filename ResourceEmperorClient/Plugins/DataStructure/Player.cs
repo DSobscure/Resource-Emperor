@@ -7,10 +7,10 @@ public class Player
     public string account { get; protected set; }
     public Inventory inventory { get; protected set; }
 
-    public Player(SerializablePlayer player)
+    public Player(SerializablePlayer player, Inventory inventory)
     {
         this.uniqueID = player.uniqueID;
         this.account = player.account;
-        inventory = new Inventory();
+        this.inventory = inventory;
     }
 }

@@ -18,6 +18,11 @@ namespace REStructure.Appliances
             _name = "高溫窯";
             _methods = new Dictionary<ProduceMethodID, ProduceMethod>()
             {
+                { ProduceMethodID.StoneStove__Log_Firewood__Charcoal, new ProduceMethod(ProduceMethodID.StoneStove__Log_Firewood__Charcoal, "製作木炭", new Item[]{ new Log(1), new Firewood(1) }, new Object[]{ new Charcoal(3) }, 10) },
+                { ProduceMethodID.StoneStove__Clay_Firewood__Brick, new ProduceMethod(ProduceMethodID.StoneStove__Clay_Firewood__Brick, "製作磚塊", new Item[] { new Clay(1), new Firewood(1) }, new Object[] { new Brick(1) }, 10) },
+
+                { ProduceMethodID.LTKiln__RawRubber_Firewood__Rubber, new ProduceMethod(ProduceMethodID.LTKiln__RawRubber_Firewood__Rubber, "製作橡膠", new Item[]{ new RawRubber(1), new Firewood(1) }, new Object[]{ new Rubber(1) }, 30) },
+
                 { ProduceMethodID.HTKiln__IronOre_Coal__IronBlock, new ProduceMethod(ProduceMethodID.HTKiln__IronOre_Coal__IronBlock, "製作鐵塊", new Item[]{ new IronOre(1), new Coal(1) }, new Object[]{ new IronBlock(1) }, 60) },
                 { ProduceMethodID.HTKiln__IronOre_Charcoal__IronBlock, new ProduceMethod(ProduceMethodID.HTKiln__IronOre_Charcoal__IronBlock, "製作鐵塊", new Item[] { new IronOre(1), new Charcoal(2) }, new Object[] { new IronBlock(1) }, 60) },
                 { ProduceMethodID.HTKiln__CopperOre_Coal__CopperBlock, new ProduceMethod(ProduceMethodID.HTKiln__CopperOre_Coal__CopperBlock, "製作銅塊", new Item[] { new CopperOre(1), new Coal(1) }, new Object[] { new CopperBlock(1) } , 60) },

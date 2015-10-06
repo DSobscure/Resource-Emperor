@@ -1,14 +1,12 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using REStructure;
+﻿using Newtonsoft.Json;
 
 namespace RESerializable
 {
     public class SerializablePlayer
     {
+        [JsonProperty("uniqueID")]
         public int uniqueID;
+        [JsonProperty("account")]
         public string account;
 
         public SerializablePlayer() { }

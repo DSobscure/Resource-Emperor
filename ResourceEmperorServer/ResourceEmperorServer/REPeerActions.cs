@@ -32,6 +32,7 @@ namespace ResourceEmperorServer
                 Player.inventory.Add(ItemID.CopperOre, new CopperOre(1000));
                 Player.inventory.Add(ItemID.Coal, new Coal(1000));
                 Player.inventory.Add(ItemID.Water, new Water(1000));
+                Player.inventory.Add(ItemID.Cotton, new Cotton(1000));
 
 
                 server.WandererDictionary.Remove(guid);

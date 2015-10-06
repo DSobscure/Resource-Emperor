@@ -2,6 +2,7 @@
 using System.Collections;
 using RESerializable;
 using UnityEngine.UI;
+using REStructure;
 
 public class LoginController : MonoBehaviour
 {
@@ -29,13 +30,12 @@ public class LoginController : MonoBehaviour
         PhotonGlobal.PS.LoginEvent += LoginEventAction;
     }
 
-    private void LoginEventAction(bool loginStatus, string debugMessage, SerializablePlayer player, string inventoryDataString)
+    private void LoginEventAction(bool loginStatus, string debugMessage, SerializablePlayer player, Inventory inventory)
     {
         if (loginStatus)
         {
             PlayerGlobal.LoginStatus = true;
-            PlayerGlobal.Player = new Player(player);
-            PlayerGlobal.Player.inventory.StringDeserialize(inventoryDataString);
+            PlayerGlobal.Player = new Player(player, inventory);
             Application.LoadLevel("WorkRoomScene");
         }
         else

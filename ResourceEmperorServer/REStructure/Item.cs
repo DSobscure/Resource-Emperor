@@ -1,13 +1,18 @@
 ﻿using System;
 using REProtocol;
+using Newtonsoft.Json;
 
 namespace REStructure
 {
     public abstract class Item : IComparable<Item> , IScalable , ICloneable
     {
+        [JsonProperty("id")]
         public abstract ItemID id { get; protected set; }
+        [JsonProperty("name")]
         public abstract string name { get; protected set; }
+        [JsonProperty("description")]
         public abstract string description { get; protected set; }
+        [JsonProperty("ietmCount")]
         public int itemCount { get; protected set; }
 
         protected Item() { }

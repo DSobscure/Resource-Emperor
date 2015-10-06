@@ -14,11 +14,15 @@ public class ApplianceContentController : MonoBehaviour
     private ProduceMethod selectedProduceMethod;
 
     [SerializeField]
+    private Text applianceNameText;
+    [SerializeField]
     private RectTransform applianceSelectPanel;
     [SerializeField]
     private InventoryController inventoryController;
     [SerializeField]
     private RectTransform applianceMenu;
+    [SerializeField]
+    private RectTransform methodPanel;
     [SerializeField]
     private RectTransform applianceContent;
     [SerializeField]
@@ -46,10 +50,7 @@ public class ApplianceContentController : MonoBehaviour
 
         UpdateApplianceScelectPanel();
 
-        var enumerator = selectedAppliance.methods.Values.GetEnumerator();
-        enumerator.MoveNext();
-        selectedProduceMethod = enumerator.Current;
-        UpdateApplianceMenu();
+        SelectAppliance(selectedAppliance.id);
     }
 
     public void UpdateApplianceScelectPanel()
@@ -74,20 +75,48 @@ public class ApplianceContentController : MonoBehaviour
 
     public void UpdateApplianceMenu()
     {
-        for (int i = applianceMenu.childCount - 1; i > 1; i--)
+        for (int i = methodPanel.childCount - 1; i >= 0; i--)
         {
-            Destroy(applianceMenu.GetChild(i).gameObject);
+            Destroy(methodPanel.GetChild(i).gameObject);
         }
         int index = 0;
+        methodPanel.sizeDelta = new Vector2(180f, selectedAppliance.methods.Count * 30f);
+        methodPanel.localPosition = new Vector3(0f, methodPanel.rect.height/2 - 40);
+        float yoffset = (applianceMenu.rect.height - methodPanel.rect.height) / 2 - 50;
         foreach (ProduceMethod produceMethod in selectedAppliance.methods.Values)
         {
             ProduceMethodID id = produceMethod.id;
             RectTransform method = Instantiate(methodPrefab);
-            method.transform.SetParent(applianceMenu);
-            method.localPosition = new Vector3(0f, -index * 30f + applianceMenu.rect.height / 2 - 45, 0f);
+            method.transform.SetParent(methodPanel);
+            method.localPosition = new Vector3(0f, -index * 30f + methodPanel.rect.height/2 - 15f, 0f);
             method.name = produceMethod.id.ToString();
             method.GetComponent<Button>().onClick.AddListener(() => SelectMethod(id));
             method.GetChild(0).GetComponent<Text>().text = produceMethod.title;
+            index++;
+        }
+    }
+
+    public void UpdateMethodMaterial()
+    {
+        for (int i = materialPanelContent.childCount - 1; i >= 0; i--)
+        {
+            Destroy(materialPanelContent.GetChild(i).gameObject);
+        }
+        int index = 0;
+        float xoffset = -80f;
+        float yoffset = 50f;
+        materialPanelContent.sizeDelta = new Vector2(220f, selectedProduceMethod.materials.Length * 50f);
+        foreach (Item item in selectedProduceMethod.materials)
+        {
+            RectTransform block = Instantiate(blockPrefab);
+            block.transform.SetParent(materialPanelContent);
+            block.localScale = Vector3.one;
+            block.localPosition = new Vector3(xoffset, -index * 50f + yoffset, 0f);
+            int hasCount = (PlayerGlobal.Player != null && PlayerGlobal.Player.inventory.ContainsKey(item.id)) ? PlayerGlobal.Player.inventory[item.id].itemCount : 0;
+            int needCount = item.itemCount;
+            block.GetChild(0).GetComponent<Text>().text = hasCount.ToString();
+            block.GetChild(1).GetComponent<Text>().text = item.name.ToString();
+            block.GetChild(2).GetComponent<Text>().text = "/" + needCount.ToString();
             index++;
         }
     }
@@ -97,6 +126,7 @@ public class ApplianceContentController : MonoBehaviour
         applianceSelectPanel.gameObject.SetActive(false);
         applianceMenu.gameObject.SetActive(true);
         selectedAppliance = appliances[id];
+        applianceNameText.text = selectedAppliance.name;
         var enumerator = selectedAppliance.methods.Values.GetEnumerator();
         enumerator.MoveNext();
         selectedProduceMethod = enumerator.Current;
@@ -108,35 +138,16 @@ public class ApplianceContentController : MonoBehaviour
     {
         applianceContent.gameObject.SetActive(true);
         selectedProduceMethod = selectedAppliance.methods[id];
-        for (int i = materialPanelContent.childCount - 1; i >= 0; i--)
-        {
-            Destroy(materialPanelContent.GetChild(i).gameObject);
-        }
         for (int i = productPanelContent.childCount - 1; i >= 0; i--)
         {
             Destroy(productPanelContent.GetChild(i).gameObject);
         }
 
+        UpdateMethodMaterial();
         int index = 0;
-        float xoffset = -80f;
-        float yoffset = 70f;
-        materialPanelContent.sizeDelta = new Vector2(220f, selectedProduceMethod.materials.Length * 50f);
-        foreach (Item item in selectedProduceMethod.materials)
-        {
-            RectTransform block = Instantiate(blockPrefab);
-            block.transform.SetParent(materialPanelContent);
-            block.localScale = Vector3.one;
-            block.localPosition = new Vector3(xoffset, -index * 50f + yoffset, 0f);
-            int hasCount = (PlayerGlobal.Player != null && PlayerGlobal.Player.inventory.ContainsKey(item.id))?PlayerGlobal.Player.inventory[item.id].itemCount: 0;
-            int needCount = item.itemCount;
-            block.GetChild(0).GetComponent<Text>().text = hasCount.ToString() + "/" + needCount.ToString();
-            block.GetChild(1).GetComponent<Text>().text = item.name.ToString();
-            index++;
-        }
-        index = 0;
         productPanelContent.sizeDelta = new Vector2(220f, selectedProduceMethod.products.Length * 50f);
-        xoffset = -80f;
-        yoffset = productPanelContent.rect.height / 2 - blockPrefab.rect.height / 2 - 10f;
+        float xoffset = -80f;
+        float yoffset = productPanelContent.rect.height / 2 - blockPrefab.rect.height / 2 - 10f;
         foreach (object product in selectedProduceMethod.products)
         {
             if(product is Item)
@@ -183,12 +194,32 @@ public class ApplianceContentController : MonoBehaviour
                         Appliance appliance = result as Appliance;
                         if(!appliances.ContainsKey(appliance.id))
                         {
-                            appliances.Add(appliance.id,appliance);
+                            if (selectedAppliance is IUpgradable)
+                            {
+                                IUpgradable target = selectedAppliance as IUpgradable;
+                                if (target.UpgradeCheck(appliance))
+                                {
+                                    appliances.Remove(selectedAppliance.id);
+                                    Appliance upgraded = target.Upgrade() as Appliance;
+                                    appliances.Add(upgraded.id, upgraded);
+                                    SelectAppliance(upgraded.id);
+                                }
+                                else
+                                {
+                                    appliances.Add(appliance.id, appliance);
+                                }
+                            }
+                            else
+                            {
+                                appliances.Add(appliance.id, appliance);
+                            }
                             UpdateApplianceScelectPanel();
                         }
                     }
                 }
-                SelectMethod(selectedProduceMethod.id);
+                UpdateMethodMaterial();
+                processButton.enabled = selectedProduceMethod.Sufficient(PlayerGlobal.Player.inventory);
+                processButton.image.color = (processButton.enabled) ? Color.white : Color.grey;
                 inventoryController.ShowInventory();
             }
         }

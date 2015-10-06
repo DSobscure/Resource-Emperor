@@ -3,15 +3,21 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using REProtocol;
+using Newtonsoft.Json;
 
 namespace REStructure
 {
     public class ProduceMethod
     {
+        [JsonProperty("id")]
         public ProduceMethodID id;
+        [JsonProperty("materials")]
         public Item[] materials;
+        [JsonProperty("products")]
         public object[] products;
+        [JsonProperty("processTime")]
         public int processTime;
+        [JsonProperty("title")]
         public string title;
 
         public ProduceMethod(ProduceMethodID id, string title, Item[] materials, object[] products, int processTime)
