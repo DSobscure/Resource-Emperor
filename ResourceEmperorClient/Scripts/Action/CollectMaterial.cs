@@ -33,13 +33,13 @@ public class CollectMaterial : MonoBehaviour
         slider.value += 0.05f;
         if(slider.value >= 5f)
         {
-            if (PlayerGlobal.Player.inventory.ContainsKey(ItemID.Log))
+            if (PlayerGlobal.Inventory.ContainsKey(ItemID.Log))
             {
-                PlayerGlobal.Player.inventory[ItemID.Log].Increase();
+                PlayerGlobal.Inventory[ItemID.Log].Increase();
             }
             else
             {
-                PlayerGlobal.Player.inventory.Add(ItemID.Log, new Log(1));
+                PlayerGlobal.Inventory.Add(ItemID.Log, new Log(1));
             }
             inventoryController.UpdateItem(ItemID.Log);
             slider.value = 0;

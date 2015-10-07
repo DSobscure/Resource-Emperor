@@ -3,6 +3,7 @@ using Photon.SocketServer;
 using REStructure.Items.Materials;
 using REStructure;
 using REProtocol;
+using Newtonsoft.Json;
 
 namespace ResourceEmperorServer
 {
@@ -12,28 +13,21 @@ namespace ResourceEmperorServer
         {
             if (server.WandererDictionary.ContainsKey(guid))
             {
-                string[] requestItem = new string[1];
+                string[] requestItem = new string[3];
                 requestItem[0] = "Account";
+                requestItem[1] = "Inventory";
+                requestItem[2] = "Appliances";
 
-                TypeCode[] requestType = new TypeCode[1];
-                requestType[0] = TypeCode.String;
+                string[] returnData = server.database.GetDataByUniqueID(playerUniqueID, requestItem, "player");
 
-                object[] returnData = server.database.GetDataByUniqueID(playerUniqueID, requestItem, requestType, "player");
-
-                Player = new REPlayer(playerUniqueID, (string)returnData[0], this);
-                Player.inventory = new Inventory();
-                Player.inventory.Add(ItemID.Log, new Log(1000));
-                Player.inventory.Add(ItemID.IronOre, new IronOre(1000));
-                Player.inventory.Add(ItemID.Rock, new Rock(1000));
-                Player.inventory.Add(ItemID.Hemp, new Hemp(1000));
-                Player.inventory.Add(ItemID.Oak, new Oak(1000));
-                Player.inventory.Add(ItemID.Cypress, new Cypress(1000));
-                Player.inventory.Add(ItemID.Clay, new Clay(1000));
-                Player.inventory.Add(ItemID.CopperOre, new CopperOre(1000));
-                Player.inventory.Add(ItemID.Coal, new Coal(1000));
-                Player.inventory.Add(ItemID.Water, new Water(1000));
-                Player.inventory.Add(ItemID.Cotton, new Cotton(1000));
-
+                if ((string)returnData[1] != "" && (string)returnData[2] != "")
+                {
+                    Player = new REPlayer(playerUniqueID, (string)returnData[0], (string)returnData[1], (string)returnData[2], this);
+                }
+                else
+                {
+                    Player = new REPlayer(playerUniqueID, (string)returnData[0], this);
+                }
 
                 server.WandererDictionary.Remove(guid);
                 server.PlayerDictionary.Add(playerUniqueID, Player);
@@ -60,28 +54,13 @@ namespace ResourceEmperorServer
             if (Player != null && server.PlayerDictionary.ContainsKey(Player.uniqueID))
             {
                 server.PlayerDictionary.Remove(Player.uniqueID);
-                //Dictionary<byte, object> parameter = new Dictionary<byte, object>
-                //                        {
-                //                            {(byte)DisconnectBroadcastItem.SoulUniqueIDListDataString,SerializeFunction.SerializeObject(soulUniqueIDList.ToArray())},
-                //                            {(byte)DisconnectBroadcastItem.SceneUniqueIDListDataString,SerializeFunction.SerializeObject(sceneUniqueIDList.ToArray())},
-                //                            {(byte)DisconnectBroadcastItem.ContainerUniqueIDListDataString,SerializeFunction.SerializeObject(containerUniqueIDList.ToArray())}
-                //                        };
-                //HashSet<DSPeer> peers = new HashSet<DSPeer>();
-                //foreach (Answer answer in server.AnswerDictionary.Values)
-                //{
-                //    peers.Add(answer.Peer);
-                //}
-                //foreach (Scene scene in server.SceneAdministratorDictionary.Values)
-                //{
-                //    peers.Add(scene.AdministratorPeer);
-                //}
-                //server.Broadcast(peers.ToArray(), BroadcastType.Disconnect, parameter);
-
-                //string[] updateItems = { "PositionX", "PositionY", "PositionZ", "EulerAngleY" };
-                //object[] updateValues = { container.PositionX, container.PositionY, container.PositionZ, container.EulerAngleY };
-                //string table = "container";
-                //server.database.UpdateDataByUniqueID(containerUniqueID, updateItems, updateValues, table);
-
+                string[] updateItems = { "Inventory", "Appliances" };
+                object[] updateValues = {
+                    JsonConvert.SerializeObject(Player.inventory, new JsonSerializerSettings { TypeNameHandling = TypeNameHandling.Auto }),
+                    JsonConvert.SerializeObject(Player.appliances, new JsonSerializerSettings { TypeNameHandling = TypeNameHandling.Auto })
+                };
+                string table = "player";
+                server.database.UpdateDataByUniqueID(Player.uniqueID, updateItems, updateValues, table);
                 return true;
             }
             else

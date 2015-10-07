@@ -3,6 +3,12 @@
     public enum LoginResponseItem
     {
         PlayerDataString,
-        InventoryDataString
+        InventoryDataString,
+        AppliancesDataString
+    }
+    public enum ProduceResponseItem
+    {
+        ApplianceID,
+        ProduceMethodID
     }
 }

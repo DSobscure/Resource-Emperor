@@ -7,11 +7,11 @@ namespace REStructure
 {
     public abstract class Appliance
     {
-        [JsonProperty("id")]
+        [JsonIgnore]
         public abstract ApplianceID id { get; protected set; }
-        [JsonProperty("name")]
+        [JsonIgnore]
         public abstract string name { get; protected set; }
-        [JsonProperty("methods")]
+        [JsonIgnore]
         public abstract Dictionary<ProduceMethodID,ProduceMethod> methods { get; protected set; }
         protected Appliance() { }
     }

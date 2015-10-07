@@ -35,7 +35,7 @@ public class InventoryController : MonoBehaviour
             }
         }
         int index = 0;
-        foreach (Item item in PlayerGlobal.Player.inventory.Values)
+        foreach (Item item in PlayerGlobal.Inventory.Values)
         {
             blockPositions.Add(item.id,index);
             inventoryBlocks[index / inventoryColumn, index % inventoryColumn].GetChild(0).GetComponent<Text>().text = item.itemCount.ToString();
@@ -49,9 +49,9 @@ public class InventoryController : MonoBehaviour
         if(blockPositions.ContainsKey(id))
         {
             int index = blockPositions[id];
-            inventoryBlocks[index / inventoryColumn, index % inventoryColumn].GetChild(0).GetComponent<Text>().text = PlayerGlobal.Player.inventory[id].itemCount.ToString();
+            inventoryBlocks[index / inventoryColumn, index % inventoryColumn].GetChild(0).GetComponent<Text>().text = PlayerGlobal.Inventory[id].itemCount.ToString();
         }
-        else if(PlayerGlobal.Player.inventory.ContainsKey(id))
+        else if(PlayerGlobal.Inventory.ContainsKey(id))
         {
             ShowInventory();
         }
@@ -69,7 +69,7 @@ public class InventoryController : MonoBehaviour
                 inventoryBlocks[i, j].GetChild(1).GetComponent<Text>().text = "";
             }
         }
-        foreach (Item item in PlayerGlobal.Player.inventory.Values)
+        foreach (Item item in PlayerGlobal.Inventory.Values)
         {
             blockPositions.Add(item.id, index);
             inventoryBlocks[index / inventoryColumn, index % inventoryColumn].GetChild(0).GetComponent<Text>().text = item.itemCount.ToString();

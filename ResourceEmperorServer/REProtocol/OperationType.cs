@@ -5,6 +5,6 @@
         Test,
         Login,
         GetMaterial,
-        MakeProduct
+        Produce
     }
 }

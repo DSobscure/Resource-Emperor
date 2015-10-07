@@ -12,8 +12,9 @@
         MaterialCount
     }
 
-    public enum MakeProductParameterItem
+    public enum ProduceParameterItem
     {
-        ProcessMethodID
+        ApplianceID,
+        ProduceMethodID
     }
 }

@@ -29,11 +29,23 @@ namespace ResourceEmperorServer
                 {
                     REServer.Log.Info("Disconnect Error because we don't know what is the target");
                 }
+                else
+                {
+                    REServer.Log.Info(Player.account + ": Disconnet");
+                }
+            }
+            else
+            {
+                REServer.Log.Info(guid+": Disconnet");
             }
         }
 
         protected override void OnOperationRequest(OperationRequest operationRequest, SendParameters sendParameters)
         {
+            if(Player == null)
+                REServer.Log.Info(guid + ":"+((OperationType)operationRequest.OperationCode).ToString());
+            else
+                REServer.Log.Info(Player.account + ":" + ((OperationType)operationRequest.OperationCode).ToString());
             switch (operationRequest.OperationCode)
             {
                 #region test
@@ -48,6 +60,14 @@ namespace ResourceEmperorServer
                 case (byte)OperationType.Login:
                     {
                         LoginTask(operationRequest);
+                    }
+                    break;
+                #endregion
+
+                #region produce
+                case (byte)OperationType.Produce:
+                    {
+                        ProduceTask(operationRequest);
                     }
                     break;
                 #endregion

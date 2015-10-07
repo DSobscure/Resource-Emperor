@@ -1,8 +1,9 @@
 ﻿using UnityEngine;
-using System.Collections;
+using System.Collections.Generic;
 using RESerializable;
 using UnityEngine.UI;
 using REStructure;
+using REProtocol;
 
 public class LoginController : MonoBehaviour
 {
@@ -30,12 +31,14 @@ public class LoginController : MonoBehaviour
         PhotonGlobal.PS.LoginEvent += LoginEventAction;
     }
 
-    private void LoginEventAction(bool loginStatus, string debugMessage, SerializablePlayer player, Inventory inventory)
+    private void LoginEventAction(bool loginStatus, string debugMessage, SerializablePlayer player, Inventory inventory, Dictionary<ApplianceID, Appliance> appliances)
     {
         if (loginStatus)
         {
             PlayerGlobal.LoginStatus = true;
-            PlayerGlobal.Player = new Player(player, inventory);
+            PlayerGlobal.Player = new Player(player);
+            PlayerGlobal.Inventory = inventory;
+            PlayerGlobal.Appliances = appliances;
             Application.LoadLevel("WorkRoomScene");
         }
         else

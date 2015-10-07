@@ -6,11 +6,11 @@ namespace REStructure
 {
     public abstract class Item : IComparable<Item> , IScalable , ICloneable
     {
-        [JsonProperty("id")]
+        [JsonIgnore]
         public abstract ItemID id { get; protected set; }
-        [JsonProperty("name")]
+        [JsonIgnore]
         public abstract string name { get; protected set; }
-        [JsonProperty("description")]
+        [JsonIgnore]
         public abstract string description { get; protected set; }
         [JsonProperty("ietmCount")]
         public int itemCount { get; protected set; }

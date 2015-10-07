@@ -88,6 +88,14 @@ public partial class PhotonService : IPhotonPeerListener
                 }
                 break;
             #endregion
+
+            #region produce
+            case (byte)OperationType.Produce:
+                {
+                    ProduceTask(operationResponse);
+                }
+                break;
+            #endregion
         }
     }
 
@@ -119,12 +127,27 @@ public partial class PhotonService : IPhotonPeerListener
                 loginStatus: true,
                 debugMessage: "",
                 player: JsonConvert.DeserializeObject<SerializablePlayer>((string)operationResponse.Parameters[(byte)LoginResponseItem.PlayerDataString], new JsonSerializerSettings { TypeNameHandling = TypeNameHandling.Auto }),
-                inventory: JsonConvert.DeserializeObject<Inventory>((string)operationResponse.Parameters[(byte)LoginResponseItem.InventoryDataString], new JsonSerializerSettings { TypeNameHandling = TypeNameHandling.Auto }));
+                inventory: JsonConvert.DeserializeObject<Inventory>((string)operationResponse.Parameters[(byte)LoginResponseItem.InventoryDataString], new JsonSerializerSettings { TypeNameHandling = TypeNameHandling.Auto }),
+                appliances: JsonConvert.DeserializeObject<Dictionary<ApplianceID, Appliance>>((string)operationResponse.Parameters[(byte)LoginResponseItem.AppliancesDataString], new JsonSerializerSettings { TypeNameHandling = TypeNameHandling.Auto }));
         }
         else
         {
             DebugReturn(0, operationResponse.DebugMessage);
-            LoginEvent(false, operationResponse.DebugMessage,null,null);
+            LoginEvent(false, operationResponse.DebugMessage,null,null,null);
+        }
+    }
+    private void ProduceTask(OperationResponse operationResponse)
+    {
+        if (operationResponse.ReturnCode == (short)ErrorType.Correct)
+        {
+            ApplianceID applianceID = (ApplianceID)operationResponse.Parameters[(byte)ProduceResponseItem.ApplianceID];
+            ProduceMethodID produceMethodID = (ProduceMethodID)operationResponse.Parameters[(byte)ProduceResponseItem.ProduceMethodID];
+            ProduceEvent(true,operationResponse.DebugMessage, applianceID, produceMethodID);
+        }
+        else
+        {
+            DebugReturn(0, operationResponse.DebugMessage);
+            ProduceEvent(false, operationResponse.DebugMessage, 0, 0);
         }
     }
 
@@ -156,6 +179,22 @@ public partial class PhotonService : IPhotonPeerListener
                         };
 
             this.peer.OpCustom((byte)OperationType.Login, parameter, true, 0, true);
+        }
+        catch (Exception EX)
+        {
+            throw EX;
+        }
+    }
+    public void Produce(Appliance appliance,ProduceMethod method)
+    {
+        try
+        {
+            var parameter = new Dictionary<byte, object> {
+                             { (byte)ProduceParameterItem.ApplianceID, appliance.id },
+                             { (byte)ProduceParameterItem.ProduceMethodID, method.id }
+                        };
+
+            this.peer.OpCustom((byte)OperationType.Produce, parameter, true, 0, true);
         }
         catch (Exception EX)
         {
