@@ -1,13 +1,6 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
-using RESerializable;
-using System.Text;
-using REStructure.Items.Materials;
-using REStructure.Items.Products;
-using REStructure.Items.Tools;
-using REStructure.Items;
 using REProtocol;
-using System;
 using Newtonsoft.Json;
 
 namespace REStructure
@@ -16,10 +9,13 @@ namespace REStructure
     {
         [JsonProperty("items")]
         protected Dictionary<ItemID, Item> items { get; set; }
+        [JsonProperty("maxCount")]
+        public int maxCount { get; set; }
 
         public Inventory()
         {
             items = new Dictionary<ItemID, Item>();
+            maxCount = 40;
         }
         //IDictionary
         public Item this[ItemID key]
@@ -64,11 +60,13 @@ namespace REStructure
         }
         public void Add(KeyValuePair<ItemID, Item> item)
         {
-            items.Add(item.Key, item.Value);
+            if(items.Count<maxCount)
+                items.Add(item.Key, item.Value);
         }
         public void Add(ItemID key, Item value)
         {
-            items.Add(key, value);
+            if (items.Count < maxCount)
+                items.Add(key, value);
         }
         public void Clear()
         {

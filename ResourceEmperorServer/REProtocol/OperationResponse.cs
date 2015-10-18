@@ -11,4 +11,9 @@
         ApplianceID,
         ProduceMethodID
     }
+    public enum DiscardItemResponseItem
+    {
+        ItemID,
+        ItemCount
+    }
 }

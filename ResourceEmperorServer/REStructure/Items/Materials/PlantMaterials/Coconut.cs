@@ -1,35 +1,29 @@
-﻿using System;
-using REProtocol;
+﻿using REProtocol;
 
 namespace REStructure.Items.Materials
 {
-    public class RawRubber : PlantMaterial
+    public class Coconut : PlantMaterial
     {
         static ItemID _id;
         static string _name;
         static string _description;
         static PlantType _type;
 
-        static RawRubber()
+        static Coconut()
         {
-            _id = ItemID.Rubber;
-            _name = "生橡膠";
+            _id = ItemID.Coconut;
+            _name = "椰子";
             _description = "";
             _type = PlantType.Product;
         }
-        protected RawRubber() { }
-        public RawRubber(int itemCount) : base(itemCount) { }
+        protected Coconut() { }
+        public Coconut(int itemCount) : base(itemCount) { }
 
         public override ItemID id
         {
             get
             {
                 return _id;
-            }
-
-            protected set
-            {
-                _id = value;
             }
         }
 
@@ -39,11 +33,6 @@ namespace REStructure.Items.Materials
             {
                 return _name;
             }
-
-            protected set
-            {
-                _name = value;
-            }
         }
 
         public override string description
@@ -51,11 +40,6 @@ namespace REStructure.Items.Materials
             get
             {
                 return _description;
-            }
-
-            protected set
-            {
-                _description = value;
             }
         }
 
@@ -70,6 +54,11 @@ namespace REStructure.Items.Materials
             {
                 _type = value;
             }
+        }
+
+        public override object Clone()
+        {
+            return new RawRubber(itemCount);
         }
     }
 }

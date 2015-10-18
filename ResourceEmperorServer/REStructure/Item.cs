@@ -1,17 +1,18 @@
 ﻿using System;
 using REProtocol;
 using Newtonsoft.Json;
+using System.Collections.Generic;
 
 namespace REStructure
 {
     public abstract class Item : IComparable<Item> , IScalable , ICloneable
     {
         [JsonIgnore]
-        public abstract ItemID id { get; protected set; }
+        public abstract ItemID id { get;}
         [JsonIgnore]
-        public abstract string name { get; protected set; }
+        public abstract string name { get;}
         [JsonIgnore]
-        public abstract string description { get; protected set; }
+        public abstract string description { get;}
         [JsonProperty("ietmCount")]
         public int itemCount { get; protected set; }
 
@@ -27,12 +28,14 @@ namespace REStructure
 
         public void Increase(int value = 1)
         {
-            itemCount += value;
+            if(value > 0)
+                itemCount += value;
         }
 
         public void Decrease(int value = 1)
         {
-            itemCount -= value;
+            if (value > 0)
+                itemCount -= value;
         }
 
         public void Reset()
@@ -41,5 +44,22 @@ namespace REStructure
         }
 
         public abstract object Clone();
+
+        public override bool Equals(object obj)
+        {
+            if(obj is Item)
+            {
+                Item i = obj as Item;
+                return id == i.id;
+            }
+            else
+            {
+                return false;
+            }
+        }
+        public override int GetHashCode()
+        {
+            return id.GetHashCode();
+        }
     }
 }

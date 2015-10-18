@@ -17,4 +17,10 @@
         ApplianceID,
         ProduceMethodID
     }
+
+    public enum DiscardItemParameterItem
+    {
+        ItemID,
+        DiscardCount
+    }
 }

@@ -4,6 +4,7 @@ using PhotonHostRuntimeInterfaces;
 using ExitGames.Logging;
 using REProtocol;
 using REStructure;
+using System.Threading;
 
 namespace ResourceEmperorServer
 {
@@ -13,6 +14,7 @@ namespace ResourceEmperorServer
         public Guid guid { get; set; }
         private REServer server;
         public REPlayer Player { get; set; }
+        private CancellationTokenSource cancelTokenSource = new CancellationTokenSource();
 
         public REPeer(IRpcProtocol rpcprotocol, IPhotonPeer nativePeer, REServer serverApplication) : base(rpcprotocol,nativePeer)
         {
@@ -68,6 +70,22 @@ namespace ResourceEmperorServer
                 case (byte)OperationType.Produce:
                     {
                         ProduceTask(operationRequest);
+                    }
+                    break;
+                #endregion
+
+                #region cancel produce
+                case (byte)OperationType.CancelProduce:
+                    {
+                        CancelProduceTask();
+                    }
+                    break;
+                #endregion
+
+                #region discard item
+                case (byte)OperationType.DiscardItem:
+                    {
+                        DiscardItemTask(operationRequest);
                     }
                     break;
                 #endregion

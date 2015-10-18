@@ -1,15 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Collections.Generic;
 using Photon.SocketServer;
 using REProtocol;
-using RESerializable;
-using REStructure.Items.Materials;
 using REStructure;
 using Newtonsoft.Json;
-using System.Reflection;
 using System.Threading;
 
 namespace ResourceEmperorServer
@@ -45,7 +38,6 @@ namespace ResourceEmperorServer
                                             {(byte)LoginResponseItem.InventoryDataString,JsonConvert.SerializeObject(Player.inventory,new JsonSerializerSettings { TypeNameHandling = TypeNameHandling.Auto })},
                                             {(byte)LoginResponseItem.AppliancesDataString,JsonConvert.SerializeObject(Player.appliances,new JsonSerializerSettings { TypeNameHandling = TypeNameHandling.Auto })}
                                         };
-
                             OperationResponse response = new OperationResponse(operationRequest.OperationCode, parameter)
                             {
                                 ReturnCode = (short)ErrorType.Correct,
@@ -53,6 +45,7 @@ namespace ResourceEmperorServer
                             };
 
                             SendOperationResponse(response, new SendParameters());
+                            
                         }
                         else
                         {
@@ -93,7 +86,7 @@ namespace ResourceEmperorServer
                 REServer.Log.Info(item.id + " " + item.name + " " + item.description + " " + item.itemCount);
             }
         }
-        private void ProduceTask(OperationRequest operationRequest)
+        private async void ProduceTask(OperationRequest operationRequest)
         {
             if (operationRequest.Parameters.Count != 2)
             {
@@ -113,59 +106,7 @@ namespace ResourceEmperorServer
                     object[] results;
                     if (Player.appliances[applianceID].methods[produceMethodID].Process(Player.inventory, out results))
                     {
-                        Thread.Sleep(Player.appliances[applianceID].methods[produceMethodID].processTime * 100);
-                        foreach (object result in results)
-                        {
-                            if (result is Item)
-                            {
-                                Item item = result as Item;
-                                if (Player.inventory.ContainsKey(item.id))
-                                {
-                                    Player.inventory[item.id].Increase(item.itemCount);
-                                }
-                                else
-                                {
-                                    Player.inventory.Add(item.id, item.Clone() as Item);
-                                }
-                            }
-                            else if (result is Appliance)
-                            {
-                                Appliance appliance = result as Appliance;
-                                if (!Player.appliances.ContainsKey(appliance.id))
-                                {
-                                    if (Player.appliances[applianceID] is IUpgradable)
-                                    {
-                                        IUpgradable target = Player.appliances[applianceID] as IUpgradable;
-                                        if (target.UpgradeCheck(appliance))
-                                        {
-                                            Player.appliances.Remove(Player.appliances[applianceID].id);
-                                            Appliance upgraded = target.Upgrade() as Appliance;
-                                            Player.appliances.Add(upgraded.id, upgraded);
-                                        }
-                                        else
-                                        {
-                                            Player.appliances.Add(appliance.id, appliance);
-                                        }
-                                    }
-                                    else
-                                    {
-                                        Player.appliances.Add(appliance.id, appliance);
-                                    }
-                                }
-                            }
-                        }
-                        Dictionary<byte, object> parameter = new Dictionary<byte, object>
-                                        {
-                                            {(byte)ProduceResponseItem.ApplianceID,applianceID},
-                                            {(byte)ProduceResponseItem.ProduceMethodID,produceMethodID}
-                                        };
-
-                        OperationResponse response = new OperationResponse(operationRequest.OperationCode, parameter)
-                        {
-                            ReturnCode = (short)ErrorType.Correct,
-                            DebugMessage = ""
-                        };
-                        SendOperationResponse(response, new SendParameters());
+                        await Produce(applianceID,produceMethodID,results, operationRequest.OperationCode);
                     }
                     else
                     {
@@ -176,6 +117,57 @@ namespace ResourceEmperorServer
                         };
                         SendOperationResponse(response, new SendParameters());
                     }
+                }
+                else
+                {
+                    OperationResponse response = new OperationResponse(operationRequest.OperationCode)
+                    {
+                        ReturnCode = (short)ErrorType.InvalidParameter,
+                        DebugMessage = "參數錯誤"
+                    };
+                    SendOperationResponse(response, new SendParameters());
+                }
+            }
+        }
+        private void CancelProduceTask()
+        {
+            cancelTokenSource.Cancel();
+            cancelTokenSource.Dispose();
+            cancelTokenSource = new CancellationTokenSource();
+        }
+        private void DiscardItemTask(OperationRequest operationRequest)
+        {
+            if (operationRequest.Parameters.Count != 2)
+            {
+                OperationResponse response = new OperationResponse(operationRequest.OperationCode)
+                {
+                    ReturnCode = (short)ErrorType.InvalidParameter,
+                    DebugMessage = "DiscardItemTask Parameter Error"
+                };
+                this.SendOperationResponse(response, new SendParameters());
+            }
+            else
+            {
+                ItemID itemID = (ItemID)operationRequest.Parameters[(byte)DiscardItemParameterItem.ItemID];
+                int discardCount = (int)operationRequest.Parameters[(byte)DiscardItemParameterItem.DiscardCount];
+                if (Player.inventory.ContainsKey(itemID) && Player.inventory[itemID].itemCount >= discardCount)
+                {
+                    Player.inventory[itemID].Decrease(discardCount);
+                    Dictionary<byte, object> parameter = new Dictionary<byte, object>
+                                        {
+                                            {(byte)DiscardItemResponseItem.ItemID,itemID},
+                                            {(byte)DiscardItemResponseItem.ItemCount,Player.inventory[itemID].itemCount},
+                                        };
+                    if (Player.inventory[itemID].itemCount == 0)
+                    {
+                        Player.inventory.Remove(itemID);
+                    }
+                    OperationResponse response = new OperationResponse(operationRequest.OperationCode, parameter)
+                    {
+                        ReturnCode = (short)ErrorType.Correct,
+                        DebugMessage = ""
+                    };
+                    SendOperationResponse(response, new SendParameters());
                 }
                 else
                 {

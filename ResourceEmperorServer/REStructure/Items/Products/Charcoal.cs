@@ -23,11 +23,6 @@ namespace REStructure.Items.Products
             {
                 return _id;
             }
-
-            protected set
-            {
-                _id = value;
-            }
         }
 
         public override string name
@@ -36,11 +31,6 @@ namespace REStructure.Items.Products
             {
                 return _name;
             }
-
-            protected set
-            {
-                _name = value;
-            }
         }
 
         public override string description
@@ -48,11 +38,6 @@ namespace REStructure.Items.Products
             get
             {
                 return _description;
-            }
-
-            protected set
-            {
-                _description = value;
             }
         }
 

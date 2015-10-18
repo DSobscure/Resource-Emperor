@@ -4,7 +4,6 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using REStructure;
-using RESerializable;
 using Newtonsoft.Json;
 using REProtocol;
 using REStructure.Appliances;
@@ -12,10 +11,8 @@ using REStructure.Items.Materials;
 
 namespace ResourceEmperorServer
 {
-    public class REPlayer
+    public class REPlayer : Player
     {
-        public int uniqueID { get; set; }
-        public string account { get; set; }
         public REPeer peer { get; set; }
         public Inventory inventory { get; set; }
         public Dictionary<ApplianceID,Appliance> appliances { get; set; }
@@ -51,9 +48,9 @@ namespace ResourceEmperorServer
             appliances = JsonConvert.DeserializeObject<Dictionary<ApplianceID, Appliance>>(appliancesDataString, new JsonSerializerSettings { TypeNameHandling = TypeNameHandling.Auto });
         }
 
-        public SerializablePlayer Serialize()
+        public Player Serialize()
         {
-            return new SerializablePlayer(uniqueID, account);
+            return new Player(uniqueID, account);
         }
     }
 }

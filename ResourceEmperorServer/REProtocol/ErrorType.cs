@@ -6,6 +6,7 @@
         NotExist,
         InvalidOperation,
         InvalidParameter,
-        PermissionDeny
+        PermissionDeny,
+        Canceled
     }
 }

@@ -6,7 +6,7 @@ namespace REStructure.Items.Materials
 {
     public abstract class AnimalMaterial : Material
     {
-        [JsonProperty("type")]
+        [JsonIgnore]
         public abstract AnimalType type { get; protected set; }
         protected AnimalMaterial() : base() { }
         protected AnimalMaterial(int itemCount) : base(itemCount)

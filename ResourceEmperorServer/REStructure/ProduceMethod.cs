@@ -31,6 +31,15 @@ namespace REStructure
 
         public bool Sufficient(Inventory inventory)
         {
+            int newItemCount = 0;
+            foreach(object product in products)
+            {
+                Item item = product as Item;
+                if (item is Item && !inventory.ContainsKey(item.id))
+                    newItemCount++;
+            }
+            if (newItemCount + inventory.Count > inventory.maxCount)
+                return false;
             foreach (var item in this.materials)
             {
                 if (!inventory.ContainsKey(item.id) || inventory[item.id].itemCount < item.itemCount)

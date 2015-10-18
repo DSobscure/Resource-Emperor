@@ -11,6 +11,7 @@ namespace REProtocol
         Oak,
         Cypress,
         Bamboo,
+        Coconut,
 
         Hemp = 10,
 

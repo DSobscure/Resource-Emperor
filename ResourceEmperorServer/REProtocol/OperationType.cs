@@ -5,6 +5,8 @@
         Test,
         Login,
         GetMaterial,
-        Produce
+        Produce,
+        CancelProduce,
+        DiscardItem
     }
 }
