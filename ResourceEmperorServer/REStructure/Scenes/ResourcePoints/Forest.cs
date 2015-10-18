@@ -7,10 +7,10 @@ namespace REStructure.Scenes.ResourcePoints
     public class Forest : ResourcePoint
     {
         protected Forest() { }
-        public Forest(List<Pathway> allPathways)
+        public Forest(string name, List<Pathway> discoveredPaths)
         {
-            name = "森林";
-            this.allPathways = allPathways;
+            this.name = name;
+            this.discoveredPaths = discoveredPaths;
             collectionList = new Dictionary<CollectionMethod, Dictionary<Item, int>>()
             {
                 { CollectionMethod.Hew, new Dictionary<Item, int>()

@@ -7,12 +7,12 @@ namespace REStructure.Scenes
     public class Wilderness : Scene
     {
         [JsonProperty("allPathways")]
-        public List<Pathway> allPathways { get; protected set; }
+        public List<Pathway> discoveredPaths { get; protected set; }
 
         protected Wilderness() { }
-        public Wilderness(string name, List<Pathway> allPathways) : base(name)
+        public Wilderness(string name, List<Pathway> discoveredPaths) : base(name)
         {
-            this.allPathways = allPathways;
+            this.discoveredPaths = discoveredPaths;
         }
     }
 }

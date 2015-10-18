@@ -7,10 +7,10 @@ namespace REStructure.Scenes.ResourcePoints
     public class CostalGrove : ResourcePoint
     {
         protected CostalGrove() { }
-        public CostalGrove(List<Pathway> allPathways)
+        public CostalGrove(string name, List<Pathway> discoveredPaths)
         {
-            name = "海岸樹叢";
-            this.allPathways = allPathways;
+            this.name = name;
+            this.discoveredPaths = discoveredPaths;
             collectionList = new Dictionary<CollectionMethod, Dictionary<Item, int>>()
             {
                 { CollectionMethod.Take, new Dictionary<Item, int>()

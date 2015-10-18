@@ -7,10 +7,10 @@ namespace REStructure.Scenes.ResourcePoints
     public class Grassland : ResourcePoint
     {
         protected Grassland() { }
-        public Grassland(List<Pathway> allPathways)
+        public Grassland(string name, List<Pathway> discoveredPaths)
         {
-            name = "草原";
-            this.allPathways = allPathways;
+            this.name = name;
+            this.discoveredPaths = discoveredPaths;
             collectionList = new Dictionary<CollectionMethod, Dictionary<Item, int>>()
             {
                 { CollectionMethod.Take, new Dictionary<Item, int>()

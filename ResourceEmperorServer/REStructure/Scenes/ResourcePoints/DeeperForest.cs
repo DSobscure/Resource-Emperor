@@ -7,10 +7,10 @@ namespace REStructure.Scenes.ResourcePoints
     public class DeeperForest : ResourcePoint
     {
         protected DeeperForest() { }
-        public DeeperForest(List<Pathway> allPathways)
+        public DeeperForest(string name, List<Pathway> discoveredPaths)
         {
-            name = "更深的森林";
-            this.allPathways = allPathways;
+            this.name = name;
+            this.discoveredPaths = discoveredPaths;
             collectionList = new Dictionary<CollectionMethod, Dictionary<Item, int>>()
             {
                 { CollectionMethod.Hew, new Dictionary<Item, int>()

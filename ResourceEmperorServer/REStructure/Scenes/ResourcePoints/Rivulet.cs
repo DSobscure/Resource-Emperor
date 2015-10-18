@@ -7,10 +7,10 @@ namespace REStructure.Scenes.ResourcePoints
     public class Rivulet : ResourcePoint
     {
         protected Rivulet() { }
-        public Rivulet(List<Pathway> allPathways)
+        public Rivulet(string name, List<Pathway> discoveredPaths)
         {
-            name = "溪流";
-            this.allPathways = allPathways;
+            this.name = name;
+            this.discoveredPaths = discoveredPaths;
             collectionList = new Dictionary<CollectionMethod, Dictionary<Item, int>>()
             {
                 { CollectionMethod.Fill, new Dictionary<Item, int>()

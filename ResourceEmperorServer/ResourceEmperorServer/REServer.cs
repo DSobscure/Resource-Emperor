@@ -1,14 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.IO;
 using Photon.SocketServer;
 using ExitGames.Logging;
 using ExitGames.Logging.Log4Net;
 using log4net.Config;
-using REStructure;
 using REProtocol;
 
 namespace ResourceEmperorServer
@@ -49,100 +45,6 @@ namespace ResourceEmperorServer
             {
                 Log.Info("Database Connect successiful!.......");
             }
-            //map = new Map(new List<ServerScene>()
-            //{
-            //    new ServerTown("起始村莊", new List<Scene>()
-            //        {
-            //            new ServerWilderness("邊緣地帶",10000,new List<Scene>()
-            //                {
-            //                    new ServerWilderness("往海邊的道路",9000,new List<Scene>()
-            //                        {
-            //                            new ServerWilderness("矮樹叢",6000,new List<Scene>()
-            //                                {
-            //                                    new ServerResourcePoint("茂密的森林",5000,new List<Scene>(),
-            //                                        new Dictionary<CollectionMethod, Dictionary<ItemID, int>>()
-            //                                        {
-            //                                        }
-            //                                    ),
-            //                                    new ServerResourcePoint("叢森",4000,new List<Scene>()
-            //                                        {
-            //                                            new ServerResourcePoint("雨林",3000,new List<Scene>()
-            //                                                {
-
-            //                                                },
-            //                                                new Dictionary<CollectionMethod, Dictionary<ItemID, int>>()
-            //                                                {
-
-            //                                                }
-            //                                            ),
-            //                                            new ServerResourcePoint("溪流",6000,new List<Scene>()
-            //                                                {
-
-            //                                                },
-            //                                                new Dictionary<CollectionMethod, Dictionary<ItemID, int>>()
-            //                                                {
-
-            //                                                }
-            //                                            )
-            //                                        },
-            //                                        new Dictionary<CollectionMethod, Dictionary<ItemID, int>>()
-            //                                        {
-
-            //                                        }
-            //                                    )
-            //                                }
-            //                            ),
-            //                            new ServerResourcePoint("灌木叢",4000,new List<Scene>()
-            //                                {
-            //                                    new ServerResourcePoint("更深的灌木叢",1000,new List<Scene>()
-            //                                        {
-
-            //                                        },
-            //                                        new Dictionary<CollectionMethod, Dictionary<ItemID, int>>()
-            //                                        {
-
-            //                                        }
-            //                                    )
-            //                                },
-            //                                new Dictionary<CollectionMethod, Dictionary<ItemID, int>>()
-            //                                {
-
-            //                                }
-            //                            ),
-            //                            new ServerWilderness("防風林",8000,new List<Scene>()
-            //                                {
-            //                                    new ServerResourcePoint("海岸樹叢",9000,new List<Scene>()
-            //                                        {
-
-            //                                        },
-            //                                        new Dictionary<CollectionMethod, Dictionary<ItemID, int>>()
-            //                                        {
-
-            //                                        }
-            //                                    ),
-            //                                    new ServerResourcePoint("海灘",10000,new List<Scene>()
-            //                                        {
-
-            //                                        },
-            //                                        new Dictionary<CollectionMethod, Dictionary<ItemID, int>>()
-            //                                        {
-            //                                        }
-            //                                    )
-            //                                }
-            //                            )
-            //                        }
-            //                    ),
-            //                    new ServerWilderness("往森林的道路",9000,new List<Scene>()
-            //                        {
-                                        
-            //                        }
-            //                    )
-            //                }
-            //            )
-            //        }
-            //    )
-            //});
-            Log.Info("Map Create successiful!.......");
         }
 
         protected override void TearDown()

@@ -7,10 +7,10 @@ namespace REStructure.Scenes.ResourcePoints
     class Jungle : ResourcePoint
     {
         protected Jungle() { }
-        public Jungle(List<Pathway> allPathways)
+        public Jungle(string name, List<Pathway> discoveredPaths)
         {
-            name = "叢森";
-            this.allPathways = allPathways;
+            this.name = name;
+            this.discoveredPaths = discoveredPaths;
             collectionList = new Dictionary<CollectionMethod, Dictionary<Item, int>>()
             {
                 { CollectionMethod.Hew, new Dictionary<Item, int>()

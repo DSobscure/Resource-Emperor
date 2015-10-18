@@ -7,10 +7,10 @@ namespace REStructure.Scenes.ResourcePoints
     public class Beach : ResourcePoint
     {
         protected Beach() { }
-        public Beach(List<Pathway> allPathways)
+        public Beach(string name,List<Pathway> discoveredPaths)
         {
-            name = "海灘";
-            this.allPathways = allPathways;
+            this.name = name;
+            this.discoveredPaths = discoveredPaths;
             collectionList = new Dictionary<CollectionMethod, Dictionary<Item, int>>()
             {
                 { CollectionMethod.Fill, new Dictionary<Item, int>()

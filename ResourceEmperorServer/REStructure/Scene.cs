@@ -15,6 +15,13 @@ namespace REStructure
         protected Scene(string name)
         {
             this.name = name;
+            players = new List<Player>();
+            paths = new List<Pathway>();
+        }
+
+        public void AddPath(Pathway path)
+        {
+            paths.Add(path);
         }
     }
 }

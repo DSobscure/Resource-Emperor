@@ -7,10 +7,10 @@ namespace REStructure.Scenes.ResourcePoints
     public class Mine : ResourcePoint
     {
         protected Mine() { }
-        public Mine(List<Pathway> allPathways)
+        public Mine(string name, List<Pathway> discoveredPaths)
         {
-            name = "礦坑";
-            this.allPathways = allPathways;
+            this.name = name;
+            this.discoveredPaths = discoveredPaths;
             collectionList = new Dictionary<CollectionMethod, Dictionary<Item, int>>()
             {
                 { CollectionMethod.Dig, new Dictionary<Item, int>()

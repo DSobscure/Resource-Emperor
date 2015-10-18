@@ -7,10 +7,10 @@ namespace REStructure.Scenes.ResourcePoints
     public class DeepCave : ResourcePoint
     {
         protected DeepCave() { }
-        public DeepCave(List<Pathway> allPathways)
+        public DeepCave(string name, List<Pathway> discoveredPaths)
         {
-            name = "山洞深處";
-            this.allPathways = allPathways;
+            this.name = name;
+            this.discoveredPaths = discoveredPaths;
             collectionList = new Dictionary<CollectionMethod, Dictionary<Item, int>>()
             {
                 { CollectionMethod.Dig, new Dictionary<Item, int>()

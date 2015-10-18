@@ -7,10 +7,10 @@ namespace REStructure.Scenes.ResourcePoints
     public class LushForest : ResourcePoint
     {
         protected LushForest() { }
-        public LushForest(List<Pathway> allPathways)
+        public LushForest(string name, List<Pathway> discoveredPaths)
         {
-            name = "茂密的森林";
-            this.allPathways = allPathways;
+            this.name = name;
+            this.discoveredPaths = discoveredPaths;
             collectionList = new Dictionary<CollectionMethod, Dictionary<Item, int>>()
             {
                 { CollectionMethod.Hew, new Dictionary<Item, int>()
