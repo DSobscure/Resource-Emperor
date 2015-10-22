@@ -10,7 +10,7 @@ namespace REStructure.Scenes
         public Dictionary<CollectionMethod,Dictionary<Item,int>> collectionList { get; protected set; }
 
         protected ResourcePoint() { }
-        public ResourcePoint(string name, List<Pathway> allPathways, Dictionary<CollectionMethod, Dictionary<Item, int>> collectionList)
+        public ResourcePoint(int uniqueID, string name, List<Pathway> allPathways, Dictionary<CollectionMethod, Dictionary<Item, int>> collectionList)
             : base(name, allPathways)
         {
             this.collectionList = collectionList;

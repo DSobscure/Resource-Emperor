@@ -6,6 +6,7 @@ using ExitGames.Logging;
 using ExitGames.Logging.Log4Net;
 using log4net.Config;
 using REProtocol;
+using REStructure;
 
 namespace ResourceEmperorServer
 {
@@ -15,7 +16,7 @@ namespace ResourceEmperorServer
         public Dictionary<Guid, REPeer> WandererDictionary;
         public Dictionary<int, REPlayer> PlayerDictionary;
         public REDatabase database;
-        public Map map;
+        public GlobalMap globalMap;
 
         protected override PeerBase CreatePeer(InitRequest initRequest)
         {
@@ -45,6 +46,9 @@ namespace ResourceEmperorServer
             {
                 Log.Info("Database Connect successiful!.......");
             }
+
+            globalMap = new GlobalMap();
+            Log.Info("Global Map Setup successiful!.......");
         }
 
         protected override void TearDown()

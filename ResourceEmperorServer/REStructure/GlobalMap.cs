@@ -4,15 +4,17 @@ using REStructure.Scenes.ResourcePoints;
 
 namespace REStructure
 {
-    public static class GlobalMap
+    public class GlobalMap
     {
-        public static HashSet<Scene> scenes { get; set; }
-        public static HashSet<Pathway> paths { get; set; }
+        public Dictionary<int,Scene> scenes { get; protected set; }
+        public Dictionary<int,Pathway> paths { get; protected set; }
+        public List<Town> towns { get; protected set; }
 
-        static GlobalMap()
+        public GlobalMap()
         {
-            scenes = new HashSet<Scene>();
-            paths = new HashSet<Pathway>();
+            scenes = new Dictionary<int,Scene>();
+            paths = new Dictionary<int,Pathway>();
+            towns = new List<Town>();
 
             #region 起始村莊地圖
             Town startTown = new Town("起始村莊");
@@ -40,15 +42,15 @@ namespace REStructure
                                 #endregion
                                 AddScene(jungle, new List<PathwayInfo>()
                                 {
-                                    new PathwayInfo() { Scene = rainForest, Distance = 100, DiscoveredProbability = 3000 },
-                                    new PathwayInfo() { Scene = rivulet, Distance = 50, DiscoveredProbability = 6000 }
+                                    new PathwayInfo() { Scene = rainForest, Distance = 100, DiscoveredProbability = 0.3 },
+                                    new PathwayInfo() { Scene = rivulet, Distance = 50, DiscoveredProbability = 0.6 }
                                 });
                             }
                             #endregion
                             AddScene(shortBush, new List<PathwayInfo>()
                             {
-                                new PathwayInfo() { Scene = lushForest, Distance = 20, DiscoveredProbability = 5000 },
-                                new PathwayInfo() { Scene = jungle, Distance = 60, DiscoveredProbability = 4000 }
+                                new PathwayInfo() { Scene = lushForest, Distance = 20, DiscoveredProbability = 0.5 },
+                                new PathwayInfo() { Scene = jungle, Distance = 60, DiscoveredProbability = 0.4 }
                             });
                         }
                         #endregion
@@ -58,7 +60,7 @@ namespace REStructure
                             DeeperBush deeperBush = new DeeperBush("更深的灌木叢", new List<Pathway>());
                             AddScene(bush, new List<PathwayInfo>()
                             {
-                                new PathwayInfo() { Scene = deeperBush, Distance = 100, DiscoveredProbability = 1000 }
+                                new PathwayInfo() { Scene = deeperBush, Distance = 100, DiscoveredProbability = 0.1 }
                             });
                         }
                         #endregion
@@ -69,16 +71,16 @@ namespace REStructure
                             Beach beach = new Beach("海灘", new List<Pathway>());
                             AddScene(windbreaks, new List<PathwayInfo>()
                             {
-                                new PathwayInfo() { Scene = costalGrove, Distance = 8, DiscoveredProbability = 9000 },
-                                new PathwayInfo() { Scene = beach, Distance = 12, DiscoveredProbability = 10000 }
+                                new PathwayInfo() { Scene = costalGrove, Distance = 8, DiscoveredProbability = 0.9 },
+                                new PathwayInfo() { Scene = beach, Distance = 12, DiscoveredProbability = 1 }
                             });
                         }
                         #endregion
                         AddScene(toBeachRoad, new List<PathwayInfo>()
                         {
-                            new PathwayInfo() { Scene = shortBush, Distance = 20, DiscoveredProbability = 6000 },
-                            new PathwayInfo() { Scene = bush, Distance = 40, DiscoveredProbability = 4000 },
-                            new PathwayInfo() { Scene = windbreaks, Distance = 10, DiscoveredProbability = 8000 }
+                            new PathwayInfo() { Scene = shortBush, Distance = 20, DiscoveredProbability = 0.6 },
+                            new PathwayInfo() { Scene = bush, Distance = 40, DiscoveredProbability = 0.4 },
+                            new PathwayInfo() { Scene = windbreaks, Distance = 10, DiscoveredProbability = 0.8 }
                         });
                     }
                     #endregion
@@ -102,25 +104,25 @@ namespace REStructure
                                         #endregion
                                         AddScene(mine, new List<PathwayInfo>()
                                         {
-                                            new PathwayInfo() { Scene = deeperMine, Distance = 19, DiscoveredProbability = 500 }
+                                            new PathwayInfo() { Scene = deeperMine, Distance = 19, DiscoveredProbability = 0.05 }
                                         });
                                     }
                                     #endregion
                                     AddScene(cave, new List<PathwayInfo>()
                                     {
-                                        new PathwayInfo() { Scene = mine, Distance = 7, DiscoveredProbability = 1500 }
+                                        new PathwayInfo() { Scene = mine, Distance = 7, DiscoveredProbability = 0.15 }
                                     });
                                 }
                                 #endregion
                                 AddScene(wilderness, new List<PathwayInfo>()
                                 {
-                                    new PathwayInfo() { Scene = cave, Distance = 50, DiscoveredProbability = 4000 }
+                                    new PathwayInfo() { Scene = cave, Distance = 50, DiscoveredProbability = 0.4 }
                                 });
                             }
                             #endregion
                             AddScene(grassland, new List<PathwayInfo>()
                             {
-                                new PathwayInfo() { Scene = wilderness, Distance = 30, DiscoveredProbability = 9500 }
+                                new PathwayInfo() { Scene = wilderness, Distance = 30, DiscoveredProbability = 0.95 }
                             });
                         }
                         #endregion
@@ -138,13 +140,13 @@ namespace REStructure
                                     #endregion
                                     AddScene(deeperForest, new List<PathwayInfo>()
                                     {
-                                        new PathwayInfo() { Scene = lake, Distance = 100, DiscoveredProbability = 3000 }
+                                        new PathwayInfo() { Scene = lake, Distance = 100, DiscoveredProbability = 0.3 }
                                     });
                                 }
                                 #endregion
                                 AddScene(forest, new List<PathwayInfo>()
                                 {
-                                    new PathwayInfo() { Scene = deeperForest, Distance = 40, DiscoveredProbability = 6000 }
+                                    new PathwayInfo() { Scene = deeperForest, Distance = 40, DiscoveredProbability = 0.6 }
                                 });
                             }
                             #endregion
@@ -159,13 +161,13 @@ namespace REStructure
                                     #endregion
                                     AddScene(taiga, new List<PathwayInfo>()
                                     {
-                                        new PathwayInfo() { Scene = alpineGrassland, Distance = 200, DiscoveredProbability = 4000 }
+                                        new PathwayInfo() { Scene = alpineGrassland, Distance = 200, DiscoveredProbability = 0.4 }
                                     });
                                 }
                                 #endregion
                                 AddScene(mountainerRoad, new List<PathwayInfo>()
                                 {
-                                    new PathwayInfo() { Scene = taiga, Distance = 80, DiscoveredProbability = 6000 }
+                                    new PathwayInfo() { Scene = taiga, Distance = 80, DiscoveredProbability = 0.6 }
                                 });
                             }
                             #endregion
@@ -186,67 +188,70 @@ namespace REStructure
                                         #endregion
                                         AddScene(mine, new List<PathwayInfo>()
                                         {
-                                            new PathwayInfo() { Scene = deeperMine, Distance = 50, DiscoveredProbability = 4000 }
+                                            new PathwayInfo() { Scene = deeperMine, Distance = 50, DiscoveredProbability = 0.4 }
                                         });
                                     }
                                     #endregion
                                     #region 礦脈地圖
                                     Lode lode = new Lode("礦脈", new List<Pathway>());
                                     #endregion
-                                    AddScene(cave, new List<PathwayInfo>()
+                                    AddScene(deepCave, new List<PathwayInfo>()
                                     {
-                                        new PathwayInfo() { Scene = mine, Distance = 80, DiscoveredProbability = 5000 },
-                                        new PathwayInfo() { Scene = lode, Distance = 180, DiscoveredProbability = 1000 }
+                                        new PathwayInfo() { Scene = mine, Distance = 80, DiscoveredProbability = 0.5 },
+                                        new PathwayInfo() { Scene = lode, Distance = 180, DiscoveredProbability = 0.1 }
                                     });
                                 }
                                 #endregion
-                                AddScene(forestPath, new List<PathwayInfo>()
+                                AddScene(cave, new List<PathwayInfo>()
                                 {
-                                    new PathwayInfo() { Scene = deepCave, Distance = 30, DiscoveredProbability = 8000 }
+                                    new PathwayInfo() { Scene = deepCave, Distance = 30, DiscoveredProbability = 0.8 }
                                 });
                             }
                             #endregion
-                            AddScene(fringe, new List<PathwayInfo>()
+                            AddScene(forestPath, new List<PathwayInfo>()
                             {
-                                new PathwayInfo() { Scene = forest, Distance = 20, DiscoveredProbability = 9500 },
-                                new PathwayInfo() { Scene = mountainerRoad, Distance = 40, DiscoveredProbability = 6000 },
-                                new PathwayInfo() { Scene = ravine, Distance = 80, DiscoveredProbability = 1500 },
-                                new PathwayInfo() { Scene = cave, Distance = 90, DiscoveredProbability = 3000 }
+                                new PathwayInfo() { Scene = forest, Distance = 20, DiscoveredProbability = 0.95 },
+                                new PathwayInfo() { Scene = mountainerRoad, Distance = 40, DiscoveredProbability = 0.6 },
+                                new PathwayInfo() { Scene = ravine, Distance = 80, DiscoveredProbability = 0.15 },
+                                new PathwayInfo() { Scene = cave, Distance = 90, DiscoveredProbability = 0.3 }
                             });
                         }
                         #endregion
                         AddScene(toForestRoad, new List<PathwayInfo>()
                         {
-                            new PathwayInfo() { Scene = grassland, Distance = 40, DiscoveredProbability = 9000 },
-                            new PathwayInfo() { Scene = forestPath, Distance = 5, DiscoveredProbability = 10000 }
+                            new PathwayInfo() { Scene = grassland, Distance = 40, DiscoveredProbability = 0.9 },
+                            new PathwayInfo() { Scene = forestPath, Distance = 5, DiscoveredProbability = 1 }
                         });
                     }
                     #endregion
                     AddScene(fringe, new List<PathwayInfo>()
                     {
-                        new PathwayInfo() { Scene = toBeachRoad, Distance = 10, DiscoveredProbability = 9000 },
-                        new PathwayInfo() { Scene = toForestRoad, Distance = 14, DiscoveredProbability = 9000 }
+                        new PathwayInfo() { Scene = toBeachRoad, Distance = 10, DiscoveredProbability = 0.9 },
+                        new PathwayInfo() { Scene = toForestRoad, Distance = 14, DiscoveredProbability = 0.9 }
                     });
                 }
                 #endregion
                 AddScene(startTown, new List<PathwayInfo>()
                 {
-                    new PathwayInfo() { Scene = fringe, Distance = 10, DiscoveredProbability = 10000 }
+                    new PathwayInfo() { Scene = fringe, Distance = 10, DiscoveredProbability = 1 }
                 });
             }
             #endregion
+            towns.Add(startTown);
         }
 
-        public static void AddScene(Scene sourceScene, List<PathwayInfo> targetInfos)
+        public void AddScene(Scene sourceScene, List<PathwayInfo> pathInfos)
         {
-            scenes.Add(sourceScene);
-            foreach (var info in targetInfos)
+            //if(!scenes.ContainsKey(sourceScene.uniqueID))
+                scenes.Add(sourceScene.uniqueID, sourceScene);
+            foreach (var info in pathInfos)
             {
-                scenes.Add(info.Scene);
+                if (!scenes.ContainsKey(info.Scene.uniqueID))
+                    scenes.Add(info.Scene.uniqueID, info.Scene);
                 Pathway path = new Pathway(sourceScene, info.Scene, info.Distance, info.DiscoveredProbability);
                 sourceScene.AddPath(path);
                 info.Scene.AddPath(path);
-                paths.Add(path);
+                paths.Add(path.uniqueID, path);
             }
         }
     }

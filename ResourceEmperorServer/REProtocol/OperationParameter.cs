@@ -23,4 +23,14 @@
         ItemID,
         DiscardCount
     }
+
+    public enum GoToSceneParameterItem
+    {
+        TargetSceneID
+    }
+
+    public enum WalkPathParameterItem
+    {
+        PathwayID
+    }
 }

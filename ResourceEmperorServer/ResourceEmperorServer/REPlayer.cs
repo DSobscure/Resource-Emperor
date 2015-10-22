@@ -16,6 +16,7 @@ namespace ResourceEmperorServer
         public REPeer peer { get; set; }
         public Inventory inventory { get; set; }
         public Dictionary<ApplianceID,Appliance> appliances { get; set; }
+        public Scene Location { get; set; }
 
         public REPlayer() { }
         public REPlayer(int uniqueID, string account, REPeer peer)

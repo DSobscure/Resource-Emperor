@@ -5,16 +5,17 @@ using ExitGames.Logging;
 using REProtocol;
 using REStructure;
 using System.Threading;
+using REStructure.Scenes;
 
 namespace ResourceEmperorServer
 {
     public partial class REPeer : PeerBase
     {
-        private static readonly ILogger Log = LogManager.GetCurrentClassLogger();
-        public Guid guid { get; set; }
+        internal Guid guid;
         private REServer server;
-        public REPlayer Player { get; set; }
+        internal REPlayer player;
         private CancellationTokenSource cancelTokenSource = new CancellationTokenSource();
+        private Room workRoom;
 
         public REPeer(IRpcProtocol rpcprotocol, IPhotonPeer nativePeer, REServer serverApplication) : base(rpcprotocol,nativePeer)
         {
@@ -33,7 +34,7 @@ namespace ResourceEmperorServer
                 }
                 else
                 {
-                    REServer.Log.Info(Player.account + ": Disconnet");
+                    REServer.Log.Info(player.account + ": Disconnet");
                 }
             }
             else
@@ -44,10 +45,10 @@ namespace ResourceEmperorServer
 
         protected override void OnOperationRequest(OperationRequest operationRequest, SendParameters sendParameters)
         {
-            if(Player == null)
+            if(player == null)
                 REServer.Log.Info(guid + ":"+((OperationType)operationRequest.OperationCode).ToString());
             else
-                REServer.Log.Info(Player.account + ":" + ((OperationType)operationRequest.OperationCode).ToString());
+                REServer.Log.Info(player.account + ":" + ((OperationType)operationRequest.OperationCode).ToString());
             switch (operationRequest.OperationCode)
             {
                 #region test
@@ -86,6 +87,30 @@ namespace ResourceEmperorServer
                 case (byte)OperationType.DiscardItem:
                     {
                         DiscardItemTask(operationRequest);
+                    }
+                    break;
+                #endregion
+
+                #region go to scene
+                case (byte)OperationType.GoToScene:
+                    {
+                        GoToSceneTask(operationRequest);
+                    }
+                    break;
+                #endregion
+
+                #region walk path
+                case (byte)OperationType.WalkPath:
+                    {
+                        WalkPathTask(operationRequest);
+                    }
+                    break;
+                #endregion
+
+                #region explore
+                case (byte)OperationType.Explore:
+                    {
+                        ExploreTask(operationRequest);
                     }
                     break;
                 #endregion

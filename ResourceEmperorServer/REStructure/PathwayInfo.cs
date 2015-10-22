@@ -4,6 +4,6 @@
     {
         public Scene Scene;
         public int Distance;
-        public int DiscoveredProbability;
+        public double DiscoveredProbability;
     }
 }

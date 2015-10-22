@@ -6,6 +6,7 @@ using REProtocol;
 using Newtonsoft.Json;
 using System.Threading.Tasks;
 using System.Collections.Generic;
+using REStructure.Scenes;
 
 namespace ResourceEmperorServer
 {
@@ -24,15 +25,15 @@ namespace ResourceEmperorServer
 
                 if ((string)returnData[1] != "" && (string)returnData[2] != "")
                 {
-                    Player = new REPlayer(playerUniqueID, (string)returnData[0], (string)returnData[1], (string)returnData[2], this);
+                    player = new REPlayer(playerUniqueID, (string)returnData[0], (string)returnData[1], (string)returnData[2], this);
                 }
                 else
                 {
-                    Player = new REPlayer(playerUniqueID, (string)returnData[0], this);
+                    player = new REPlayer(playerUniqueID, (string)returnData[0], this);
                 }
-
+                workRoom = new Room("工作小屋");
                 server.WandererDictionary.Remove(guid);
-                server.PlayerDictionary.Add(playerUniqueID, Player);
+                server.PlayerDictionary.Add(playerUniqueID, player);
                 return true;
             }
             else
@@ -53,17 +54,17 @@ namespace ResourceEmperorServer
         }
         private bool DisconnectAsPlayer()
         {
-            if (Player != null && server.PlayerDictionary.ContainsKey(Player.uniqueID))
+            if (player != null && server.PlayerDictionary.ContainsKey(player.uniqueID))
             {
                 cancelTokenSource.Cancel();
-                server.PlayerDictionary.Remove(Player.uniqueID);
+                server.PlayerDictionary.Remove(player.uniqueID);
                 string[] updateItems = { "Inventory", "Appliances" };
                 object[] updateValues = {
-                    JsonConvert.SerializeObject(Player.inventory, new JsonSerializerSettings { TypeNameHandling = TypeNameHandling.Auto }),
-                    JsonConvert.SerializeObject(Player.appliances, new JsonSerializerSettings { TypeNameHandling = TypeNameHandling.Auto })
+                    JsonConvert.SerializeObject(player.inventory, new JsonSerializerSettings { TypeNameHandling = TypeNameHandling.Auto }),
+                    JsonConvert.SerializeObject(player.appliances, new JsonSerializerSettings { TypeNameHandling = TypeNameHandling.Auto })
                 };
                 string table = "player";
-                server.database.UpdateDataByUniqueID(Player.uniqueID, updateItems, updateValues, table);
+                server.database.UpdateDataByUniqueID(player.uniqueID, updateItems, updateValues, table);
                 return true;
             }
             else
@@ -75,43 +76,43 @@ namespace ResourceEmperorServer
         {
             try
             {
-                await Task.Delay(Player.appliances[applianceID].methods[produceMethodID].processTime * 1000, cancelTokenSource.Token);
+                await Task.Delay(player.appliances[applianceID].methods[produceMethodID].processTime * 1000, cancelTokenSource.Token);
                 foreach (object result in results)
                 {
                     if (result is Item)
                     {
                         Item item = result as Item;
-                        if (Player.inventory.ContainsKey(item.id))
+                        if (player.inventory.ContainsKey(item.id))
                         {
-                            Player.inventory[item.id].Increase(item.itemCount);
+                            player.inventory[item.id].Increase(item.itemCount);
                         }
                         else
                         {
-                            Player.inventory.Add(item.id, item.Clone() as Item);
+                            player.inventory.Add(item.id, item.Clone() as Item);
                         }
                     }
                     else if (result is Appliance)
                     {
                         Appliance appliance = result as Appliance;
-                        if (!Player.appliances.ContainsKey(appliance.id))
+                        if (!player.appliances.ContainsKey(appliance.id))
                         {
-                            if (Player.appliances[applianceID] is IUpgradable)
+                            if (player.appliances[applianceID] is IUpgradable)
                             {
-                                IUpgradable target = Player.appliances[applianceID] as IUpgradable;
+                                IUpgradable target = player.appliances[applianceID] as IUpgradable;
                                 if (target.UpgradeCheck(appliance))
                                 {
-                                    Player.appliances.Remove(Player.appliances[applianceID].id);
+                                    player.appliances.Remove(player.appliances[applianceID].id);
                                     Appliance upgraded = target.Upgrade() as Appliance;
-                                    Player.appliances.Add(upgraded.id, upgraded);
+                                    player.appliances.Add(upgraded.id, upgraded);
                                 }
                                 else
                                 {
-                                    Player.appliances.Add(appliance.id, appliance);
+                                    player.appliances.Add(appliance.id, appliance);
                                 }
                             }
                             else
                             {
-                                Player.appliances.Add(appliance.id, appliance);
+                                player.appliances.Add(appliance.id, appliance);
                             }
                         }
                     }

@@ -1,16 +1,16 @@
-﻿using RESerializable;
-using REStructure;
+﻿using REStructure;
 
-public class Player
+public class ClientPlayer
 {
     public int uniqueID { get; protected set; }
     public string account { get; protected set; }
-    public bool isWorking { get; set; }
+    public bool IsWorking { get; set; }
+    public Scene Location { get; set; }
 
-    public Player(SerializablePlayer player)
+    public ClientPlayer(Player player)
     {
         this.uniqueID = player.uniqueID;
         this.account = player.account;
-        isWorking = false;
+        IsWorking = false;
     }
 }

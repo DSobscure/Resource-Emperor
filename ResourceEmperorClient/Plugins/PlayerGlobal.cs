@@ -2,10 +2,11 @@
 using REStructure;
 using REProtocol;
 
-public static class PlayerGlobal
+public static class GameGlobal
 {
-    static public Player Player;
+    static public ClientPlayer Player;
     static public Inventory Inventory;
     static public Dictionary<ApplianceID, Appliance> Appliances;
     static public bool LoginStatus = false;
+    static public GlobalMap GlobalMap;
 }

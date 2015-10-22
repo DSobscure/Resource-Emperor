@@ -10,6 +10,8 @@ public class DraggablePanel : MonoBehaviour, IDragHandler, IPointerDownHandler, 
     private Vector3 originMousePosition;
     private Vector3 originPosition;
     private RectTransform self;
+    [SerializeField]
+    private CanvasScaler canvasScaler;
 
     void Start()
     {
@@ -20,15 +22,15 @@ public class DraggablePanel : MonoBehaviour, IDragHandler, IPointerDownHandler, 
     {
         if(canDrag)
         {
-            Vector3 newPosition = originPosition + Input.mousePosition - originMousePosition;
-            if(newPosition.x < -Screen.width/2+self.rect.width/2)
-                newPosition.x = -Screen.width / 2 + self.rect.width / 2;
-            else if(newPosition.x > Screen.width / 2 - self.rect.width / 2)
-                newPosition.x = Screen.width / 2 - self.rect.width / 2;
-            if (newPosition.y < -Screen.height / 2 + self.rect.height / 2)
-                newPosition.y = -Screen.height / 2 + self.rect.height / 2;
-            else if (newPosition.y > Screen.height / 2 - self.rect.height / 2)
-                newPosition.y = Screen.height / 2 - self.rect.height / 2;
+            Vector3 newPosition = originPosition + Input.mousePosition* canvasScaler.referenceResolution.y / Screen.height - originMousePosition;
+            if (newPosition.x < -canvasScaler.referenceResolution.x/2+self.rect.width/2)
+                newPosition.x = -canvasScaler.referenceResolution.x / 2 + self.rect.width / 2;
+            else if(newPosition.x > canvasScaler.referenceResolution.x / 2 - self.rect.width / 2)
+                newPosition.x = canvasScaler.referenceResolution.x / 2 - self.rect.width / 2;
+            if (newPosition.y < -canvasScaler.referenceResolution.y / 2 + self.rect.height / 2)
+                newPosition.y = -canvasScaler.referenceResolution.y / 2 + self.rect.height / 2;
+            else if (newPosition.y > canvasScaler.referenceResolution.y / 2 - self.rect.height / 2)
+                newPosition.y = canvasScaler.referenceResolution.y / 2 - self.rect.height / 2;
             self.localPosition = newPosition;
         }
     }
@@ -36,7 +38,7 @@ public class DraggablePanel : MonoBehaviour, IDragHandler, IPointerDownHandler, 
     public void OnPointerDown(PointerEventData eventData)
     {
         canDrag = true;
-        originMousePosition = Input.mousePosition;
+        originMousePosition = Input.mousePosition* canvasScaler.referenceResolution.y / Screen.height;
         originPosition = self.localPosition;
     }
 

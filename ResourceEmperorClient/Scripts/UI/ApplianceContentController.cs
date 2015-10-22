@@ -6,15 +6,13 @@ using System;
 
 public class ApplianceContentController : MonoBehaviour
 {
-    private Appliance selectedAppliance;
-    private ProduceMethod selectedProduceMethod;
+    internal float remainTime;
+    internal Appliance selectedAppliance;
+    internal ProduceMethod selectedProduceMethod;
 
-    [SerializeField]
-    private Text applianceNameText;
+    //panels
     [SerializeField]
     private RectTransform applianceSelectPanel;
-    [SerializeField]
-    private InventoryController inventoryController;
     [SerializeField]
     private RectTransform applianceMenu;
     [SerializeField]
@@ -25,11 +23,28 @@ public class ApplianceContentController : MonoBehaviour
     private RectTransform materialPanelContent;
     [SerializeField]
     private RectTransform productPanelContent;
+
+    //texts
+    [SerializeField]
+    private Text applianceNameText;
     [SerializeField]
     private Text produceTimeText;
-    [SerializeField]
-    private Button processButton;
 
+    //buttons
+    [SerializeField]
+    internal Button processButton;
+    [SerializeField]
+    private Button cancelButton;
+
+    //sliders
+    [SerializeField]
+    private Slider processSlider;
+
+    //animations
+    [SerializeField]
+    internal GameObject workingAnimation;
+
+    //prefabs
     [SerializeField]
     private RectTransform blockPrefab;
     [SerializeField]
@@ -37,32 +52,22 @@ public class ApplianceContentController : MonoBehaviour
     [SerializeField]
     private RectTransform applianceButtonPrefab;
 
-    [SerializeField]
-    private GameObject workingAnimation;
-    [SerializeField]
-    private Slider processSlider;
-    private float remainTime;
-
-    // Use this for initialization
     void Start ()
     {
-        PhotonGlobal.PS.ProduceEvent += ProduceEventAction;
         UpdateApplianceScelectPanel();
-        var enumerator = PlayerGlobal.Appliances.GetEnumerator();
+        var enumerator = GameGlobal.Appliances.GetEnumerator();
         enumerator.MoveNext();
         selectedAppliance = enumerator.Current.Value;
         SelectAppliance(selectedAppliance.id);
     }
-
     void Update()
     {
-        if(PlayerGlobal.Player.isWorking)
+        if(GameGlobal.Player != null && GameGlobal.Player.IsWorking)
         {
             remainTime -= Time.deltaTime;
             processSlider.value = Convert.ToSingle(Math.Round(remainTime, 2));
         }
     }
-
     public void UpdateApplianceScelectPanel()
     {
         for (int i = applianceSelectPanel.childCount - 1; i >= 0; i--)
@@ -71,18 +76,17 @@ public class ApplianceContentController : MonoBehaviour
         }
         int index = 0;
         float xoffset = -300f, yoffset = 200f;
-        foreach (Appliance appliance in PlayerGlobal.Appliances.Values)
+        foreach (Appliance appliance in GameGlobal.Appliances.Values)
         {
             ApplianceID id = appliance.id;
             RectTransform applianceButton = Instantiate(applianceButtonPrefab);
             applianceButton.transform.SetParent(applianceSelectPanel);
-            applianceButton.localPosition = new Vector3(xoffset + index%3 * applianceButton.rect.width, yoffset - index/3 * applianceButton.rect.height);
+            applianceButton.localPosition = new Vector3(xoffset + index%3 * applianceButton.rect.width*2, yoffset - index/3 * applianceButton.rect.height*2);
             applianceButton.GetComponent<Button>().onClick.AddListener(() => SelectAppliance(id));
             applianceButton.GetChild(0).GetComponent<Text>().text = appliance.name;
             index++;
         }
     }
-
     public void UpdateApplianceMenu()
     {
         for (int i = methodPanel.childCount - 1; i >= 0; i--)
@@ -105,7 +109,6 @@ public class ApplianceContentController : MonoBehaviour
             index++;
         }
     }
-
     public void UpdateMethodMaterial()
     {
         for (int i = materialPanelContent.childCount - 1; i >= 0; i--)
@@ -122,7 +125,7 @@ public class ApplianceContentController : MonoBehaviour
             block.transform.SetParent(materialPanelContent);
             block.localScale = Vector3.one;
             block.localPosition = new Vector3(xoffset, -index * 50f + yoffset, 0f);
-            int hasCount = (PlayerGlobal.Player != null && PlayerGlobal.Inventory.ContainsKey(item.id)) ? PlayerGlobal.Inventory[item.id].itemCount : 0;
+            int hasCount = (GameGlobal.Player != null && GameGlobal.Inventory.ContainsKey(item.id)) ? GameGlobal.Inventory[item.id].itemCount : 0;
             int needCount = item.itemCount;
             block.GetChild(0).GetComponent<Text>().text = hasCount.ToString();
             block.GetChild(1).GetComponent<Text>().text = item.name.ToString();
@@ -130,12 +133,11 @@ public class ApplianceContentController : MonoBehaviour
             index++;
         }
     }
-
     public void SelectAppliance(ApplianceID id)
     {
         applianceSelectPanel.gameObject.SetActive(false);
         applianceMenu.gameObject.SetActive(true);
-        selectedAppliance = PlayerGlobal.Appliances[id];
+        selectedAppliance = GameGlobal.Appliances[id];
         applianceNameText.text = selectedAppliance.name;
         var enumerator = selectedAppliance.methods.Values.GetEnumerator();
         enumerator.MoveNext();
@@ -143,7 +145,6 @@ public class ApplianceContentController : MonoBehaviour
         UpdateApplianceMenu();
         SelectMethod(selectedProduceMethod.id);
     }
-
     public void SelectMethod(ProduceMethodID id)
     {
         applianceContent.gameObject.SetActive(true);
@@ -174,94 +175,32 @@ public class ApplianceContentController : MonoBehaviour
         }
 
         produceTimeText.text = selectedProduceMethod.processTime.ToString() + "秒";
-        processButton.enabled = selectedProduceMethod.Sufficient(PlayerGlobal.Inventory) && !PlayerGlobal.Player.isWorking;
+        processButton.enabled = !GameGlobal.Player.IsWorking && selectedProduceMethod.Sufficient(GameGlobal.Inventory);
         processButton.image.color = (processButton.enabled)?Color.white:Color.grey;
     }
-
     public void StartProduce()
     {
-        if(selectedAppliance != null && selectedProduceMethod != null)
+        if(selectedAppliance != null && selectedProduceMethod != null && GameGlobal.Inventory!= null)
         {
-            if(selectedProduceMethod.Sufficient(PlayerGlobal.Inventory))
+            if(selectedProduceMethod.Sufficient(GameGlobal.Inventory))
             {
-                PlayerGlobal.Player.isWorking = true;
+                GameGlobal.Player.IsWorking = true;
                 workingAnimation.SetActive(true);
-                remainTime = selectedProduceMethod.processTime/10;
-                processSlider.maxValue = selectedProduceMethod.processTime/10;
-                processSlider.value = selectedProduceMethod.processTime/10;
+                remainTime = selectedProduceMethod.processTime;
+                processSlider.maxValue = selectedProduceMethod.processTime;
+                processSlider.value = selectedProduceMethod.processTime;
                 PhotonGlobal.PS.Produce(selectedAppliance, selectedProduceMethod);
                 processButton.enabled = false;
                 processButton.image.color = Color.grey;
+                cancelButton.enabled = true;
+                cancelButton.image.color = Color.white;
             }
         }
     }
-    public void ProduceEventAction(bool produceStatus, string debugMessage, ApplianceID applianceID, ProduceMethodID produceMethodID)
+    public void CancelProduce()
     {
-        workingAnimation.SetActive(false);
-        PlayerGlobal.Player.isWorking = false;
-        remainTime = 0;
-        if (produceStatus)
-        {
-            if (PlayerGlobal.Appliances.ContainsKey(applianceID) && PlayerGlobal.Appliances[applianceID].methods.ContainsKey(produceMethodID))
-            {
-                object[] results;
-                selectedAppliance = PlayerGlobal.Appliances[applianceID];
-                selectedProduceMethod = selectedAppliance.methods[produceMethodID];
-                if (selectedProduceMethod.Process(PlayerGlobal.Inventory, out results))
-                {
-                    foreach (object result in results)
-                    {
-                        if (result is Item)
-                        {
-                            Item item = result as Item;
-                            if (PlayerGlobal.Inventory.ContainsKey(item.id))
-                            {
-                                PlayerGlobal.Inventory[item.id].Increase(item.itemCount);
-                            }
-                            else
-                            {
-                                PlayerGlobal.Inventory.Add(item.id, item.Clone() as Item);
-                            }
-                        }
-                        else if (result is Appliance)
-                        {
-                            Appliance appliance = result as Appliance;
-                            if (!PlayerGlobal.Appliances.ContainsKey(appliance.id))
-                            {
-                                if (selectedAppliance is IUpgradable)
-                                {
-                                    IUpgradable target = selectedAppliance as IUpgradable;
-                                    if (target.UpgradeCheck(appliance))
-                                    {
-                                        PlayerGlobal.Appliances.Remove(selectedAppliance.id);
-                                        Appliance upgraded = target.Upgrade() as Appliance;
-                                        PlayerGlobal.Appliances.Add(upgraded.id, upgraded);
-                                        SelectAppliance(upgraded.id);
-                                    }
-                                    else
-                                    {
-                                        PlayerGlobal.Appliances.Add(appliance.id, appliance);
-                                    }
-                                }
-                                else
-                                {
-                                    PlayerGlobal.Appliances.Add(appliance.id, appliance);
-                                }
-                                UpdateApplianceScelectPanel();
-                            }
-                        }
-                    }
-                    UpdateMethodMaterial();
-                    processButton.enabled = selectedProduceMethod.Sufficient(PlayerGlobal.Inventory);
-                    processButton.image.color = (processButton.enabled) ? Color.white : Color.grey;
-                    inventoryController.ShowInventory();
-                }
-            }
-        }
-        else
-        {
-            processButton.enabled = selectedProduceMethod.Sufficient(PlayerGlobal.Inventory);
-            processButton.image.color = (processButton.enabled) ? Color.white : Color.grey;
-        }
+        cancelButton.enabled = false;
+        cancelButton.image.color = Color.grey;
+        PhotonGlobal.PS.CancelProduce();
     }
 }

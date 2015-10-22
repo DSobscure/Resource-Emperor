@@ -7,6 +7,9 @@
         GetMaterial,
         Produce,
         CancelProduce,
-        DiscardItem
+        DiscardItem,
+        GoToScene,
+        WalkPath,
+        Explore
     }
 }

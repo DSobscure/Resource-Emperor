@@ -1,50 +1,37 @@
 ﻿using UnityEngine;
-using System.Collections;
+using System.Collections.Generic;
 using REProtocol;
-using REStructure.Items.Materials;
-using UnityEngine.UI;
+using REStructure;
+using REStructure.Scenes;
 
 public class CollectMaterial : MonoBehaviour
 {
-    public InventoryController inventoryController;
-    [SerializeField]
-    private Slider slider;
-
-    private bool workingStatus = false;
-    public void WorkingSwitch()
+    public void/* bool*/ Collect(CollectionMethod method/*, out Item material*/)
     {
-        workingStatus = !workingStatus;
-        if (workingStatus)
+        //material = null;
+        if (GameGlobal.Player.Location is ResourcePoint)
         {
-            slider.value = 0;
-            slider.gameObject.SetActive(true);
-            StartCoroutine("GetMaterial");
-        }
-        else
-        {
-            slider.value = 0;
-            slider.gameObject.SetActive(false);
-            StopCoroutine("GetMaterial");
-        }
-    }
-
-    IEnumerator GetMaterial()
-    {
-        slider.value += 0.05f;
-        if(slider.value >= 5f)
-        {
-            if (PlayerGlobal.Inventory.ContainsKey(ItemID.Log))
+            ResourcePoint resourcePoint = GameGlobal.Player.Location as ResourcePoint;
+            if (resourcePoint.collectionList.ContainsKey(method))
             {
-                PlayerGlobal.Inventory[ItemID.Log].Increase();
+                Dictionary<Item, int> materials = resourcePoint.collectionList[method];
+                var enumerator = materials.GetEnumerator();
+                int randomResult = Random.Range(1, 10000);
+                while (enumerator.MoveNext() && randomResult > 0)
+                {
+                    if(randomResult <= enumerator.Current.Value)
+                    {
+                        Debug.Log(enumerator.Current.Key.name);
+                        //material = enumerator.Current.Key;
+                        return;// true;
+                    }
+                    else
+                    {
+                        randomResult -= enumerator.Current.Value;
+                    }
+                }
             }
-            else
-            {
-                PlayerGlobal.Inventory.Add(ItemID.Log, new Log(1));
-            }
-            inventoryController.UpdateItem(ItemID.Log);
-            slider.value = 0;
         }
-        yield return new WaitForSeconds(0.05f);
-        StartCoroutine("GetMaterial");
+        //return false;
     }
 }
