@@ -24,4 +24,7 @@ public partial class PhotonService
 
     public delegate void ExploreEventHandler(bool status, string debugMessage, List<Pathway> paths);
     public event ExploreEventHandler ExploreEvent;
+
+    public delegate void CollectMaterialEventHandler(bool status, string debugMessage);
+    public event CollectMaterialEventHandler CollectMaterialEvent;
 }

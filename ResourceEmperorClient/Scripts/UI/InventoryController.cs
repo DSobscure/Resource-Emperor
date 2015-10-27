@@ -89,6 +89,12 @@ public class InventoryController : MonoBehaviour
         if (selectedItemIndex != -1)
             inventoryBlocks[selectedItemIndex].GetComponent<Button>().image.color = originColor;
         selectedItemIndex = index;
+        if (blockPositions.ContainsValue(selectedItemIndex))
+        {
+            ItemID selectedItemID = blockPositions.First(x => x.Value == selectedItemIndex).Key;
+            if (GameGlobal.Inventory.ContainsKey(selectedItemID))
+                GameGlobal.Player.SelectedItem = GameGlobal.Inventory[selectedItemID];
+        }
         inventoryBlocks[selectedItemIndex].GetComponent<Button>().image.color = Color.black;
     }
     public void DiscardItem()

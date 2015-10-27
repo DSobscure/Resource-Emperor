@@ -2,7 +2,7 @@
 
 namespace REStructure.Items.Tools
 {
-    public class StonePickaxe : Tool
+    public class StonePickaxe : Pickaxe
     {
         static ItemID _id;
         static string _name;

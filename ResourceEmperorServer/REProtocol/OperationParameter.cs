@@ -33,4 +33,10 @@
     {
         PathwayID
     }
+
+    public enum CollectMaterialParameterItem
+    {
+        CollectiontMethod,
+        ToolID
+    }
 }

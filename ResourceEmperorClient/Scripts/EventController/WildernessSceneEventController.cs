@@ -117,5 +117,7 @@ public class WildernessSceneEventController : MonoBehaviour, ISceneEventControll
                 explorePanelController.ShowPathways();
             }
         }
+        else
+            Debug.Log(debugMessage);
     }
 }

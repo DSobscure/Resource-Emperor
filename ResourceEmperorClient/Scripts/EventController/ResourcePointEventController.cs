@@ -11,6 +11,8 @@ public class ResourcePointEventController : MonoBehaviour, ISceneEventController
     private InventoryController inventoryController;
     [SerializeField]
     private ExplorePanelController explorePanelController;
+    [SerializeField]
+    private CollectionButtonController collectionButtonController;
 
     public void InitialEvents()
     {
@@ -18,6 +20,8 @@ public class ResourcePointEventController : MonoBehaviour, ISceneEventController
         PhotonGlobal.PS.GoToSceneEvent += GoToSceneEventAction;
         PhotonGlobal.PS.WalkPathEvent += WalkPathEventAction;
         PhotonGlobal.PS.ExploreEvent += ExploreEventAction;
+        GameGlobal.Player.SelectItemEvent += collectionButtonController.ShowCollectButtons;
+        PhotonGlobal.PS.CollectMaterialEvent += CollectMaterialEventAction;
     }
     public void ClearEvents()
     {
@@ -25,6 +29,8 @@ public class ResourcePointEventController : MonoBehaviour, ISceneEventController
         PhotonGlobal.PS.GoToSceneEvent -= GoToSceneEventAction;
         PhotonGlobal.PS.WalkPathEvent -= WalkPathEventAction;
         PhotonGlobal.PS.ExploreEvent -= ExploreEventAction;
+        GameGlobal.Player.SelectItemEvent -= collectionButtonController.ShowCollectButtons;
+        PhotonGlobal.PS.CollectMaterialEvent -= CollectMaterialEventAction;
     }
 
     void Start()
@@ -116,6 +122,13 @@ public class ResourcePointEventController : MonoBehaviour, ISceneEventController
                 }
                 explorePanelController.ShowPathways();
             }
+        }
+    }
+    private void CollectMaterialEventAction(bool status, string debugMessage)
+    {
+        if (status)
+        {
+            inventoryController.ShowInventory();
         }
     }
 }

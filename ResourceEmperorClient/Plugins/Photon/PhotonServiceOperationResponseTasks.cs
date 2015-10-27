@@ -11,12 +11,19 @@ public partial class PhotonService : IPhotonPeerListener
     {
         if (operationResponse.ReturnCode == (short)ErrorType.Correct)
         {
-            LoginEvent(
+            string version = (string)operationResponse.Parameters[(byte)LoginResponseItem.Version];
+            if(version != GameGlobal.version)
+            {
+                LoginEvent(false, "請下載最新版本: "+version, null, null, null);
+            }
+            LoginEvent
+            (
                 status: true,
                 debugMessage: "",
                 player: JsonConvert.DeserializeObject<Player>((string)operationResponse.Parameters[(byte)LoginResponseItem.PlayerDataString], new JsonSerializerSettings { TypeNameHandling = TypeNameHandling.Auto }),
                 inventory: JsonConvert.DeserializeObject<Inventory>((string)operationResponse.Parameters[(byte)LoginResponseItem.InventoryDataString], new JsonSerializerSettings { TypeNameHandling = TypeNameHandling.Auto }),
-                appliances: JsonConvert.DeserializeObject<Dictionary<ApplianceID, Appliance>>((string)operationResponse.Parameters[(byte)LoginResponseItem.AppliancesDataString], new JsonSerializerSettings { TypeNameHandling = TypeNameHandling.Auto }));
+                appliances: JsonConvert.DeserializeObject<Dictionary<ApplianceID, Appliance>>((string)operationResponse.Parameters[(byte)LoginResponseItem.AppliancesDataString], new JsonSerializerSettings { TypeNameHandling = TypeNameHandling.Auto })
+            );
         }
         else
         {
@@ -122,6 +129,19 @@ public partial class PhotonService : IPhotonPeerListener
         {
             DebugReturn(0, operationResponse.DebugMessage);
             ExploreEvent(false, operationResponse.DebugMessage, null);
+        }
+    }
+    private void CollectMaterialTask(OperationResponse operationResponse)
+    {
+        if (operationResponse.ReturnCode == (short)ErrorType.Correct)
+        {
+            GameGlobal.Inventory = JsonConvert.DeserializeObject<Inventory>((string)operationResponse.Parameters[(byte)CollectMaterialResponseItem.InventoryDataString], new JsonSerializerSettings { TypeNameHandling = TypeNameHandling.Auto });
+            CollectMaterialEvent(true, operationResponse.DebugMessage);
+        }
+        else
+        {
+            DebugReturn(0, operationResponse.DebugMessage);
+            CollectMaterialEvent(false, operationResponse.DebugMessage);
         }
     }
 }

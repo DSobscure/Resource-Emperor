@@ -4,7 +4,8 @@
     {
         PlayerDataString,
         InventoryDataString,
-        AppliancesDataString
+        AppliancesDataString,
+        Version
     }
     public enum ProduceResponseItem
     {
@@ -28,5 +29,9 @@
     public enum ExploreResponseItem
     {
         DiscoveredPathIDsDataString
+    }
+    public enum CollectMaterialResponseItem
+    {
+        InventoryDataString
     }
 }

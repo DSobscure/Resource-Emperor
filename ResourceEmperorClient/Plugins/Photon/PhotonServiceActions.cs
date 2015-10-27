@@ -3,6 +3,8 @@ using ExitGames.Client.Photon;
 using System;
 using REProtocol;
 using REStructure;
+using REStructure.Items;
+using Newtonsoft.Json;
 
 public partial class PhotonService : IPhotonPeerListener
 {
@@ -116,6 +118,22 @@ public partial class PhotonService : IPhotonPeerListener
         try
         {
             this.peer.OpCustom((byte)OperationType.Explore, new Dictionary<byte, object>(), true, 0, true);
+        }
+        catch (Exception EX)
+        {
+            throw EX;
+        }
+    }
+    public void CollectMaterial(CollectionMethod method, Tool tool)
+    {
+        try
+        {
+            var parameter = new Dictionary<byte, object> {
+                             { (byte)CollectMaterialParameterItem.CollectiontMethod, method},
+                             { (byte)CollectMaterialParameterItem.ToolID, (tool == null) ? ItemID.No : tool.id}
+                        };
+
+            this.peer.OpCustom((byte)OperationType.CollectMaterial, parameter, true, 0, true);
         }
         catch (Exception EX)
         {

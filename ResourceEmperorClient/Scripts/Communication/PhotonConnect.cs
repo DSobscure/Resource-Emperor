@@ -39,6 +39,7 @@ public class PhotonConnect : MonoBehaviour {
 
     void OnGUI()
     {
+        GUI.Label(new Rect(0, 0, 100, 20), "Version: "+GameGlobal.version);
         if (ConnectStatus == false)
         {
             GUI.Label(new Rect((Screen.width / 2) - 200, (Screen.height / 2) - 10, 400, 20), "Connect fail");

@@ -10,6 +10,7 @@
         DiscardItem,
         GoToScene,
         WalkPath,
-        Explore
+        Explore,
+        CollectMaterial
     }
 }

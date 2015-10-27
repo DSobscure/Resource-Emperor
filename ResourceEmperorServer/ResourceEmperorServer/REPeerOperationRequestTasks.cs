@@ -5,6 +5,7 @@ using REStructure;
 using Newtonsoft.Json;
 using System.Threading;
 using REStructure.Scenes;
+using REStructure.Items;
 
 namespace ResourceEmperorServer
 {
@@ -37,7 +38,8 @@ namespace ResourceEmperorServer
                                         {
                                             {(byte)LoginResponseItem.PlayerDataString,JsonConvert.SerializeObject(player.Serialize(),new JsonSerializerSettings { TypeNameHandling = TypeNameHandling.Auto })},
                                             {(byte)LoginResponseItem.InventoryDataString,JsonConvert.SerializeObject(player.inventory,new JsonSerializerSettings { TypeNameHandling = TypeNameHandling.Auto })},
-                                            {(byte)LoginResponseItem.AppliancesDataString,JsonConvert.SerializeObject(player.appliances,new JsonSerializerSettings { TypeNameHandling = TypeNameHandling.Auto })}
+                                            {(byte)LoginResponseItem.AppliancesDataString,JsonConvert.SerializeObject(player.appliances,new JsonSerializerSettings { TypeNameHandling = TypeNameHandling.Auto })},
+                                            {(byte)LoginResponseItem.Version, server.version }
                                         };
                             OperationResponse response = new OperationResponse(operationRequest.OperationCode, parameter)
                             {
@@ -239,23 +241,6 @@ namespace ResourceEmperorServer
                     Pathway targetPath = server.globalMap.paths[pathID];
                     Scene targetScene = (targetPath.endPoint1 == player.Location)? targetPath.endPoint2 : targetPath.endPoint1;
                     player.Location = targetScene;
-                    if(player.Location is Wilderness && targetScene is Wilderness)
-                    {
-                        Wilderness locationWilderness = player.Location as Wilderness;
-                        Wilderness targetWilderness = targetScene as Wilderness;
-                        if (!targetWilderness.discoveredPaths.Contains(targetPath))
-                        {
-                            targetWilderness.discoveredPaths.Add(targetPath);
-                        }
-                    }
-                    else if(player.Location is Town && targetScene is Wilderness)
-                    {
-                        Wilderness targetWilderness = targetScene as Wilderness;
-                        if (!targetWilderness.discoveredPaths.Contains(targetPath))
-                        {
-                            targetWilderness.discoveredPaths.Add(targetPath);
-                        }
-                    }
                     Dictionary<byte, object> parameter = new Dictionary<byte, object>
                     {
                         {(byte)WalkPathResponseItem.PathID,pathID},
@@ -294,10 +279,6 @@ namespace ResourceEmperorServer
             {
                 if (player.Location is Wilderness)
                 {
-                    lock(this)
-                    {
-
-                    }
                     List<Pathway> paths = (player.Location as Wilderness).Explore();
                     List<int> pathIDs = new List<int>();
                     paths.ForEach(path=> pathIDs.Add(path.uniqueID));
@@ -318,6 +299,71 @@ namespace ResourceEmperorServer
                     {
                         ReturnCode = (short)ErrorType.InvalidOperation,
                         DebugMessage = "此地無法進行探索"
+                    };
+                    SendOperationResponse(response, new SendParameters());
+                }
+            }
+        }
+        private void CollectMaterialTask(OperationRequest operationRequest)
+        {
+            if (operationRequest.Parameters.Count != 2)
+            {
+                OperationResponse response = new OperationResponse(operationRequest.OperationCode)
+                {
+                    ReturnCode = (short)ErrorType.InvalidParameter,
+                    DebugMessage = "CollectMaterialTask Parameter Error"
+                };
+                this.SendOperationResponse(response, new SendParameters());
+            }
+            else
+            {
+                CollectionMethod method = (CollectionMethod)operationRequest.Parameters[(byte)CollectMaterialParameterItem.CollectiontMethod];
+                ItemID toolID = (ItemID)operationRequest.Parameters[(byte)CollectMaterialParameterItem.ToolID];
+                if (player.Location is ResourcePoint && player.inventory.ContainsKey(toolID) || toolID == ItemID.No)
+                {
+                    Tool tool = (toolID == ItemID.No) ? null : player.inventory[toolID] as Tool;
+                    ResourcePoint resourcePoint = player.Location as ResourcePoint;
+                    if(resourcePoint.collectionList.ContainsKey(method) && resourcePoint.ToolCheck(method,tool))
+                    {
+                        Item material =  resourcePoint.Collect(method, tool);
+                        if(material != null)
+                        {
+                            if (player.inventory.ContainsKey(material.id))
+                            {
+                                player.inventory[material.id].Increase(material.itemCount);
+                            }
+                            else
+                            {
+                                player.inventory.Add(material.id, material);
+                            }
+                        }
+                        Dictionary<byte, object> parameter = new Dictionary<byte, object>
+                        {
+                            {(byte)CollectMaterialResponseItem.InventoryDataString, JsonConvert.SerializeObject(player.inventory,new JsonSerializerSettings { TypeNameHandling = TypeNameHandling.Auto })}
+                        };
+                        OperationResponse response = new OperationResponse(operationRequest.OperationCode, parameter)
+                        {
+                            ReturnCode = (short)ErrorType.Correct,
+                            DebugMessage = ""
+                        };
+                        SendOperationResponse(response, new SendParameters());
+                    }
+                    else
+                    {
+                        OperationResponse response = new OperationResponse(operationRequest.OperationCode)
+                        {
+                            ReturnCode = (short)ErrorType.InvalidOperation,
+                            DebugMessage = "採集方法或工具錯誤"
+                        };
+                        SendOperationResponse(response, new SendParameters());
+                    }
+                }
+                else
+                {
+                    OperationResponse response = new OperationResponse(operationRequest.OperationCode)
+                    {
+                        ReturnCode = (short)ErrorType.InvalidOperation,
+                        DebugMessage = "此地無法進行採集"
                     };
                     SendOperationResponse(response, new SendParameters());
                 }

@@ -126,6 +126,14 @@ public partial class PhotonService : IPhotonPeerListener
                 }
                 break;
             #endregion
+
+            #region collect material
+            case (byte)OperationType.CollectMaterial:
+                {
+                    CollectMaterialTask(operationResponse);
+                }
+                break;
+            #endregion
         }
     }
 

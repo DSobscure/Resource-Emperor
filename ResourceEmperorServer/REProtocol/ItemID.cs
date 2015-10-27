@@ -62,6 +62,8 @@ namespace REProtocol
         CottonThread,
         CottonRope,
         CottonCloth,
-        Paper
+        Paper,
+
+        No = 65535
     }
 }

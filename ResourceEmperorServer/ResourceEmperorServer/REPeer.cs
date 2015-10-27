@@ -114,6 +114,14 @@ namespace ResourceEmperorServer
                     }
                     break;
                 #endregion
+
+                #region collect material
+                case (byte)OperationType.CollectMaterial:
+                    {
+                        CollectMaterialTask(operationRequest);
+                    }
+                    break;
+                #endregion
             }
         }
     }
