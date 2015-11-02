@@ -199,7 +199,10 @@ namespace ResourceEmperorServer
                 int sceneID = (int)operationRequest.Parameters[(byte)GoToSceneParameterItem.TargetSceneID];
                 if (server.globalMap.scenes.ContainsKey(sceneID) || sceneID == -1)
                 {
+                    if(player.Location != null && player.Location.players.Contains(player))
+                        player.Location.players.Remove(player);
                     player.Location = (sceneID == -1) ? workRoom : server.globalMap.scenes[sceneID];
+                    player.Location.players.Add(player);
                     Dictionary<byte, object> parameter = new Dictionary<byte, object>
                     {
                         {(byte)GoToSceneResponseItem.TargetSceneID,sceneID}
@@ -240,7 +243,10 @@ namespace ResourceEmperorServer
                 {
                     Pathway targetPath = server.globalMap.paths[pathID];
                     Scene targetScene = (targetPath.endPoint1 == player.Location)? targetPath.endPoint2 : targetPath.endPoint1;
+                    if (player.Location != null && player.Location.players.Contains(player))
+                        player.Location.players.Remove(player);
                     player.Location = targetScene;
+                    player.Location.players.Add(player);
                     Dictionary<byte, object> parameter = new Dictionary<byte, object>
                     {
                         {(byte)WalkPathResponseItem.PathID,pathID},
@@ -366,6 +372,42 @@ namespace ResourceEmperorServer
                         DebugMessage = "此地無法進行採集"
                     };
                     SendOperationResponse(response, new SendParameters());
+                }
+            }
+        }
+        private void SendMessageTask(OperationRequest operationRequest)
+        {
+            if (operationRequest.Parameters.Count != 1)
+            {
+                OperationResponse response = new OperationResponse(operationRequest.OperationCode)
+                {
+                    ReturnCode = (short)ErrorType.InvalidParameter,
+                    DebugMessage = "SendMessageTask Parameter Error"
+                };
+                this.SendOperationResponse(response, new SendParameters());
+            }
+            else
+            {
+                string message = (string)operationRequest.Parameters[(byte)SendMessageParameterItem.Message];
+
+                if (SendMessage_and_Broadcast(message))
+                {
+                    OperationResponse response = new OperationResponse(operationRequest.OperationCode)
+                    {
+                        ReturnCode = (short)ErrorType.Correct,
+                        DebugMessage = ""
+                    };
+
+                    SendOperationResponse(response, new SendParameters());
+                }
+                else
+                {
+                    OperationResponse response = new OperationResponse(operationRequest.OperationCode)
+                    {
+                        ReturnCode = (short)ErrorType.NotExist,
+                        DebugMessage = "Send target not exist"
+                    };
+                    this.SendOperationResponse(response, new SendParameters());
                 }
             }
         }

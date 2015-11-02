@@ -39,4 +39,9 @@
         CollectiontMethod,
         ToolID
     }
+
+    public enum SendMessageParameterItem
+    {
+        Message
+    }
 }

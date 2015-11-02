@@ -122,6 +122,14 @@ namespace ResourceEmperorServer
                     }
                     break;
                 #endregion
+
+                #region send message
+                case (byte)OperationType.SendMessage:
+                    {
+                        SendMessageTask(operationRequest);
+                    }
+                    break;
+               #endregion
             }
         }
     }

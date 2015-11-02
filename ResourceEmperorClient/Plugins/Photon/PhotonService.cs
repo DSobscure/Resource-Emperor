@@ -70,9 +70,16 @@ public partial class PhotonService : IPhotonPeerListener
 
     public void OnEvent(EventData eventData)
     {
-        //switch (eventData.Code)
-        //{
-        //}
+        switch (eventData.Code)
+        {
+            #region send message
+            case (byte)BroadcastType.SendMessage:
+                {
+                    SendMessageEventTask(eventData);
+                }
+                break;
+            #endregion
+        }
     }
 
     public void OnOperationResponse(OperationResponse operationResponse)
@@ -131,6 +138,14 @@ public partial class PhotonService : IPhotonPeerListener
             case (byte)OperationType.CollectMaterial:
                 {
                     CollectMaterialTask(operationResponse);
+                }
+                break;
+            #endregion
+
+            #region send message
+            case (byte)OperationType.SendMessage:
+                {
+                    SendMessageTask(operationResponse);
                 }
                 break;
             #endregion

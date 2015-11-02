@@ -144,5 +144,21 @@ namespace ResourceEmperorServer
                 throw ex;
             }
         }
+        private bool SendMessage_and_Broadcast(string message)
+        {
+            Dictionary<byte, object> parameter = new Dictionary<byte, object>
+                                        {
+                                            {(byte)SendMessageBroadcastItem.SceneID, player.Location.uniqueID },
+                                            {(byte)SendMessageBroadcastItem.PlayerName, player.account},
+                                            {(byte)SendMessageBroadcastItem.Message,message}
+                                        };
+            List<REPeer> peers = new List<REPeer>();
+            foreach(REPlayer player in player.Location.players)
+            {
+                peers.Add(player.peer);
+            }
+            server.Broadcast(peers.ToArray(), BroadcastType.SendMessage, parameter);
+            return true;
+        }
     }
 }

@@ -17,7 +17,7 @@ namespace ResourceEmperorServer
         public Dictionary<int, REPlayer> PlayerDictionary;
         public REDatabase database;
         public GlobalMap globalMap;
-        public string version = "0.0.1";
+        public string version = "0.0.2";
 
         protected override PeerBase CreatePeer(InitRequest initRequest)
         {

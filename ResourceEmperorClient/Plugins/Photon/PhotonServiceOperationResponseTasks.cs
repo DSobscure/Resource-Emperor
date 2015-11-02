@@ -144,4 +144,11 @@ public partial class PhotonService : IPhotonPeerListener
             CollectMaterialEvent(false, operationResponse.DebugMessage);
         }
     }
+    private void SendMessageTask(OperationResponse operationResponse)
+    {
+        if (operationResponse.ReturnCode != (short)ErrorType.Correct)
+        {
+            SendMessageEvent("system","error");
+        }
+    }
 }

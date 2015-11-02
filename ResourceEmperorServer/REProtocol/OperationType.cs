@@ -11,6 +11,7 @@
         GoToScene,
         WalkPath,
         Explore,
-        CollectMaterial
+        CollectMaterial,
+        SendMessage
     }
 }

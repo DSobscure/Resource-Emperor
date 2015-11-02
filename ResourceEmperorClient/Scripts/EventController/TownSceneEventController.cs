@@ -8,18 +8,22 @@ public class TownSceneEventController : MonoBehaviour, ISceneEventController
     //controllers
     [SerializeField]
     private InventoryController inventoryController;
+    [SerializeField]
+    MessagePanelController messageController;
 
     public void InitialEvents()
     {
         PhotonGlobal.PS.DiscardItemEvent += DiscardItemEventAction;
         PhotonGlobal.PS.GoToSceneEvent += GoToSceneEventAction;
         PhotonGlobal.PS.WalkPathEvent += WalkPathEventAction;
+        PhotonGlobal.PS.SendMessageEvent += SendMessageEventAction;
     }
     public void ClearEvents()
     {
         PhotonGlobal.PS.DiscardItemEvent -= DiscardItemEventAction;
         PhotonGlobal.PS.GoToSceneEvent -= GoToSceneEventAction;
         PhotonGlobal.PS.WalkPathEvent -= WalkPathEventAction;
+        PhotonGlobal.PS.SendMessageEvent -= SendMessageEventAction;
     }
 
     void Start ()
@@ -94,5 +98,10 @@ public class TownSceneEventController : MonoBehaviour, ISceneEventController
                 Application.LoadLevel("WildernessScene");
             }
         }
+    }
+    private void SendMessageEventAction(string senderName, string message)
+    {
+        messageController.AppendMessage(senderName + ": " + message);
+        messageController.UpdateMessageBox();
     }
 }

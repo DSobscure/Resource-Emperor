@@ -140,4 +140,19 @@ public partial class PhotonService : IPhotonPeerListener
             throw EX;
         }
     }
+    public void SendMessage(string message)
+    {
+        try
+        {
+            var parameter = new Dictionary<byte, object> {
+                             { (byte)SendMessageParameterItem.Message, message}
+                        };
+
+            this.peer.OpCustom((byte)OperationType.SendMessage, parameter, true, 0, true);
+        }
+        catch (Exception EX)
+        {
+            throw EX;
+        }
+    }
 }

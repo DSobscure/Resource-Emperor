@@ -27,4 +27,7 @@ public partial class PhotonService
 
     public delegate void CollectMaterialEventHandler(bool status, string debugMessage);
     public event CollectMaterialEventHandler CollectMaterialEvent;
+
+    public delegate void SendMessageEventHandler(string senderName, string message);
+    public event SendMessageEventHandler SendMessageEvent;
 }
