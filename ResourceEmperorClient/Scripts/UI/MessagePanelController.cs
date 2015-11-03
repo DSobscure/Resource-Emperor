@@ -9,13 +9,12 @@ public class MessagePanelController : MonoBehaviour
     private StringBuilder showingContent = new StringBuilder();
 
     [SerializeField]
+    private MessageController messageController;
+    [SerializeField]
     private RectTransform messageBox;
     [SerializeField]
     private Text showingText;
-    //[SerializeField]
-    //private Scrollbar scrollbar;
-    [SerializeField]
-    private InputField inputText;
+    public InputField inputText;
 
     public void AppendMessage(string message)
     {
@@ -28,18 +27,8 @@ public class MessagePanelController : MonoBehaviour
         if (messageContent.Count * 20 > 200)
         {
             messageBox.sizeDelta = new Vector2(messageBox.rect.width, messageContent.Count * 20);
-            //scrollbar.value = 0;
         }
         showingText.text = showingContent.ToString();
-    }
-
-    public void SendMessage()
-    {
-        if (inputText.text != "")
-        {
-            PhotonGlobal.PS.SendMessage(inputText.text);
-            inputText.text = "";
-        }
     }
 
     void Update()
@@ -48,7 +37,7 @@ public class MessagePanelController : MonoBehaviour
         {
             if(inputText.isFocused)
             {
-                SendMessage();
+                messageController.SendMessage();
             }
             else
             {

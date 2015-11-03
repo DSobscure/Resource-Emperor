@@ -8,9 +8,9 @@ using REStructure.Items;
 public class CollectionButtonController : MonoBehaviour
 {
     [SerializeField]
-    private CollectMaterial collectMaterial;
+    private CollectMaterialController collectMaterial;
     [SerializeField]
-    private InventoryController inventoryController;
+    private InventoryPanelController inventoryPanelController;
 
     [SerializeField]
     private RectTransform controlButtonPrefab;

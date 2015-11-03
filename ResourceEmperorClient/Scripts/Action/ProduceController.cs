@@ -1,34 +1,48 @@
-﻿using UnityEngine;
+﻿using REProtocol;
 using REStructure;
-using REProtocol;
-using REStructure.Scenes;
+using UnityEngine;
 
-public class WorkRoomSceneEventController : MonoBehaviour, ISceneEventController
+public class ProduceController : MonoBehaviour
 {
-    //controllers
-    [SerializeField]
-    private InventoryController inventoryController;
     [SerializeField]
     private ApplianceContentController applianceContentController;
-
-    public void InitialEvents()
-    {
-        PhotonGlobal.PS.ProduceEvent += ProduceEventAction;
-        PhotonGlobal.PS.DiscardItemEvent += DiscardItemEventAction;
-        PhotonGlobal.PS.GoToSceneEvent += GoToSceneEventAction;
-    }
-    public void ClearEvents()
-    {
-        PhotonGlobal.PS.ProduceEvent -= ProduceEventAction;
-        PhotonGlobal.PS.DiscardItemEvent -= DiscardItemEventAction;
-        PhotonGlobal.PS.GoToSceneEvent -= GoToSceneEventAction;
-    }
+    [SerializeField]
+    private InventoryPanelController inventoryPanelController;
 
     void Start ()
     {
-        InitialEvents();
+        PhotonGlobal.PS.ProduceEvent += ProduceEventAction;
+    }
+    void OnDestroy()
+    {
+        PhotonGlobal.PS.ProduceEvent -= ProduceEventAction;
     }
 
+    public void StartProduce()
+    {
+        if (applianceContentController.selectedAppliance != null && applianceContentController.selectedProduceMethod != null && GameGlobal.Inventory != null)
+        {
+            if (applianceContentController.selectedProduceMethod.Sufficient(GameGlobal.Inventory))
+            {
+                GameGlobal.Player.IsWorking = true;
+                applianceContentController.workingAnimation.SetActive(true);
+                applianceContentController.remainTime = applianceContentController.selectedProduceMethod.processTime;
+                applianceContentController.processSlider.maxValue = applianceContentController.selectedProduceMethod.processTime;
+                applianceContentController.processSlider.value = applianceContentController.selectedProduceMethod.processTime;
+                PhotonGlobal.PS.Produce(applianceContentController.selectedAppliance, applianceContentController.selectedProduceMethod);
+                applianceContentController.processButton.enabled = false;
+                applianceContentController.processButton.image.color = Color.grey;
+                applianceContentController.cancelButton.enabled = true;
+                applianceContentController.cancelButton.image.color = Color.white;
+            }
+        }
+    }
+    public void CancelProduce()
+    {
+        applianceContentController.cancelButton.enabled = false;
+        applianceContentController.cancelButton.image.color = Color.grey;
+        PhotonGlobal.PS.CancelProduce();
+    }
     public void ProduceEventAction(bool produceStatus, string debugMessage, ApplianceID applianceID, ProduceMethodID produceMethodID)
     {
         applianceContentController.workingAnimation.SetActive(false);
@@ -88,7 +102,7 @@ public class WorkRoomSceneEventController : MonoBehaviour, ISceneEventController
                     applianceContentController.UpdateMethodMaterial();
                     applianceContentController.processButton.enabled = applianceContentController.selectedProduceMethod.Sufficient(GameGlobal.Inventory);
                     applianceContentController.processButton.image.color = (applianceContentController.processButton.enabled) ? Color.white : Color.grey;
-                    inventoryController.ShowInventory();
+                    inventoryPanelController.ShowInventory();
                 }
             }
         }
@@ -96,69 +110,6 @@ public class WorkRoomSceneEventController : MonoBehaviour, ISceneEventController
         {
             applianceContentController.processButton.enabled = applianceContentController.selectedProduceMethod.Sufficient(GameGlobal.Inventory);
             applianceContentController.processButton.image.color = (applianceContentController.processButton.enabled) ? Color.white : Color.grey;
-        }
-    }
-    private void DiscardItemEventAction(bool discardStatus, string debugMessage, ItemID itemID, int itemCount)
-    {
-        if (discardStatus && GameGlobal.Inventory.ContainsKey(itemID))
-        {
-            if (itemCount > 0)
-            {
-                GameGlobal.Inventory[itemID].Reset();
-                GameGlobal.Inventory[itemID].Increase(itemCount);
-            }
-            else
-            {
-                GameGlobal.Inventory.Remove(itemID);
-                inventoryController.blockPositions.Remove(itemID);
-            }
-            inventoryController.ShowInventory();
-        }
-        inventoryController.discardButton.enabled = true;
-        inventoryController.discardButton.image.color = inventoryController.discardButtonOriginColor;
-    }
-    private void GoToSceneEventAction(bool status, string debugMessage, Scene targetScene)
-    {
-        if (status)
-        {
-            GameGlobal.Player.Location = targetScene;
-            ClearEvents();
-            if (targetScene is Town)
-            {
-                Application.LoadLevel("TownScene");
-            }
-            else if (targetScene is ResourcePoint)
-            {
-                Application.LoadLevel("ResourcePointScene");
-            }
-            else if (targetScene is Wilderness)
-            {
-                Application.LoadLevel("WildernessScene");
-            }
-            else if (targetScene is Room)
-            {
-                Application.LoadLevel("WorkRoomScene");
-            }
-        }
-    }
-    private void WalkPathEventAction(bool status, string debugMessage, Scene targetScene)
-    {
-        if (status)
-        {
-            GameGlobal.Player.Location = targetScene;
-            ClearEvents();
-            if (targetScene is Town)
-            {
-                Application.LoadLevel("TownScene");
-            }
-            else if (targetScene is ResourcePoint)
-            {
-                Application.LoadLevel("ResourcePointScene");
-            }
-            else if (targetScene is Wilderness)
-            {
-                Application.LoadLevel("WildernessScene");
-            }
         }
     }
 }

@@ -2,10 +2,10 @@
 {
     public enum LoginResponseItem
     {
+        Version,
         PlayerDataString,
         InventoryDataString,
         AppliancesDataString,
-        Version
     }
     public enum ProduceResponseItem
     {
@@ -33,5 +33,9 @@
     public enum CollectMaterialResponseItem
     {
         InventoryDataString
+    }
+    public enum GetRankingResponseItem
+    {
+        RankingDataString
     }
 }

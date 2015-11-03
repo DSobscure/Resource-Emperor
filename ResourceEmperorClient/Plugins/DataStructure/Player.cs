@@ -6,6 +6,7 @@ public class ClientPlayer
     public string account { get; protected set; }
     public bool IsWorking { get; set; }
     public Scene Location { get; set; }
+    public int money { get; protected set; }
 
     private Item _selectedItem;
     public Item SelectedItem
@@ -17,7 +18,8 @@ public class ClientPlayer
         set
         {
             _selectedItem = value;
-            SelectItemEvent();
+            if(SelectItemEvent != null)
+                SelectItemEvent();
         }
     }
 
@@ -26,8 +28,9 @@ public class ClientPlayer
 
     public ClientPlayer(Player player)
     {
-        this.uniqueID = player.uniqueID;
-        this.account = player.account;
+        uniqueID = player.uniqueID;
+        account = player.account;
         IsWorking = false;
+        money = player.money;
     }
 }

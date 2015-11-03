@@ -34,11 +34,11 @@ public class ApplianceContentController : MonoBehaviour
     [SerializeField]
     internal Button processButton;
     [SerializeField]
-    private Button cancelButton;
+    internal Button cancelButton;
 
     //sliders
     [SerializeField]
-    private Slider processSlider;
+    internal Slider processSlider;
 
     //animations
     [SerializeField]
@@ -55,10 +55,6 @@ public class ApplianceContentController : MonoBehaviour
     void Start ()
     {
         UpdateApplianceScelectPanel();
-        var enumerator = GameGlobal.Appliances.GetEnumerator();
-        enumerator.MoveNext();
-        selectedAppliance = enumerator.Current.Value;
-        SelectAppliance(selectedAppliance.id);
     }
     void Update()
     {
@@ -139,11 +135,7 @@ public class ApplianceContentController : MonoBehaviour
         applianceMenu.gameObject.SetActive(true);
         selectedAppliance = GameGlobal.Appliances[id];
         applianceNameText.text = selectedAppliance.name;
-        var enumerator = selectedAppliance.methods.Values.GetEnumerator();
-        enumerator.MoveNext();
-        selectedProduceMethod = enumerator.Current;
         UpdateApplianceMenu();
-        SelectMethod(selectedProduceMethod.id);
     }
     public void SelectMethod(ProduceMethodID id)
     {
@@ -177,30 +169,5 @@ public class ApplianceContentController : MonoBehaviour
         produceTimeText.text = selectedProduceMethod.processTime.ToString() + "秒";
         processButton.enabled = !GameGlobal.Player.IsWorking && selectedProduceMethod.Sufficient(GameGlobal.Inventory);
         processButton.image.color = (processButton.enabled)?Color.white:Color.grey;
-    }
-    public void StartProduce()
-    {
-        if(selectedAppliance != null && selectedProduceMethod != null && GameGlobal.Inventory!= null)
-        {
-            if(selectedProduceMethod.Sufficient(GameGlobal.Inventory))
-            {
-                GameGlobal.Player.IsWorking = true;
-                workingAnimation.SetActive(true);
-                remainTime = selectedProduceMethod.processTime;
-                processSlider.maxValue = selectedProduceMethod.processTime;
-                processSlider.value = selectedProduceMethod.processTime;
-                PhotonGlobal.PS.Produce(selectedAppliance, selectedProduceMethod);
-                processButton.enabled = false;
-                processButton.image.color = Color.grey;
-                cancelButton.enabled = true;
-                cancelButton.image.color = Color.white;
-            }
-        }
-    }
-    public void CancelProduce()
-    {
-        cancelButton.enabled = false;
-        cancelButton.image.color = Color.grey;
-        PhotonGlobal.PS.CancelProduce();
     }
 }

@@ -5,7 +5,7 @@ using REProtocol;
 using System.Collections.Generic;
 using System.Linq;
 
-public class InventoryController : MonoBehaviour
+public class InventoryPanelController : MonoBehaviour
 {
     [SerializeField]
     private RectTransform inventoryPanel;
@@ -19,7 +19,7 @@ public class InventoryController : MonoBehaviour
     private float xoffset = -175f;
     [SerializeField]
     private float yoffset = 225f;
-    private int selectedItemIndex = -1;
+    public int selectedItemIndex = -1;
     [SerializeField]
     internal Button discardButton;
     internal Color discardButtonOriginColor;
@@ -51,6 +51,7 @@ public class InventoryController : MonoBehaviour
             index++;
         }
     }
+
     public void UpdateItem(ItemID id)
     {
         if(blockPositions.ContainsKey(id))
@@ -96,15 +97,5 @@ public class InventoryController : MonoBehaviour
                 GameGlobal.Player.SelectedItem = GameGlobal.Inventory[selectedItemID];
         }
         inventoryBlocks[selectedItemIndex].GetComponent<Button>().image.color = Color.black;
-    }
-    public void DiscardItem()
-    {
-        if(blockPositions.ContainsValue(selectedItemIndex))
-        {
-            var pair = blockPositions.First(x=>x.Value == selectedItemIndex);
-            PhotonGlobal.PS.DiscardItem(pair.Key, 1);
-            discardButton.enabled = false;
-            discardButton.image.color = Color.grey;
-        }
     }
 }

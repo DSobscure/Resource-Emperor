@@ -40,7 +40,10 @@ public class ExplorePanelController : MonoBehaviour
             pathway.transform.SetParent(pathwayPanel);
             pathway.localScale = Vector3.one;
             pathway.localPosition = new Vector3(0f, yoffset - index * pathwayPrefab.rect.height);
-            pathway.GetChild(0).GetComponent<Text>().text = "往" + ((path.endPoint1 == location) ? path.endPoint2.name : path.endPoint1.name);
+            if(location is Wilderness && index == 0)
+                pathway.GetChild(0).GetComponent<Text>().text = "回 " + ((path.endPoint1 == location) ? path.endPoint2.name : path.endPoint1.name);
+            else
+                pathway.GetChild(0).GetComponent<Text>().text = "往 " + ((path.endPoint1 == location) ? path.endPoint2.name : path.endPoint1.name);
             pathway.GetChild(1).GetComponent<Text>().text = "距離： " + path.distance.ToString() + "m";
             pathway.GetChild(2).GetComponent<Text>().text = "時間： " + "尚未處理";
             int pathIndex = index;

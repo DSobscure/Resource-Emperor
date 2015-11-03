@@ -12,6 +12,7 @@
         WalkPath,
         Explore,
         CollectMaterial,
-        SendMessage
+        SendMessage,
+        GetRanking
     }
 }

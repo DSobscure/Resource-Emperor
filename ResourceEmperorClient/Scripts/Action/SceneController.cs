@@ -5,6 +5,18 @@ using REStructure.Scenes;
 
 public class SceneController : MonoBehaviour
 {
+    void Start()
+    {
+        PhotonGlobal.PS.GoToSceneEvent += GoToSceneEventAction;
+        PhotonGlobal.PS.WalkPathEvent += WalkPathEventAction;
+    }
+
+    void OnDestroy()
+    {
+        PhotonGlobal.PS.GoToSceneEvent -= GoToSceneEventAction;
+        PhotonGlobal.PS.WalkPathEvent -= WalkPathEventAction;
+    }
+
     public void ToTown()
     {
         PhotonGlobal.PS.GoToScene(GameGlobal.GlobalMap.towns[0].uniqueID);
@@ -20,6 +32,55 @@ public class SceneController : MonoBehaviour
         if(index>=0 && index < paths.Count)
         {
             PhotonGlobal.PS.WalkPath(paths[index].uniqueID);
+        }
+    }
+
+    private void GoToSceneEventAction(bool status, string debugMessage, Scene targetScene)
+    {
+        if (status)
+        {
+            GameGlobal.Player.Location = targetScene;
+            if (targetScene is Town)
+            {
+                Application.LoadLevel("TownScene");
+            }
+            else if (targetScene is ResourcePoint)
+            {
+                Application.LoadLevel("ResourcePointScene");
+            }
+            else if (targetScene is Wilderness)
+            {
+                Application.LoadLevel("WildernessScene");
+            }
+            else if (targetScene is Room)
+            {
+                Application.LoadLevel("WorkRoomScene");
+            }
+        }
+    }
+    private void WalkPathEventAction(bool status, string debugMessage, Pathway path, Scene targetScene)
+    {
+        if (status)
+        {
+            GameGlobal.Player.Location = targetScene;
+            if (targetScene is Wilderness)
+            {
+                Wilderness targetWilderness = targetScene as Wilderness;
+                if (!targetWilderness.discoveredPaths.Contains(path))
+                    targetWilderness.discoveredPaths.Add(path);
+            }
+            if (targetScene is Town)
+            {
+                Application.LoadLevel("TownScene");
+            }
+            else if (targetScene is ResourcePoint)
+            {
+                Application.LoadLevel("ResourcePointScene");
+            }
+            else if (targetScene is Wilderness)
+            {
+                Application.LoadLevel("WildernessScene");
+            }
         }
     }
 }
