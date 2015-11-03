@@ -17,12 +17,12 @@ public partial class PhotonService : IPhotonPeerListener
             string message = (string)eventData.Parameters[(byte)SendMessageBroadcastItem.Message];
             if(sceneID == GameGlobal.Player.Location.uniqueID)
             {
-                SendMessageEvent(senderName, message);
+                SendMessageEvent(true, "",senderName, message);
             }
         }
         else
         {
-            DebugReturn(DebugLevel.ERROR,"SendMessageEventTask parameter error");
+            SendMessageEvent(false, "SendMessageEventTask parameter error", "", "");
         }
     }
 }

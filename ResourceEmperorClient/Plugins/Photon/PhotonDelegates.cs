@@ -28,6 +28,9 @@ public partial class PhotonService
     public delegate void CollectMaterialEventHandler(bool status, string debugMessage);
     public event CollectMaterialEventHandler CollectMaterialEvent;
 
-    public delegate void SendMessageEventHandler(string senderName, string message);
+    public delegate void SendMessageEventHandler(bool status, string debugMessage, string senderName, string message);
     public event SendMessageEventHandler SendMessageEvent;
+
+    public delegate void GetRankingEventHandler(bool status, string debugMessage, Dictionary<string, int> ranking);
+    public event GetRankingEventHandler GetRankingEvent;
 }

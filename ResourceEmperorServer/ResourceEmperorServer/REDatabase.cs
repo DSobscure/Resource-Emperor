@@ -288,5 +288,35 @@ namespace ResourceEmperorServer
                     connection.Close();
             }
         }
+        public bool GetRanking(out Dictionary<string,int> ranking)
+        {
+            ranking = new Dictionary<string, int>();
+            try
+            {
+                if (connection.State == System.Data.ConnectionState.Closed)
+                    connection.Open();
+                String sqlText = "SELECT Account, Money FROM player order by Money DESC";
+                using (MySqlCommand cmd = new MySqlCommand(sqlText, connection))
+                {
+                    using (MySqlDataReader reader = cmd.ExecuteReader())
+                    {
+                        while(reader.Read())
+                        {
+                            ranking.Add(reader.GetString(0),reader.GetInt32(1));
+                        }
+                    }
+                }
+            }
+            catch (Exception EX)
+            {
+                throw EX;
+            }
+            finally
+            {
+                if (connection.State == System.Data.ConnectionState.Open)
+                    connection.Close();
+            }
+            return true;
+        }
     }
 }

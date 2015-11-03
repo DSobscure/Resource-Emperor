@@ -129,7 +129,15 @@ namespace ResourceEmperorServer
                         SendMessageTask(operationRequest);
                     }
                     break;
-               #endregion
+                #endregion
+
+                #region get ranking
+                case (byte)OperationType.GetRanking:
+                    {
+                        GetRankingTask(operationRequest);
+                    }
+                    break;
+                #endregion
             }
         }
     }

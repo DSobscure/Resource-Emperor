@@ -25,9 +25,16 @@ public class MessageController : MonoBehaviour
         }
     }
 
-    private void SendMessageEventAction(string senderName, string message)
+    private void SendMessageEventAction(bool status, string debugMessage, string senderName, string message)
     {
-        messagePanelController.AppendMessage(senderName + ": " + message);
-        messagePanelController.UpdateMessageBox();
+        if(status)
+        {
+            messagePanelController.AppendMessage(senderName + ": " + message);
+            messagePanelController.UpdateMessageBox();
+        }
+        else
+        {
+            Debug.Log(debugMessage);
+        }
     }
 }

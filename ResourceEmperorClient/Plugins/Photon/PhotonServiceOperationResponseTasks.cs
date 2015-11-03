@@ -148,7 +148,18 @@ public partial class PhotonService : IPhotonPeerListener
     {
         if (operationResponse.ReturnCode != (short)ErrorType.Correct)
         {
-            SendMessageEvent("system","error");
+            SendMessageEvent(false, operationResponse.DebugMessage, "system","error");
+        }
+    }
+    private void GetRankingTask(OperationResponse operationResponse)
+    {
+        if (operationResponse.ReturnCode == (short)ErrorType.Correct)
+        {
+            GetRankingEvent(true, operationResponse.DebugMessage, JsonConvert.DeserializeObject<Dictionary<string,int>>((string)operationResponse.Parameters[(byte)GetRankingResponseItem.RankingDataString]));
+        }
+        else
+        {
+            GetRankingEvent(false, operationResponse.DebugMessage, null);
         }
     }
 }

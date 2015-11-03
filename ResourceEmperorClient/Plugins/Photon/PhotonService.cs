@@ -149,6 +149,14 @@ public partial class PhotonService : IPhotonPeerListener
                 }
                 break;
             #endregion
+
+            #region get ranking
+            case (byte)OperationType.GetRanking:
+                {
+                    GetRankingTask(operationResponse);
+                }
+                break;
+            #endregion
         }
     }
 

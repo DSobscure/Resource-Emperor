@@ -1,10 +1,9 @@
-﻿using System.Collections.Generic;
-using ExitGames.Client.Photon;
-using System;
+﻿using ExitGames.Client.Photon;
 using REProtocol;
 using REStructure;
 using REStructure.Items;
-using Newtonsoft.Json;
+using System;
+using System.Collections.Generic;
 
 public partial class PhotonService : IPhotonPeerListener
 {
@@ -149,6 +148,17 @@ public partial class PhotonService : IPhotonPeerListener
                         };
 
             this.peer.OpCustom((byte)OperationType.SendMessage, parameter, true, 0, true);
+        }
+        catch (Exception EX)
+        {
+            throw EX;
+        }
+    }
+    public void GetRanking()
+    {
+        try
+        {
+            this.peer.OpCustom((byte)OperationType.GetRanking, new Dictionary<byte, object>(), true, 0, true);
         }
         catch (Exception EX)
         {

@@ -36,10 +36,10 @@ namespace ResourceEmperorServer
                         {
                             Dictionary<byte, object> parameter = new Dictionary<byte, object>
                                         {
+                                            {(byte)LoginResponseItem.Version, server.version },
                                             {(byte)LoginResponseItem.PlayerDataString,JsonConvert.SerializeObject(player.Serialize(),new JsonSerializerSettings { TypeNameHandling = TypeNameHandling.Auto })},
                                             {(byte)LoginResponseItem.InventoryDataString,JsonConvert.SerializeObject(player.inventory,new JsonSerializerSettings { TypeNameHandling = TypeNameHandling.Auto })},
                                             {(byte)LoginResponseItem.AppliancesDataString,JsonConvert.SerializeObject(player.appliances,new JsonSerializerSettings { TypeNameHandling = TypeNameHandling.Auto })},
-                                            {(byte)LoginResponseItem.Version, server.version }
                                         };
                             OperationResponse response = new OperationResponse(operationRequest.OperationCode, parameter)
                             {
@@ -408,6 +408,44 @@ namespace ResourceEmperorServer
                         DebugMessage = "Send target not exist"
                     };
                     this.SendOperationResponse(response, new SendParameters());
+                }
+            }
+        }
+        private void GetRankingTask(OperationRequest operationRequest)
+        {
+            if (operationRequest.Parameters.Count != 0)
+            {
+                OperationResponse response = new OperationResponse(operationRequest.OperationCode)
+                {
+                    ReturnCode = (short)ErrorType.InvalidParameter,
+                    DebugMessage = "GetRankingTask Parameter Error"
+                };
+                this.SendOperationResponse(response, new SendParameters());
+            }
+            else
+            {
+                Dictionary<string, int> ranking;
+                if (server.database.GetRanking(out ranking))
+                {
+                    Dictionary<byte, object> parameter = new Dictionary<byte, object>
+                    {
+                        {(byte)GetRankingResponseItem.RankingDataString,JsonConvert.SerializeObject(ranking)}
+                    };
+                    OperationResponse response = new OperationResponse(operationRequest.OperationCode, parameter)
+                    {
+                        ReturnCode = (short)ErrorType.Correct,
+                        DebugMessage = ""
+                    };
+                    SendOperationResponse(response, new SendParameters());
+                }
+                else
+                {
+                    OperationResponse response = new OperationResponse(operationRequest.OperationCode)
+                    {
+                        ReturnCode = (short)ErrorType.InvalidOperation,
+                        DebugMessage = "資料庫錯誤"
+                    };
+                    SendOperationResponse(response, new SendParameters());
                 }
             }
         }
