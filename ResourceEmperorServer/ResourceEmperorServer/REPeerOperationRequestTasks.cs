@@ -6,6 +6,8 @@ using Newtonsoft.Json;
 using System.Threading;
 using REStructure.Scenes;
 using REStructure.Items;
+using System.Threading.Tasks;
+using System;
 
 namespace ResourceEmperorServer
 {
@@ -252,6 +254,10 @@ namespace ResourceEmperorServer
                         {(byte)WalkPathResponseItem.PathID,pathID},
                         {(byte)WalkPathResponseItem.TargetSceneID,targetScene.uniqueID}
                     };
+                    if(targetScene is Wilderness)
+                    {
+                        parameter.Add((byte)WalkPathResponseItem.Messages, JsonConvert.SerializeObject((targetScene as Wilderness).messages));
+                    }
                     OperationResponse response = new OperationResponse(operationRequest.OperationCode,parameter)
                     {
                         ReturnCode = (short)ErrorType.Correct,
@@ -446,6 +452,52 @@ namespace ResourceEmperorServer
                         DebugMessage = "資料庫錯誤"
                     };
                     SendOperationResponse(response, new SendParameters());
+                }
+            }
+        }
+        private void LeaveMessageTask(OperationRequest operationRequest)
+        {
+            if (operationRequest.Parameters.Count != 1)
+            {
+                OperationResponse response = new OperationResponse(operationRequest.OperationCode)
+                {
+                    ReturnCode = (short)ErrorType.InvalidParameter,
+                    DebugMessage = "LeaveMessageTask Parameter Error"
+                };
+                this.SendOperationResponse(response, new SendParameters());
+            }
+            else
+            {
+                string message = (string)operationRequest.Parameters[(byte)LeaveMessageParameterItem.Message];
+
+                if (player.Location is Wilderness)
+                {
+                    Wilderness location = player.Location as Wilderness;
+                    Task.Run(async delegate
+                    {
+                        location.LeaveMessage(message);
+                        await Task.Delay(new TimeSpan(TimeSpan.TicksPerHour));
+                        lock(location.messages)
+                        {
+                            if (location.messages.Count > 0)
+                                location.messages.Dequeue();
+                        }
+                    });
+                    OperationResponse response = new OperationResponse(operationRequest.OperationCode)
+                    {
+                        ReturnCode = (short)ErrorType.Correct,
+                        DebugMessage = ""
+                    };
+                    SendOperationResponse(response, new SendParameters());
+                }
+                else
+                {
+                    OperationResponse response = new OperationResponse(operationRequest.OperationCode)
+                    {
+                        ReturnCode = (short)ErrorType.InvalidOperation,
+                        DebugMessage = "here can't leave message"
+                    };
+                    this.SendOperationResponse(response, new SendParameters());
                 }
             }
         }

@@ -24,7 +24,8 @@
     public enum WalkPathResponseItem
     {
         PathID,
-        TargetSceneID
+        TargetSceneID,
+        Messages
     }
     public enum ExploreResponseItem
     {

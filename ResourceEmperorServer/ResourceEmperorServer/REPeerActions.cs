@@ -1,12 +1,11 @@
-﻿using System;
+﻿using Newtonsoft.Json;
 using Photon.SocketServer;
-using REStructure.Items.Materials;
-using REStructure;
 using REProtocol;
-using Newtonsoft.Json;
-using System.Threading.Tasks;
-using System.Collections.Generic;
+using REStructure;
 using REStructure.Scenes;
+using System;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace ResourceEmperorServer
 {
@@ -16,16 +15,17 @@ namespace ResourceEmperorServer
         {
             if (server.WandererDictionary.ContainsKey(guid))
             {
-                string[] requestItem = new string[3];
+                string[] requestItem = new string[4];
                 requestItem[0] = "Account";
                 requestItem[1] = "Inventory";
                 requestItem[2] = "Appliances";
+                requestItem[3] = "Money";
 
                 string[] returnData = server.database.GetDataByUniqueID(playerUniqueID, requestItem, "player");
 
-                if ((string)returnData[1] != "" && (string)returnData[2] != "")
+                if (returnData[1] != "" && returnData[2] != "")
                 {
-                    player = new REPlayer(playerUniqueID, (string)returnData[0], (string)returnData[1], (string)returnData[2], this);
+                    player = new REPlayer(playerUniqueID, returnData[0], returnData[1], returnData[2], int.Parse(returnData[3]), this);
                 }
                 else
                 {
@@ -58,10 +58,11 @@ namespace ResourceEmperorServer
             {
                 cancelTokenSource.Cancel();
                 server.PlayerDictionary.Remove(player.uniqueID);
-                string[] updateItems = { "Inventory", "Appliances" };
+                string[] updateItems = { "Inventory", "Appliances", "Money" };
                 object[] updateValues = {
                     JsonConvert.SerializeObject(player.inventory, new JsonSerializerSettings { TypeNameHandling = TypeNameHandling.Auto }),
-                    JsonConvert.SerializeObject(player.appliances, new JsonSerializerSettings { TypeNameHandling = TypeNameHandling.Auto })
+                    JsonConvert.SerializeObject(player.appliances, new JsonSerializerSettings { TypeNameHandling = TypeNameHandling.Auto }),
+                    player.money
                 };
                 string table = "player";
                 server.database.UpdateDataByUniqueID(player.uniqueID, updateItems, updateValues, table);

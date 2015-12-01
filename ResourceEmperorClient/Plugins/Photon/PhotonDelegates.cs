@@ -19,7 +19,7 @@ public partial class PhotonService
     public delegate void GoToSceneEventHandler(bool status, string debugMessage, Scene targetScene);
     public event GoToSceneEventHandler GoToSceneEvent;
 
-    public delegate void WalkPathEventHandler(bool status, string debugMessage, Pathway path, Scene targetScene);
+    public delegate void WalkPathEventHandler(bool status, string debugMessage, Pathway path, Scene targetScene, List<string> messages);
     public event WalkPathEventHandler WalkPathEvent;
 
     public delegate void ExploreEventHandler(bool status, string debugMessage, List<Pathway> paths);

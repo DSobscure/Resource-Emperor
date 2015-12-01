@@ -44,4 +44,9 @@
     {
         Message
     }
+
+    public enum LeaveMessageParameterItem
+    {
+        Message
+    }
 }

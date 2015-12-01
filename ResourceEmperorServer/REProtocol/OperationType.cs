@@ -13,6 +13,7 @@
         Explore,
         CollectMaterial,
         SendMessage,
-        GetRanking
+        GetRanking,
+        LeaveMessage
     }
 }

@@ -96,18 +96,26 @@ public partial class PhotonService : IPhotonPeerListener
             int targetScene = (int)operationResponse.Parameters[(byte)WalkPathResponseItem.TargetSceneID];
             if(GameGlobal.GlobalMap.paths.ContainsKey(pathID) && GameGlobal.GlobalMap.scenes.ContainsKey(targetScene))
             {
-                WalkPathEvent(true, operationResponse.DebugMessage, GameGlobal.GlobalMap.paths[pathID], GameGlobal.GlobalMap.scenes[targetScene]);
+                if(GameGlobal.GlobalMap.scenes[targetScene] is Wilderness)
+                {
+                    List<string> messages = JsonConvert.DeserializeObject<List<string>>((string)operationResponse.Parameters[(byte)WalkPathResponseItem.Messages]);
+                    WalkPathEvent(true, operationResponse.DebugMessage, GameGlobal.GlobalMap.paths[pathID], GameGlobal.GlobalMap.scenes[targetScene], messages);
+                }
+                else
+                {
+                    WalkPathEvent(true, operationResponse.DebugMessage, GameGlobal.GlobalMap.paths[pathID], GameGlobal.GlobalMap.scenes[targetScene], null);
+                }
             }
             else
             {
                 DebugReturn(0, operationResponse.DebugMessage);
-                WalkPathEvent(false, "target scene not in global map", null, null);
+                WalkPathEvent(false, "target scene not in global map", null, null, null);
             }
         }
         else
         {
             DebugReturn(0, operationResponse.DebugMessage);
-            WalkPathEvent(false, operationResponse.DebugMessage, null, null);
+            WalkPathEvent(false, operationResponse.DebugMessage, null, null, null);
         }
     }
     private void ExploreTask(OperationResponse operationResponse)
@@ -160,6 +168,13 @@ public partial class PhotonService : IPhotonPeerListener
         else
         {
             GetRankingEvent(false, operationResponse.DebugMessage, null);
+        }
+    }
+    private void LeaveMessageTask(OperationResponse operationResponse)
+    {
+        if (operationResponse.ReturnCode != (short)ErrorType.Correct)
+        {
+            DebugReturn(DebugLevel.ERROR, operationResponse.DebugMessage);
         }
     }
 }

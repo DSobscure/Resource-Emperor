@@ -157,6 +157,14 @@ public partial class PhotonService : IPhotonPeerListener
                 }
                 break;
             #endregion
+
+            #region send message
+            case (byte)OperationType.LeaveMessage:
+                {
+                    LeaveMessageTask(operationResponse);
+                }
+                break;
+            #endregion
         }
     }
 

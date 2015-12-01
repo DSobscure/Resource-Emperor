@@ -9,11 +9,17 @@ namespace REStructure.Scenes
     {
         [JsonProperty("allPathways")]
         public List<Pathway> discoveredPaths { get; protected set; }
+        [JsonIgnore]
+        public Queue<string> messages { get; protected set; }
 
-        protected Wilderness() { }
+        protected Wilderness()
+        {
+            messages = new Queue<string>();
+        }
         public Wilderness(string name, List<Pathway> discoveredPaths) : base(name)
         {
             this.discoveredPaths = discoveredPaths;
+            messages = new Queue<string>();
         }
 
         public List<Pathway> Explore()
@@ -28,6 +34,10 @@ namespace REStructure.Scenes
                 }
             }
             return foundPaths;
+        }
+        public void LeaveMessage(string message)
+        {
+            messages.Enqueue(message);
         }
     }
 }

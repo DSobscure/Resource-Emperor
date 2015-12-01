@@ -58,7 +58,7 @@ public class SceneController : MonoBehaviour
             }
         }
     }
-    private void WalkPathEventAction(bool status, string debugMessage, Pathway path, Scene targetScene)
+    private void WalkPathEventAction(bool status, string debugMessage, Pathway path, Scene targetScene, List<string> messages)
     {
         if (status)
         {
@@ -68,6 +68,9 @@ public class SceneController : MonoBehaviour
                 Wilderness targetWilderness = targetScene as Wilderness;
                 if (!targetWilderness.discoveredPaths.Contains(path))
                     targetWilderness.discoveredPaths.Add(path);
+                targetWilderness.messages.Clear();
+                foreach(string message in messages)
+                    targetWilderness.messages.Enqueue(message);
             }
             if (targetScene is Town)
             {

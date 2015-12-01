@@ -138,6 +138,14 @@ namespace ResourceEmperorServer
                     }
                     break;
                 #endregion
+
+                #region get ranking
+                case (byte)OperationType.LeaveMessage:
+                    {
+                        LeaveMessageTask(operationRequest);
+                    }
+                    break;
+                #endregion
             }
         }
     }
