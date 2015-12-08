@@ -35,14 +35,14 @@ namespace REStructure
             foreach(object product in products)
             {
                 Item item = product as Item;
-                if (item is Item && !inventory.ContainsKey(item.id))
+                if (item is Item && !inventory.Any(x=>x.id == item.id))
                     newItemCount++;
             }
             if (newItemCount + inventory.Count > inventory.maxCount)
                 return false;
             foreach (var item in this.materials)
             {
-                if (!inventory.ContainsKey(item.id) || inventory[item.id].itemCount < item.itemCount)
+                if (!inventory.Any(x=>x.id == item.id) || inventory.Where(x=>x.id == item.id).Sum(x=>x.itemCount) < item.itemCount)
                 {
                     return false;
                 }
@@ -56,11 +56,7 @@ namespace REStructure
             {
                 foreach (var item in this.materials)
                 {
-                    inventory[item.id].Decrease(item.itemCount);
-                    if(inventory[item.id].itemCount == 0)
-                    {
-                        inventory.Remove(item.id);
-                    }
+                    inventory.Consume(item);
                 }
                 products = this.products;
                 return true;

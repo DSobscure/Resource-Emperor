@@ -1,6 +1,9 @@
 ﻿using System.Collections.Generic;
 using REStructure.Scenes;
 using REStructure.Scenes.ResourcePoints;
+using REProtocol;
+using REStructure.Items.Materials;
+using REStructure.Items.Products;
 
 namespace REStructure
 {
@@ -17,7 +20,32 @@ namespace REStructure
             towns = new List<Town>();
 
             #region 起始村莊地圖
-            Town startTown = new Town("起始村莊");
+            Town startTown = new Town( 
+                name: "起始村莊",
+                market: new Market(new List<Commodity>()
+                {
+                    new Commodity(new Log(1), 800, 1000, 20),
+                    new Commodity(new Oak(1), 200, 400, 60),
+                    new Commodity(new Bamboo(1), 700, 800, 15),
+                    new Commodity(new Cypress(1), 60, 400, 100),
+                    new Commodity(new Hemp(1), 750, 1000, 10),
+                    new Commodity(new Coconut(1), 20, 300, 30),
+                    new Commodity(new RawRubber(1), 50, 300, 10),
+                    new Commodity(new Cotton(1), 1800,2400, 10),
+                    new Commodity(new CopperOre(1), 300, 1000, 80),
+                    new Commodity(new IronOre(1), 300, 1000, 80),
+                    new Commodity(new Coal(1), 300, 1000, 50),
+                    new Commodity(new Timber(1), 400, 2000, 25),
+                    new Commodity(new Hemp(1), 300, 1000, 60),
+                    new Commodity(new Firewood(1), 4000, 10000, 8),
+                    new Commodity(new OakTimber(1), 200, 1000, 80),
+                    new Commodity(new CypressTimber(1), 200, 1000, 150),
+                    new Commodity(new Brick(1), 500, 2000, 20),
+                    new Commodity(new Charcoal(1), 400, 2000, 12),
+                    new Commodity(new Rubber(1), 50, 400, 30),
+                    new Commodity(new WroughIron(1), 20, 400, 400),
+                    new Commodity(new Copper(1), 20, 400, 400)
+                }));
             {
                 #region 邊緣地帶地圖
                 Wilderness fringe = new Wilderness("邊緣地帶", new List<Pathway>());

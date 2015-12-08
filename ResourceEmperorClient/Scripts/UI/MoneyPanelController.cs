@@ -8,7 +8,13 @@ public class MoneyPanelController : MonoBehaviour
 
     void Start()
     {
+        GameGlobal.Player.OnMoneyChange += UpdateMoney;
         UpdateMoney();
+    }
+
+    void OnDestroy()
+    {
+        GameGlobal.Player.OnMoneyChange -= UpdateMoney;
     }
 
     public void UpdateMoney()

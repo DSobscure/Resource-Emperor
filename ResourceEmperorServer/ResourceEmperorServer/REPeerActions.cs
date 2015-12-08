@@ -6,6 +6,7 @@ using REStructure.Scenes;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using System.Linq;
 
 namespace ResourceEmperorServer
 {
@@ -83,14 +84,7 @@ namespace ResourceEmperorServer
                     if (result is Item)
                     {
                         Item item = result as Item;
-                        if (player.inventory.ContainsKey(item.id))
-                        {
-                            player.inventory[item.id].Increase(item.itemCount);
-                        }
-                        else
-                        {
-                            player.inventory.Add(item.id, item.Clone() as Item);
-                        }
+                        player.inventory.Stack(item);
                     }
                     else if (result is Appliance)
                     {

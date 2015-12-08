@@ -1,12 +1,9 @@
 ﻿using REStructure;
 
-public class ClientPlayer
+public class ClientPlayer : Player
 {
-    public int uniqueID { get; protected set; }
-    public string account { get; protected set; }
     public bool IsWorking { get; set; }
     public Scene Location { get; set; }
-    public int money { get; protected set; }
 
     private Item _selectedItem;
     public Item SelectedItem

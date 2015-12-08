@@ -1,6 +1,7 @@
 ﻿using UnityEngine;
 using System.Linq;
 using REProtocol;
+using REStructure;
 
 public class DiscardItemController : MonoBehaviour
 {
@@ -19,10 +20,10 @@ public class DiscardItemController : MonoBehaviour
 
     public void DiscardItem()
     {
-        if (inventoryPanelController.blockPositions.ContainsValue(inventoryPanelController.selectedItemIndex))
+        if (inventoryPanelController.blockPositions.ContainsKey(inventoryPanelController.selectedItemIndex))
         {
-            var pair = inventoryPanelController.blockPositions.First(x => x.Value == inventoryPanelController.selectedItemIndex);
-            PhotonGlobal.PS.DiscardItem(pair.Key, 1);
+            ItemID discardID = inventoryPanelController.blockPositions[inventoryPanelController.selectedItemIndex].id;
+            PhotonGlobal.PS.DiscardItem(discardID, 1);
             inventoryPanelController.discardButton.enabled = false;
             inventoryPanelController.discardButton.image.color = Color.grey;
         }
@@ -30,18 +31,10 @@ public class DiscardItemController : MonoBehaviour
 
     private void DiscardItemEventAction(bool discardStatus, string debugMessage, ItemID itemID, int itemCount)
     {
-        if (discardStatus && GameGlobal.Inventory.ContainsKey(itemID))
+        if (discardStatus && GameGlobal.Inventory.Any(x=>x.id == itemID))
         {
-            if (itemCount > 0)
-            {
-                GameGlobal.Inventory[itemID].Reset();
-                GameGlobal.Inventory[itemID].Increase(itemCount);
-            }
-            else
-            {
-                GameGlobal.Inventory.Remove(itemID);
-                inventoryPanelController.blockPositions.Remove(itemID);
-            }
+            int discardCount = GameGlobal.Inventory.Where(x => x.id == itemID).Sum(x => x.itemCount) - itemCount;
+            GameGlobal.Inventory.Consume(GameGlobal.Inventory.First(x => x.id == itemID).Instantiate(discardCount) as Item);
             inventoryPanelController.ShowInventory();
         }
         inventoryPanelController.discardButton.enabled = true;

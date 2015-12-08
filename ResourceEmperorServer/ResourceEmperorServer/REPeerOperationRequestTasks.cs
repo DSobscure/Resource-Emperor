@@ -8,6 +8,7 @@ using REStructure.Scenes;
 using REStructure.Items;
 using System.Threading.Tasks;
 using System;
+using System.Linq;
 
 namespace ResourceEmperorServer
 {
@@ -86,7 +87,7 @@ namespace ResourceEmperorServer
         private void TestTask(OperationRequest operationRequest)
         {
             Inventory inventory = JsonConvert.DeserializeObject<Inventory>((string)operationRequest.Parameters[0], new JsonSerializerSettings { TypeNameHandling = TypeNameHandling.Auto });
-            foreach (Item item in inventory.Values)
+            foreach (Item item in inventory)
             {
                 REServer.Log.Info(item.id + " " + item.name + " " + item.description + " " + item.itemCount);
             }
@@ -155,18 +156,15 @@ namespace ResourceEmperorServer
             {
                 ItemID itemID = (ItemID)operationRequest.Parameters[(byte)DiscardItemParameterItem.ItemID];
                 int discardCount = (int)operationRequest.Parameters[(byte)DiscardItemParameterItem.DiscardCount];
-                if (player.inventory.ContainsKey(itemID) && player.inventory[itemID].itemCount >= discardCount)
+                if (player.inventory.Any(x=>x.id == itemID) && player.inventory.First(x => x.id == itemID).itemCount >= discardCount)
                 {
-                    player.inventory[itemID].Decrease(discardCount);
+                    Item discardTarget = player.inventory.First(x => x.id == itemID);
+                    player.inventory.Consume(discardTarget.Instantiate(discardCount) as Item);
                     Dictionary<byte, object> parameter = new Dictionary<byte, object>
                                         {
                                             {(byte)DiscardItemResponseItem.ItemID,itemID},
-                                            {(byte)DiscardItemResponseItem.ItemCount,player.inventory[itemID].itemCount},
+                                            {(byte)DiscardItemResponseItem.ItemCount,player.inventory.Where(x => x.id == itemID).Sum(x=>x.itemCount)},
                                         };
-                    if (player.inventory[itemID].itemCount == 0)
-                    {
-                        player.inventory.Remove(itemID);
-                    }
                     OperationResponse response = new OperationResponse(operationRequest.OperationCode, parameter)
                     {
                         ReturnCode = (short)ErrorType.Correct,
@@ -331,23 +329,16 @@ namespace ResourceEmperorServer
             {
                 CollectionMethod method = (CollectionMethod)operationRequest.Parameters[(byte)CollectMaterialParameterItem.CollectiontMethod];
                 ItemID toolID = (ItemID)operationRequest.Parameters[(byte)CollectMaterialParameterItem.ToolID];
-                if (player.Location is ResourcePoint && player.inventory.ContainsKey(toolID) || toolID == ItemID.No)
+                if (player.Location is ResourcePoint && player.inventory.Any(x=>x.id == toolID) || toolID == ItemID.No)
                 {
-                    Tool tool = (toolID == ItemID.No) ? null : player.inventory[toolID] as Tool;
+                    Tool tool = (toolID == ItemID.No) ? null : player.inventory.First(x => x.id == toolID) as Tool;
                     ResourcePoint resourcePoint = player.Location as ResourcePoint;
                     if(resourcePoint.collectionList.ContainsKey(method) && resourcePoint.ToolCheck(method,tool))
                     {
                         Item material =  resourcePoint.Collect(method, tool);
                         if(material != null)
                         {
-                            if (player.inventory.ContainsKey(material.id))
-                            {
-                                player.inventory[material.id].Increase(material.itemCount);
-                            }
-                            else
-                            {
-                                player.inventory.Add(material.id, material);
-                            }
+                            player.inventory.Stack(material);
                         }
                         Dictionary<byte, object> parameter = new Dictionary<byte, object>
                         {

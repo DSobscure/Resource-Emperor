@@ -2,34 +2,19 @@
 using System.Collections.Generic;
 using REProtocol;
 using Newtonsoft.Json;
+using System.Linq;
+using System;
 
 namespace REStructure
 {
-    public class Inventory : IDictionary<ItemID, Item>
+    public class Inventory : IList<Item>
     {
         [JsonProperty("items")]
-        protected Dictionary<ItemID, Item> items { get; set; }
+        protected List<Item> items { get; set; }
         [JsonProperty("maxCount")]
-        public int maxCount { get; set; }
+        public int maxCount { get; protected set; }
+        public event Action OnItemChange;
 
-        public Inventory()
-        {
-            items = new Dictionary<ItemID, Item>();
-            maxCount = 40;
-        }
-        //IDictionary
-        public Item this[ItemID key]
-        {
-            get
-            {
-                return items[key];
-            }
-
-            set
-            {
-                items[key] = value;
-            }
-        }
         public int Count
         {
             get
@@ -37,75 +22,199 @@ namespace REStructure
                 return items.Count;
             }
         }
+
         public bool IsReadOnly
         {
             get
             {
-                return true;
+                return false;
             }
         }
-        public ICollection<ItemID> Keys
+
+        Item IList<Item>.this[int index]
         {
             get
             {
-                return items.Keys;
+                return items[index];
+            }
+
+            set
+            {
+                items[index] = value;
             }
         }
-        public ICollection<Item> Values
+
+        public Item this[int index]
         {
             get
             {
-                return items.Values;
+                return items[index];
             }
         }
-        public void Add(KeyValuePair<ItemID, Item> item)
+
+        public Inventory()
         {
-            if(items.Count<maxCount)
-                items.Add(item.Key, item.Value);
+            items = new List<Item>();
+            maxCount = 40;
         }
-        public void Add(ItemID key, Item value)
+
+        public int IndexOf(Item item)
         {
-            if (items.Count < maxCount)
-                items.Add(key, value);
+            return items.IndexOf(item);
         }
+
+        public void Insert(int index, Item item)
+        {
+            items.Insert(index, item);
+        }
+
+        public void RemoveAt(int index)
+        {
+            items.RemoveAt(index);
+        }
+
+        public void Add(Item item)
+        {
+            Stack(item);
+        }
+
         public void Clear()
         {
             items.Clear();
         }
-        public bool Contains(KeyValuePair<ItemID, Item> item)
+
+        public bool Contains(Item item)
         {
-            return items.ContainsKey(item.Key) && items[item.Key] == item.Value;
+            return items.Contains(item);
         }
-        public bool ContainsKey(ItemID key)
+
+        public void CopyTo(Item[] array, int arrayIndex)
         {
-            return items.ContainsKey(key);
+            items.CopyTo(array, arrayIndex);
         }
-        public void CopyTo(KeyValuePair<ItemID, Item>[] array, int arrayIndex)
+
+        public bool Remove(Item item)
         {
-            for(int i=arrayIndex;i<array.Length;i++)
-            {
-                items.Add(array[i].Key,array[i].Value);
-            }
+            return items.Remove(item);
         }
-        public IEnumerator<KeyValuePair<ItemID, Item>> GetEnumerator()
+
+        public IEnumerator<Item> GetEnumerator()
         {
             return items.GetEnumerator();
         }
-        public bool Remove(KeyValuePair<ItemID, Item> item)
-        {
-            return this.Contains(item)&&items.Remove(item.Key);
-        }
-        public bool Remove(ItemID key)
-        {
-            return items.Remove(key);
-        }
-        public bool TryGetValue(ItemID key, out Item value)
-        {
-            return items.TryGetValue(key, out value);
-        }
+
         IEnumerator IEnumerable.GetEnumerator()
         {
             return items.GetEnumerator();
+        }
+
+        public bool Stack(Item item)
+        {
+            if(items.Any(x=>x.id == item.id && !x.isFull))
+            {
+                Item targetItem = items.First(x => x.id == item.id && !x.isFull);
+                if (item.itemCount <= targetItem.maxCount - targetItem.itemCount)
+                {
+                    targetItem.Increase(item.itemCount);
+                }
+                else
+                {
+                    int addCount = targetItem.maxCount - targetItem.itemCount;
+                    targetItem.Increase(addCount);
+                    int remainCount = item.itemCount - addCount;
+                    while (remainCount > 0)
+                    {
+                        if (remainCount >= item.maxCount)
+                        {
+                            if (items.Count >= maxCount)
+                                return false;
+                            items.Add(item.Instantiate(item.maxCount) as Item);
+                            remainCount -= item.maxCount;
+                        }
+                        else
+                        {
+                            if (items.Count >= maxCount)
+                                return false;
+                            items.Add(item.Instantiate(remainCount) as Item);
+                            remainCount = 0;
+                        }
+                    }
+                }
+            }
+            else
+            {
+                if(item.itemCount > item.maxCount)
+                {
+                    int remainCount = item.itemCount;
+                    while(remainCount > 0)
+                    {
+                        if(remainCount > item.maxCount)
+                        {
+                            if (items.Count >= maxCount)
+                                return false;
+                            items.Add(item.Instantiate(item.maxCount) as Item);
+                            remainCount -= item.maxCount;
+                        }
+                        else
+                        {
+                            if (items.Count >= maxCount)
+                                return false;
+                            items.Add(item.Instantiate(remainCount) as Item);
+                            remainCount = 0;
+                        }
+                    }
+                }
+                else
+                {
+                    if (items.Count >= maxCount)
+                        return false;
+                    items.Add(item.Clone() as Item);
+                }
+            }
+            if (OnItemChange != null)
+                OnItemChange();
+            return true;
+        }
+        public bool Consume(Item item)
+        {
+            if (items.Where(x => x.id == item.id).Sum(x => x.itemCount) < item.itemCount)
+                return false;
+            if(items.Any(x => x.id == item.id))
+            {
+                Item targetItem = items.First(x => x.id == item.id);
+                if (item.itemCount > targetItem.itemCount)
+                {
+                    int remainCount = item.itemCount - targetItem.itemCount;
+                    items.Remove(targetItem);
+                    while(remainCount > 0)
+                    {
+                        targetItem = items.First(x => x.id == item.id);
+                        if (remainCount > targetItem.itemCount)
+                        {
+                            items.Remove(targetItem);
+                            remainCount -= targetItem.itemCount;
+                        }
+                        else
+                        {
+                            targetItem.Decrease(remainCount);
+                            if(targetItem.itemCount == 0)
+                                items.Remove(targetItem);
+                            remainCount = 0;
+                        }
+                    }
+                }
+                else
+                {
+                    targetItem.Decrease(item.itemCount);
+                    if(targetItem.itemCount == 0)
+                    {
+                        items.Remove(targetItem);
+                    }
+                }
+            }
+            if (OnItemChange != null)
+                OnItemChange();
+            return true;
         }
     }
 }

@@ -62,14 +62,7 @@ public class ProduceController : MonoBehaviour
                         if (result is Item)
                         {
                             Item item = result as Item;
-                            if (GameGlobal.Inventory.ContainsKey(item.id))
-                            {
-                                GameGlobal.Inventory[item.id].Increase(item.itemCount);
-                            }
-                            else
-                            {
-                                GameGlobal.Inventory.Add(item.id, item.Clone() as Item);
-                            }
+                            GameGlobal.Inventory.Stack(item);
                         }
                         else if (result is Appliance)
                         {

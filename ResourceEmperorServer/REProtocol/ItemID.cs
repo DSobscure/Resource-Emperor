@@ -5,8 +5,9 @@ using System.Text;
 
 namespace REProtocol
 {
-    public enum ItemID
+    public enum ItemID : ushort
     {
+        MaterialBegin = 0,
         Log = 0,
         Oak,
         Cypress,
@@ -31,10 +32,16 @@ namespace REProtocol
         Brine = 70,
         Water,
 
+        MaterialEnd = 999,
+
+        ToolBegin = 1000,
         StoneAxe = 1000,
         StonePickaxe,
         StoneShovel,
 
+        ToolEnd = 1999,
+
+        ProductBegin = 2000,
         Timber = 2000,
         StoneBlade,
         HempRope,
@@ -63,6 +70,7 @@ namespace REProtocol
         CottonRope,
         CottonCloth,
         Paper,
+        ProductEnd = 10000,
 
         No = 65535
     }

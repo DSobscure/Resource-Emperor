@@ -9,5 +9,5 @@ public static class GameGlobal
     static public Dictionary<ApplianceID, Appliance> Appliances;
     static public bool LoginStatus = false;
     static public GlobalMap GlobalMap;
-    static public string version = "0.0.2";
+    static public string version = "0.0.3";
 }

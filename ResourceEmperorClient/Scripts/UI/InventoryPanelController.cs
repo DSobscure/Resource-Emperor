@@ -12,7 +12,7 @@ public class InventoryPanelController : MonoBehaviour
     [SerializeField]
     private RectTransform inventoryBlockPrefab;
     private RectTransform[] inventoryBlocks;
-    internal Dictionary<ItemID,int> blockPositions;
+    internal Dictionary<int,Item> blockPositions;
     private int inventoryRow = 10;
     private int inventoryColumn = 4;
     [SerializeField]
@@ -27,7 +27,7 @@ public class InventoryPanelController : MonoBehaviour
     void Start ()
     {
         discardButtonOriginColor = discardButton.image.color;
-        blockPositions = new Dictionary<ItemID, int>();
+        blockPositions = new Dictionary<int, Item>();
         inventoryBlocks = new RectTransform[inventoryRow*inventoryColumn];
         for (int i=0;i<inventoryRow;i++)
         {
@@ -43,23 +43,31 @@ public class InventoryPanelController : MonoBehaviour
             }
         }
         int index = 0;
-        foreach (Item item in GameGlobal.Inventory.Values)
+        foreach (Item item in GameGlobal.Inventory)
         {
-            blockPositions.Add(item.id,index);
+            blockPositions.Add(index, item);
             inventoryBlocks[index].GetChild(0).GetComponent<Text>().text = item.itemCount.ToString();
             inventoryBlocks[index].GetChild(1).GetComponent<Text>().text = item.name.ToString();
             index++;
         }
+        GameGlobal.Inventory.OnItemChange += ShowInventory;
+    }
+
+    void OnDestroy()
+    {
+        GameGlobal.Inventory.OnItemChange -= ShowInventory;
     }
 
     public void UpdateItem(ItemID id)
     {
-        if(blockPositions.ContainsKey(id))
+        if(blockPositions.Any(x=>x.Value.id == id))
         {
-            int index = blockPositions[id];
-            inventoryBlocks[index].GetChild(0).GetComponent<Text>().text = GameGlobal.Inventory[id].itemCount.ToString();
+            blockPositions.Where(x => x.Value.id == id).ToList().ForEach((pair)=> 
+            {
+                inventoryBlocks[pair.Key].GetChild(0).GetComponent<Text>().text = pair.Value.itemCount.ToString();
+            });
         }
-        else if(GameGlobal.Inventory.ContainsKey(id))
+        else if(GameGlobal.Inventory.Any(x=>x.id == id))
         {
             ShowInventory();
         }
@@ -76,9 +84,9 @@ public class InventoryPanelController : MonoBehaviour
                 inventoryBlocks[i * inventoryColumn + j].GetChild(1).GetComponent<Text>().text = "";
             }
         }
-        foreach (Item item in GameGlobal.Inventory.Values)
+        foreach (Item item in GameGlobal.Inventory)
         {
-            blockPositions.Add(item.id, index);
+            blockPositions.Add(index, item);
             inventoryBlocks[index].GetChild(0).GetComponent<Text>().text = item.itemCount.ToString();
             inventoryBlocks[index].GetChild(1).GetComponent<Text>().text = item.name.ToString();
             index++;
@@ -90,11 +98,9 @@ public class InventoryPanelController : MonoBehaviour
         if (selectedItemIndex != -1)
             inventoryBlocks[selectedItemIndex].GetComponent<Button>().image.color = originColor;
         selectedItemIndex = index;
-        if (blockPositions.ContainsValue(selectedItemIndex))
+        if (blockPositions.ContainsKey(selectedItemIndex))
         {
-            ItemID selectedItemID = blockPositions.First(x => x.Value == selectedItemIndex).Key;
-            if (GameGlobal.Inventory.ContainsKey(selectedItemID))
-                GameGlobal.Player.SelectedItem = GameGlobal.Inventory[selectedItemID];
+            GameGlobal.Player.SelectedItem = blockPositions.First(x => x.Key == selectedItemIndex).Value;
         }
         inventoryBlocks[selectedItemIndex].GetComponent<Button>().image.color = Color.black;
     }

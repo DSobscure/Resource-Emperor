@@ -3,6 +3,7 @@ using REStructure;
 using REProtocol;
 using UnityEngine.UI;
 using System;
+using System.Linq;
 
 public class ApplianceContentController : MonoBehaviour
 {
@@ -121,9 +122,9 @@ public class ApplianceContentController : MonoBehaviour
             block.transform.SetParent(materialPanelContent);
             block.localScale = Vector3.one;
             block.localPosition = new Vector3(xoffset, -index * 50f + yoffset, 0f);
-            int hasCount = (GameGlobal.Player != null && GameGlobal.Inventory.ContainsKey(item.id)) ? GameGlobal.Inventory[item.id].itemCount : 0;
+            int itemCount = (GameGlobal.Player != null && GameGlobal.Inventory.Any(x=>x.id == item.id)) ? GameGlobal.Inventory.Where(x => x.id == item.id).Sum(x => x.itemCount) : 0;
             int needCount = item.itemCount;
-            block.GetChild(0).GetComponent<Text>().text = hasCount.ToString();
+            block.GetChild(0).GetComponent<Text>().text = itemCount.ToString();
             block.GetChild(1).GetComponent<Text>().text = item.name.ToString();
             block.GetChild(2).GetComponent<Text>().text = "/" + needCount.ToString();
             index++;

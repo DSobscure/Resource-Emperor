@@ -15,6 +15,9 @@ namespace REStructure
         public abstract string description { get;}
         [JsonProperty("ietmCount")]
         public int itemCount { get; protected set; }
+        [JsonProperty("maxCount")]
+        public abstract int maxCount { get; }
+        public bool isFull { get { return itemCount == maxCount; } }
 
         protected Item() { }
         protected Item(int itemCount)
@@ -60,6 +63,14 @@ namespace REStructure
         public override int GetHashCode()
         {
             return id.GetHashCode();
+        }
+
+        public IScalable Instantiate(int value = 1)
+        {
+            IScalable newObject = this.Clone() as IScalable;
+            newObject.Reset();
+            newObject.Increase(value);
+            return newObject;
         }
     }
 }

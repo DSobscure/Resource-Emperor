@@ -19,31 +19,27 @@ namespace ResourceEmperorServer
         public Scene Location { get; set; }
 
         public REPlayer() { }
-        public REPlayer(int uniqueID, string account, REPeer peer)
+        public REPlayer(int uniqueID, string account, REPeer peer) : base(uniqueID, account, 100)
         {
-            this.uniqueID = uniqueID;
-            this.account = account;
             this.peer = peer;
             inventory = new Inventory()
             {
-                { ItemID.Log, new Log(1000) },
-                { ItemID.IronOre, new IronOre(1000) },
-                { ItemID.Rock, new Rock(1000) },
-                { ItemID.Hemp, new Hemp(1000) },
-                { ItemID.Oak, new Oak(1000) },
-                { ItemID.Cypress, new Cypress(1000) },
-                { ItemID.Clay, new Clay(1000) },
-                { ItemID.CopperOre, new CopperOre(1000) },
-                { ItemID.Coal, new Coal(1000) },
-                { ItemID.Water, new Water(1000) },
-                { ItemID.Cotton, new Cotton(1000) }
+                new Log(150),
+                new IronOre(20),
+                new Rock(30),
+                new Hemp(40),
+                new Oak(20),
+                new Cypress(20),
+                new Clay(50),
+                new CopperOre(20),
+                new Coal(100),
+                new Water(100),
+                new Cotton(100)
             };
             appliances = new Dictionary<ApplianceID, Appliance>() { { ApplianceID.Machete, new Machete() } };
         }
-        public REPlayer(int uniqueID, string account, string inventoryDataString, string appliancesDataString, REPeer peer)
+        public REPlayer(int uniqueID, string account, string inventoryDataString, string appliancesDataString, int money, REPeer peer) : base(uniqueID, account, money)
         {
-            this.uniqueID = uniqueID;
-            this.account = account;
             this.peer = peer;
             inventory = JsonConvert.DeserializeObject<Inventory>(inventoryDataString, new JsonSerializerSettings { TypeNameHandling = TypeNameHandling.Auto });
             appliances = JsonConvert.DeserializeObject<Dictionary<ApplianceID, Appliance>>(appliancesDataString, new JsonSerializerSettings { TypeNameHandling = TypeNameHandling.Auto });
@@ -51,7 +47,7 @@ namespace ResourceEmperorServer
 
         public Player Serialize()
         {
-            return new Player(uniqueID, account);
+            return new Player(uniqueID, account, money);
         }
     }
 }
