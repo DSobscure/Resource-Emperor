@@ -17,7 +17,6 @@ public class RankingPanelController : MonoBehaviour
 
     public void ShowRanking()
     {
-        rankingPanel.gameObject.SetActive(true);
         for (int i = rankingPanel.childCount - 1; i >= 0; i--)
         {
             Destroy(rankingPanel.GetChild(i).gameObject);
@@ -52,7 +51,7 @@ public class RankingPanelController : MonoBehaviour
     }
     public void NextPage()
     {
-        if(pageIndex < (rankingController.ranking.Count+1/ pageSize)+1)
+        if(pageIndex < ((rankingController.ranking.Count-1)/ pageSize)+1)
         {
             pageIndex++;
             ShowRanking();

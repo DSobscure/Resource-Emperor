@@ -8,6 +8,10 @@ public class PhotonConnect : MonoBehaviour {
     public string ServerName = "REServer";
     private bool ConnectStatus = true;
 
+    void Awake()
+    {
+        Application.targetFrameRate = 50;
+    }
     // Use this for initialization
     void Start()
     {

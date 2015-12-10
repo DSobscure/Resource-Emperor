@@ -11,4 +11,8 @@ namespace REProtocol
         PlayerName,
         Message
     }
+    public enum MarketChangeBroadcastItem
+    {
+        MarketDataString
+    }
 }

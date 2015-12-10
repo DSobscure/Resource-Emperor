@@ -15,6 +15,8 @@ public class MessagePanelController : MonoBehaviour
     [SerializeField]
     private Text showingText;
     public InputField inputText;
+    [SerializeField]
+    private Scrollbar scrollBar;
 
     public void AppendMessage(string message)
     {
@@ -24,11 +26,9 @@ public class MessagePanelController : MonoBehaviour
 
     public void UpdateMessageBox()
     {
-        if (messageContent.Count * 20 > 200)
-        {
-            messageBox.sizeDelta = new Vector2(messageBox.rect.width, messageContent.Count * 20);
-        }
         showingText.text = showingContent.ToString();
+        showingText.rectTransform.sizeDelta = new Vector2(showingText.rectTransform.rect.width, showingText.preferredHeight);
+        scrollBar.value = 0;
     }
 
     void Update()

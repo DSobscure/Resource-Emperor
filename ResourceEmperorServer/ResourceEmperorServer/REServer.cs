@@ -7,14 +7,15 @@ using ExitGames.Logging.Log4Net;
 using log4net.Config;
 using REProtocol;
 using REStructure;
+using Newtonsoft.Json;
 
 namespace ResourceEmperorServer
 {
     public class REServer : ApplicationBase
     {
-        public static readonly ILogger Log = LogManager.GetCurrentClassLogger();
-        public Dictionary<Guid, REPeer> WandererDictionary;
-        public Dictionary<int, REPlayer> PlayerDictionary;
+        public static readonly ILogger log = LogManager.GetCurrentClassLogger();
+        public Dictionary<Guid, REPeer> wandererDictionary;
+        public Dictionary<int, REPlayer> playerDictionary;
         public REDatabase database;
         public GlobalMap globalMap;
         public string version = "0.0.3";
@@ -37,19 +38,19 @@ namespace ResourceEmperorServer
                 XmlConfigurator.ConfigureAndWatch(file);
             }
 
-            WandererDictionary = new Dictionary<Guid, REPeer>();
-            PlayerDictionary = new Dictionary<int, REPlayer>();
+            wandererDictionary = new Dictionary<Guid, REPeer>();
+            playerDictionary = new Dictionary<int, REPlayer>();
 
-            Log.Info("Server Setup successiful!.......");
+            log.Info("Server Setup successiful!.......");
 
             database = new REDatabase("localhost", "root", "", "resource emperor");
             if (database.Connect())
             {
-                Log.Info("Database Connect successiful!.......");
+                log.Info("Database Connect successiful!.......");
             }
 
             globalMap = new GlobalMap();
-            Log.Info("Global Map Setup successiful!.......");
+            log.Info("Global Map Setup successiful!.......");
         }
 
         protected override void TearDown()
@@ -64,6 +65,41 @@ namespace ResourceEmperorServer
             {
                 peer.SendEvent(eventData, new SendParameters());
             }
+        }
+
+        public bool GetRanking(out Dictionary<string, int> ranking)
+        {
+            if(database.GetRanking(out ranking))
+            {
+                foreach (var player in playerDictionary.Values)
+                {
+                    ranking[player.account] = player.money;
+                }
+                return true;
+            }
+            else
+            {
+                return false;
+            }
+        }
+
+        public void PlayerOnline(REPlayer player)
+        {
+            wandererDictionary.Remove(player.peer.guid);
+            playerDictionary.Add(player.uniqueID, player);
+        }
+
+        public void PlayerOffline(REPlayer player)
+        {
+            playerDictionary.Remove(player.uniqueID);
+            string[] updateItems = { "Inventory", "Appliances", "Money" };
+            object[] updateValues = {
+                    JsonConvert.SerializeObject(player.inventory, new JsonSerializerSettings { TypeNameHandling = TypeNameHandling.Auto }),
+                    JsonConvert.SerializeObject(player.appliances, new JsonSerializerSettings { TypeNameHandling = TypeNameHandling.Auto }),
+                    player.money
+                };
+            string table = "player";
+            database.UpdateDataByUniqueID(player.uniqueID, updateItems, updateValues, table);
         }
     }
 }

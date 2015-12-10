@@ -49,4 +49,11 @@
     {
         Message
     }
+
+    public enum TradeCommodityItem
+    {
+        IsPurchase,
+        CommodityID,
+        Count
+    }
 }

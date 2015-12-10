@@ -79,6 +79,14 @@ public partial class PhotonService : IPhotonPeerListener
                 }
                 break;
             #endregion
+
+            #region market change
+            case (byte)BroadcastType.MarketChange:
+                {
+                    MarketChangeEventTask(eventData);
+                }
+                break;
+            #endregion
         }
     }
 
@@ -162,6 +170,22 @@ public partial class PhotonService : IPhotonPeerListener
             case (byte)OperationType.LeaveMessage:
                 {
                     LeaveMessageTask(operationResponse);
+                }
+                break;
+            #endregion
+
+            #region trade commoduty
+            case (byte)OperationType.TradeCommodity:
+                {
+                    TradeCommodityTask(operationResponse);
+                }
+                break;
+            #endregion
+
+            #region trade commoduty
+            case (byte)OperationType.GetMarket:
+                {
+                    GetMarketTask(operationResponse);
                 }
                 break;
             #endregion

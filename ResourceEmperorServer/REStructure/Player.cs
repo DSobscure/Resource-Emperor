@@ -9,8 +9,22 @@ namespace REStructure
         public int uniqueID { get; protected set; }
         [JsonProperty("account")]
         public string account { get; protected set; }
+        [JsonIgnore]
+        private int _money;
         [JsonProperty("money")]
-        public int money { get; protected set; }
+        public int money
+        {
+            get
+            {
+                return _money;
+            }
+            set
+            {
+                _money = value;
+                if (OnMoneyChange != null)
+                    OnMoneyChange();
+            }
+        }
         public event Action OnMoneyChange;
 
         public Player() { }
@@ -26,8 +40,6 @@ namespace REStructure
             if(this.money >= money)
             {
                 this.money -= money;
-                if (OnMoneyChange != null)
-                    OnMoneyChange();
                 return true;
             }
             else
@@ -39,8 +51,6 @@ namespace REStructure
         public bool GetMoney(int money)
         {
             this.money += money;
-            if (OnMoneyChange != null)
-                OnMoneyChange();
             return true;
         }
     }

@@ -39,4 +39,13 @@
     {
         RankingDataString
     }
+    public enum TradeCommodityResponseItem
+    {
+        InventoryDataString,
+        Money
+    }
+    public enum GetMarketResponseItem
+    {
+        MarketDataString
+    }
 }

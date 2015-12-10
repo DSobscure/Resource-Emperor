@@ -177,4 +177,20 @@ public partial class PhotonService : IPhotonPeerListener
             DebugReturn(DebugLevel.ERROR, operationResponse.DebugMessage);
         }
     }
+    private void TradeCommodityTask(OperationResponse operationResponse)
+    {
+        if (operationResponse.ReturnCode == (short)ErrorType.Correct)
+        {
+            GameGlobal.Inventory.Update(JsonConvert.DeserializeObject<Inventory>((string)operationResponse.Parameters[(byte)TradeCommodityResponseItem.InventoryDataString], new JsonSerializerSettings { TypeNameHandling = TypeNameHandling.Auto }));
+            GameGlobal.Player.money = (int)operationResponse.Parameters[(byte)TradeCommodityResponseItem.Money];
+        }
+    }
+    private void GetMarketTask(OperationResponse operationResponse)
+    {
+        if (operationResponse.ReturnCode == (short)ErrorType.Correct)
+        {
+            if(GameGlobal.Player.Location is Town)
+                (GameGlobal.Player.Location as Town).market.Update(JsonConvert.DeserializeObject<Market>((string)operationResponse.Parameters[(byte)MarketChangeBroadcastItem.MarketDataString], new JsonSerializerSettings { TypeNameHandling = TypeNameHandling.Auto }));
+        }
+    }
 }

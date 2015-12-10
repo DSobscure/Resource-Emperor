@@ -5,7 +5,7 @@ using System.Text;
 
 namespace REProtocol
 {
-    public enum ItemID : ushort
+    public enum ItemID : int
     {
         MaterialBegin = 0,
         Log = 0,

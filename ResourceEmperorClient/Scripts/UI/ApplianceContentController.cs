@@ -78,7 +78,8 @@ public class ApplianceContentController : MonoBehaviour
             ApplianceID id = appliance.id;
             RectTransform applianceButton = Instantiate(applianceButtonPrefab);
             applianceButton.transform.SetParent(applianceSelectPanel);
-            applianceButton.localPosition = new Vector3(xoffset + index%3 * applianceButton.rect.width*2, yoffset - index/3 * applianceButton.rect.height*2);
+            applianceButton.localScale = Vector3.one;
+            applianceButton.localPosition = new Vector3(xoffset + index%3 * applianceButton.rect.width, yoffset - index/3 * applianceButton.rect.height);
             applianceButton.GetComponent<Button>().onClick.AddListener(() => SelectAppliance(id));
             applianceButton.GetChild(0).GetComponent<Text>().text = appliance.name;
             index++;
@@ -99,6 +100,7 @@ public class ApplianceContentController : MonoBehaviour
             ProduceMethodID id = produceMethod.id;
             RectTransform method = Instantiate(methodPrefab);
             method.transform.SetParent(methodPanel);
+            method.localScale = Vector3.one;
             method.localPosition = new Vector3(0f, -index * 30f + methodPanel.rect.height/2 - 15f, 0f);
             method.name = produceMethod.id.ToString();
             method.GetComponent<Button>().onClick.AddListener(() => SelectMethod(id));

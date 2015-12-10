@@ -14,7 +14,7 @@ namespace ResourceEmperorServer
     {
         private bool Login(int playerUniqueID)
         {
-            if (server.WandererDictionary.ContainsKey(guid))
+            if (server.wandererDictionary.ContainsKey(guid))
             {
                 string[] requestItem = new string[4];
                 requestItem[0] = "Account";
@@ -33,8 +33,7 @@ namespace ResourceEmperorServer
                     player = new REPlayer(playerUniqueID, (string)returnData[0], this);
                 }
                 workRoom = new Room("工作小屋");
-                server.WandererDictionary.Remove(guid);
-                server.PlayerDictionary.Add(playerUniqueID, player);
+                server.PlayerOnline(player);
                 return true;
             }
             else
@@ -44,9 +43,9 @@ namespace ResourceEmperorServer
         }
         private bool DisconnectAsWanderer()
         {
-            if (server.WandererDictionary.ContainsKey(guid))
+            if (server.wandererDictionary.ContainsKey(guid))
             {
-                return server.WandererDictionary.Remove(guid);
+                return server.wandererDictionary.Remove(guid);
             }
             else
             {
@@ -55,18 +54,10 @@ namespace ResourceEmperorServer
         }
         private bool DisconnectAsPlayer()
         {
-            if (player != null && server.PlayerDictionary.ContainsKey(player.uniqueID))
+            if (player != null && server.playerDictionary.ContainsKey(player.uniqueID))
             {
                 cancelTokenSource.Cancel();
-                server.PlayerDictionary.Remove(player.uniqueID);
-                string[] updateItems = { "Inventory", "Appliances", "Money" };
-                object[] updateValues = {
-                    JsonConvert.SerializeObject(player.inventory, new JsonSerializerSettings { TypeNameHandling = TypeNameHandling.Auto }),
-                    JsonConvert.SerializeObject(player.appliances, new JsonSerializerSettings { TypeNameHandling = TypeNameHandling.Auto }),
-                    player.money
-                };
-                string table = "player";
-                server.database.UpdateDataByUniqueID(player.uniqueID, updateItems, updateValues, table);
+                server.PlayerOffline(player);
                 return true;
             }
             else
@@ -154,6 +145,19 @@ namespace ResourceEmperorServer
             }
             server.Broadcast(peers.ToArray(), BroadcastType.SendMessage, parameter);
             return true;
+        }
+        private void BroadcastMarketChange()
+        {
+            Dictionary<byte, object> parameter = new Dictionary<byte, object>
+                                        {
+                                            {(byte)MarketChangeBroadcastItem.MarketDataString, JsonConvert.SerializeObject((player.Location as Town).market, new JsonSerializerSettings { TypeNameHandling = TypeNameHandling.Auto }) }
+                                        };
+            List<REPeer> peers = new List<REPeer>();
+            foreach (REPlayer player in player.Location.players)
+            {
+                peers.Add(player.peer);
+            }
+            server.Broadcast(peers.ToArray(), BroadcastType.MarketChange, parameter);
         }
     }
 }

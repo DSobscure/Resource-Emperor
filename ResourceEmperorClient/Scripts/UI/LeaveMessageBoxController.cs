@@ -11,6 +11,8 @@ public class LeaveMessageBoxController : MonoBehaviour
     [SerializeField]
     internal InputField inputMessage;
     private StringBuilder messageContent;
+    [SerializeField]
+    private Scrollbar scrollBar;
 
     void Start ()
     {
@@ -25,5 +27,7 @@ public class LeaveMessageBoxController : MonoBehaviour
     {
         messageContent.AppendLine(message);
         messages.text = messageContent.ToString();
+        messages.rectTransform.sizeDelta = new Vector2(messages.rectTransform.rect.width, messages.preferredHeight);
+        scrollBar.value = 0;
     }
 }

@@ -9,6 +9,8 @@ public class CollectMaterialController : MonoBehaviour
     private InventoryPanelController inventoryPanelController;
     [SerializeField]
     private CollectionButtonController collectionButtonController;
+    [SerializeField]
+    private LeaveMessageBoxController leaveMessageBoxController;
 
     void Start()
     {
@@ -34,6 +36,7 @@ public class CollectMaterialController : MonoBehaviour
         if (status)
         {
             inventoryPanelController.ShowInventory();
+            leaveMessageBoxController.AddMessage(debugMessage);
         }
     }
 }

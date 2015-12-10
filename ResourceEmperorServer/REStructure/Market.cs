@@ -16,9 +16,9 @@ namespace REStructure
             this.catalog = catalog;
         }
 
-        public bool Purchase(int commodityIndex, int count, Player seller, Inventory inventory)
+        public bool Purchase(ItemID commodityID, int count, Player seller, Inventory inventory)
         {
-            if (catalog[commodityIndex].Purchase(count, seller, inventory))
+            if (catalog.Find(x=>x.item.id == commodityID).Purchase(count, seller, inventory))
             {
                 if (OnCommodityChange != null)
                     OnCommodityChange();
@@ -30,9 +30,9 @@ namespace REStructure
             }
         }
 
-        public bool Sell(int commodityIndex, int count, Player seller, Inventory inventory)
+        public bool Sell(ItemID commodityID, int count, Player seller, Inventory inventory)
         {
-            if (catalog[commodityIndex].Sell(count, seller, inventory))
+            if (catalog.Find(x => x.item.id == commodityID).Sell(count, seller, inventory))
             {
                 if (OnCommodityChange != null)
                     OnCommodityChange();
@@ -42,6 +42,13 @@ namespace REStructure
             {
                 return false;
             }
+        }
+
+        public void Update(Market markey)
+        {
+            catalog = markey.catalog;
+            if (OnCommodityChange != null)
+                OnCommodityChange();
         }
     }
 }

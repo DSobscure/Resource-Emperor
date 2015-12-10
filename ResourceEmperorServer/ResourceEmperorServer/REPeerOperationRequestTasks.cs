@@ -33,7 +33,7 @@ namespace ResourceEmperorServer
                 int playerUniqueID;
                 if (server.database.LoginCheck(account, password, out playerUniqueID))
                 {
-                    if (!server.PlayerDictionary.ContainsKey(playerUniqueID))
+                    if (!server.playerDictionary.ContainsKey(playerUniqueID))
                     {
                         if (Login(playerUniqueID))
                         {
@@ -89,7 +89,7 @@ namespace ResourceEmperorServer
             Inventory inventory = JsonConvert.DeserializeObject<Inventory>((string)operationRequest.Parameters[0], new JsonSerializerSettings { TypeNameHandling = TypeNameHandling.Auto });
             foreach (Item item in inventory)
             {
-                REServer.Log.Info(item.id + " " + item.name + " " + item.description + " " + item.itemCount);
+                REServer.log.Info(item.id + " " + item.name + " " + item.description + " " + item.itemCount);
             }
         }
         private async void ProduceTask(OperationRequest operationRequest)
@@ -336,9 +336,15 @@ namespace ResourceEmperorServer
                     if(resourcePoint.collectionList.ContainsKey(method) && resourcePoint.ToolCheck(method,tool))
                     {
                         Item material =  resourcePoint.Collect(method, tool);
+                        string resultMessage = null;
                         if(material != null)
                         {
                             player.inventory.Stack(material);
+                            resultMessage = "採集到了" + material.itemCount.ToString() + "個" + material.name;
+                        }
+                        else
+                        {
+                            resultMessage = "什麼都沒有採到";
                         }
                         Dictionary<byte, object> parameter = new Dictionary<byte, object>
                         {
@@ -347,7 +353,7 @@ namespace ResourceEmperorServer
                         OperationResponse response = new OperationResponse(operationRequest.OperationCode, parameter)
                         {
                             ReturnCode = (short)ErrorType.Correct,
-                            DebugMessage = ""
+                            DebugMessage = resultMessage
                         };
                         SendOperationResponse(response, new SendParameters());
                     }
@@ -422,7 +428,7 @@ namespace ResourceEmperorServer
             else
             {
                 Dictionary<string, int> ranking;
-                if (server.database.GetRanking(out ranking))
+                if (server.GetRanking(out ranking))
                 {
                     Dictionary<byte, object> parameter = new Dictionary<byte, object>
                     {
@@ -491,6 +497,105 @@ namespace ResourceEmperorServer
                     this.SendOperationResponse(response, new SendParameters());
                 }
             }
+        }
+        private void TradeCommodityTask(OperationRequest operationRequest)
+        {
+            if (operationRequest.Parameters.Count != 3)
+            {
+                OperationResponse response = new OperationResponse(operationRequest.OperationCode)
+                {
+                    ReturnCode = (short)ErrorType.InvalidParameter,
+                    DebugMessage = "TradeCommodityTask Parameter Error"
+                };
+                this.SendOperationResponse(response, new SendParameters());
+            }
+            else
+            {
+                bool isPurchase = (bool)operationRequest.Parameters[(byte)TradeCommodityItem.IsPurchase];
+                ItemID commodityID = (ItemID)(int)operationRequest.Parameters[(byte)TradeCommodityItem.CommodityID];
+                int stock = (int)operationRequest.Parameters[(byte)TradeCommodityItem.Count];
+
+                if (player.Location is Town)
+                {
+                    Market market = (player.Location as Town).market;
+                    if (isPurchase)
+                    {
+                        if(market.Purchase(commodityID, stock, player, player.inventory))
+                        {
+                            Dictionary<byte, object> parameter = new Dictionary<byte, object>
+                            {
+                                {(byte)TradeCommodityResponseItem.InventoryDataString, JsonConvert.SerializeObject(player.inventory,new JsonSerializerSettings { TypeNameHandling = TypeNameHandling.Auto })},
+                                {(byte)TradeCommodityResponseItem.Money, player.money}
+                            };
+                            OperationResponse response = new OperationResponse(operationRequest.OperationCode, parameter)
+                            {
+                                ReturnCode = (short)ErrorType.Correct,
+                                DebugMessage = ""
+                            };
+                            SendOperationResponse(response, new SendParameters());
+                            BroadcastMarketChange();
+                        }
+                        else
+                        {
+                            OperationResponse response = new OperationResponse(operationRequest.OperationCode)
+                            {
+                                ReturnCode = (short)ErrorType.InvalidOperation,
+                                DebugMessage = "you can't buy this"
+                            };
+                            SendOperationResponse(response, new SendParameters());
+                        }
+                    }
+                    else
+                    {
+                        if (market.Sell(commodityID, stock, player, player.inventory))
+                        {
+                            Dictionary<byte, object> parameter = new Dictionary<byte, object>
+                            {
+                                {(byte)TradeCommodityResponseItem.InventoryDataString, JsonConvert.SerializeObject(player.inventory,new JsonSerializerSettings { TypeNameHandling = TypeNameHandling.Auto })},
+                                {(byte)TradeCommodityResponseItem.Money, player.money}
+                            };
+                            OperationResponse response = new OperationResponse(operationRequest.OperationCode, parameter)
+                            {
+                                ReturnCode = (short)ErrorType.Correct,
+                                DebugMessage = ""
+                            };
+                            SendOperationResponse(response, new SendParameters());
+                            BroadcastMarketChange();
+                        }
+                        else
+                        {
+                            OperationResponse response = new OperationResponse(operationRequest.OperationCode)
+                            {
+                                ReturnCode = (short)ErrorType.InvalidOperation,
+                                DebugMessage = "you can't sell this"
+                            };
+                            SendOperationResponse(response, new SendParameters());
+                        }
+                    }
+                }
+                else
+                {
+                    OperationResponse response = new OperationResponse(operationRequest.OperationCode)
+                    {
+                        ReturnCode = (short)ErrorType.InvalidOperation,
+                        DebugMessage = "here can't trade commodity"
+                    };
+                    this.SendOperationResponse(response, new SendParameters());
+                }
+            }
+        }
+        private void GetMarketTask(OperationRequest operationRequest)
+        {
+            Dictionary<byte, object> parameter = new Dictionary<byte, object>
+                            {
+                                {(byte)GetMarketResponseItem.MarketDataString, JsonConvert.SerializeObject((player.Location as Town).market ,new JsonSerializerSettings { TypeNameHandling = TypeNameHandling.Auto })},
+                            };
+            OperationResponse response = new OperationResponse(operationRequest.OperationCode, parameter)
+            {
+                ReturnCode = (short)ErrorType.Correct,
+                DebugMessage = ""
+            };
+            SendOperationResponse(response, new SendParameters());
         }
     }
 }

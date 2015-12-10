@@ -20,10 +20,6 @@ public class MarketPanelController : MonoBehaviour
     [SerializeField]
     private Scrollbar commodityScrollbar;
 
-    void Awake()
-    {
-        Application.targetFrameRate = 50;
-    }
     // Use this for initialization
     void Start ()
     {
@@ -50,15 +46,16 @@ public class MarketPanelController : MonoBehaviour
         {
             if(selectedType.IsInstanceOfType(commodity.item))
             {
-                int targetIndex = index;
+                ItemID targetID = commodity.item.id;
                 RectTransform commodityUI = Instantiate(commodityUIPrefab);
                 commodityUI.transform.SetParent(marketContentPanel);
+                commodityUI.localScale = Vector3.one;
                 commodityUI.localPosition = commodityUIOffset + new Vector2(0, - index * (commodityUI.rect.height+10f));
                 commodityUI.GetChild(0).GetComponent<Text>().text = commodity.item.name;
                 commodityUI.GetChild(2).GetComponent<Text>().text = commodity.stock.ToString() + "/" + commodity.maxStock.ToString();
                 commodityUI.GetChild(4).GetComponent<Text>().text = commodity.price.ToString();
-                commodityUI.GetChild(5).GetComponent<Button>().onClick.AddListener(()=> market.Purchase(targetIndex, 1, GameGlobal.Player, GameGlobal.Inventory));
-                commodityUI.GetChild(6).GetComponent<Button>().onClick.AddListener(() => market.Sell(targetIndex, 1, GameGlobal.Player, GameGlobal.Inventory));
+                commodityUI.GetChild(5).GetComponent<Button>().onClick.AddListener(()=> PhotonGlobal.PS.PurchaseCommodity(targetID, 1));
+                commodityUI.GetChild(6).GetComponent<Button>().onClick.AddListener(() => PhotonGlobal.PS.SellCommodity(targetID, 1));
                 index++;
             }
         }

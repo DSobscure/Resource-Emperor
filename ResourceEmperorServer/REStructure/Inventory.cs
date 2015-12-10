@@ -216,5 +216,12 @@ namespace REStructure
                 OnItemChange();
             return true;
         }
+        public void Update(Inventory inventory)
+        {
+            items = inventory.items;
+            maxCount = inventory.maxCount;
+            if (OnItemChange != null)
+                OnItemChange();
+    }
     }
 }

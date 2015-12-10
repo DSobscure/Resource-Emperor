@@ -180,4 +180,50 @@ public partial class PhotonService : IPhotonPeerListener
             throw EX;
         }
     }
+    public void PurchaseCommodity(ItemID commodityID, int count)
+    {
+        try
+        {
+            var parameter = new Dictionary<byte, object> {
+                             { (byte)TradeCommodityItem.IsPurchase, true},
+                             { (byte)TradeCommodityItem.CommodityID, (int)commodityID},
+                             { (byte)TradeCommodityItem.Count, count}
+                        };
+
+            this.peer.OpCustom((byte)OperationType.TradeCommodity, parameter, true, 0, true);
+        }
+        catch (Exception EX)
+        {
+            throw EX;
+        }
+    }
+    public void SellCommodity(ItemID commodityID, int count)
+    {
+        try
+        {
+            var parameter = new Dictionary<byte, object> {
+                             { (byte)TradeCommodityItem.IsPurchase, false},
+                             { (byte)TradeCommodityItem.CommodityID, (int)commodityID},
+                             { (byte)TradeCommodityItem.Count, count}
+                        };
+
+            this.peer.OpCustom((byte)OperationType.TradeCommodity, parameter, true, 0, true);
+        }
+        catch (Exception EX)
+        {
+            throw EX;
+        }
+    }
+    public void GetMarket()
+    {
+        try
+        {
+            var parameter = new Dictionary<byte, object>();
+            this.peer.OpCustom((byte)OperationType.GetMarket, parameter, true, 0, true);
+        }
+        catch (Exception EX)
+        {
+            throw EX;
+        }
+    }
 }

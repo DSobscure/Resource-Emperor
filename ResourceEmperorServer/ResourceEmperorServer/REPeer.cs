@@ -21,7 +21,7 @@ namespace ResourceEmperorServer
         {
             guid = Guid.NewGuid();
             server = serverApplication;
-            server.WandererDictionary.Add(guid, this);
+            server.wandererDictionary.Add(guid, this);
         }
 
         protected override void OnDisconnect(DisconnectReason reasonCode, string reasonDetail)
@@ -30,25 +30,25 @@ namespace ResourceEmperorServer
             {
                 if (!DisconnectAsPlayer())
                 {
-                    REServer.Log.Info("Disconnect Error because we don't know what is the target");
+                    REServer.log.Info("Disconnect Error because we don't know what is the target");
                 }
                 else
                 {
-                    REServer.Log.Info(player.account + ": Disconnet");
+                    REServer.log.Info(player.account + ": Disconnet");
                 }
             }
             else
             {
-                REServer.Log.Info(guid+": Disconnet");
+                REServer.log.Info(guid+": Disconnet");
             }
         }
 
         protected override void OnOperationRequest(OperationRequest operationRequest, SendParameters sendParameters)
         {
             if(player == null)
-                REServer.Log.Info(guid + ":"+((OperationType)operationRequest.OperationCode).ToString());
+                REServer.log.Info(guid + ":"+((OperationType)operationRequest.OperationCode).ToString());
             else
-                REServer.Log.Info(player.account + ":" + ((OperationType)operationRequest.OperationCode).ToString());
+                REServer.log.Info(player.account + ":" + ((OperationType)operationRequest.OperationCode).ToString());
             switch (operationRequest.OperationCode)
             {
                 #region test
@@ -143,6 +143,22 @@ namespace ResourceEmperorServer
                 case (byte)OperationType.LeaveMessage:
                     {
                         LeaveMessageTask(operationRequest);
+                    }
+                    break;
+                #endregion
+
+                #region trade commodity
+                case (byte)OperationType.TradeCommodity:
+                    {
+                        TradeCommodityTask(operationRequest);
+                    }
+                    break;
+                #endregion
+
+                #region get market
+                case (byte)OperationType.GetMarket:
+                    {
+                        GetMarketTask(operationRequest);
                     }
                     break;
                 #endregion

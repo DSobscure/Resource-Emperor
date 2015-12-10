@@ -5,6 +5,7 @@ using REProtocol;
 using REStructure;
 using REStructure.Items;
 using Newtonsoft.Json;
+using REStructure.Scenes;
 
 public partial class PhotonService : IPhotonPeerListener
 {
@@ -23,6 +24,13 @@ public partial class PhotonService : IPhotonPeerListener
         else
         {
             SendMessageEvent(false, "SendMessageEventTask parameter error", "", "");
+        }
+    }
+    private void MarketChangeEventTask(EventData eventData)
+    {
+        if (GameGlobal.Player.Location is Town && eventData.Parameters.Count == 1)
+        {
+            (GameGlobal.Player.Location as Town).market.Update(JsonConvert.DeserializeObject<Market>((string)eventData.Parameters[(byte)MarketChangeBroadcastItem.MarketDataString], new JsonSerializerSettings { TypeNameHandling = TypeNameHandling.Auto }));
         }
     }
 }

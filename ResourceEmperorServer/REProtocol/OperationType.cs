@@ -14,6 +14,9 @@
         CollectMaterial,
         SendMessage,
         GetRanking,
-        LeaveMessage
+        LeaveMessage,
+        PurchaseCommodity,
+        TradeCommodity,
+        GetMarket
     }
 }
