@@ -16,7 +16,7 @@ namespace ResourceEmperorServer
     {
         private void LoginTask(OperationRequest operationRequest)
         {
-            if (operationRequest.Parameters.Count != 2)
+            if (operationRequest.Parameters.Count != 3)
             {
                 OperationResponse response = new OperationResponse(operationRequest.OperationCode)
                 {
@@ -29,9 +29,11 @@ namespace ResourceEmperorServer
             {
                 string account = (string)operationRequest.Parameters[(byte)LoginParameterItem.Account];
                 string password = (string)operationRequest.Parameters[(byte)LoginParameterItem.Password];
+                string version = (string)operationRequest.Parameters[(byte)LoginParameterItem.Version];
 
                 int playerUniqueID;
-                if (server.database.LoginCheck(account, password, out playerUniqueID))
+
+                if (server.version == version && server.database.LoginCheck(account, password, out playerUniqueID))
                 {
                     if (!server.playerDictionary.ContainsKey(playerUniqueID))
                     {
@@ -39,7 +41,6 @@ namespace ResourceEmperorServer
                         {
                             Dictionary<byte, object> parameter = new Dictionary<byte, object>
                                         {
-                                            {(byte)LoginResponseItem.Version, server.version },
                                             {(byte)LoginResponseItem.PlayerDataString,JsonConvert.SerializeObject(player.Serialize(),new JsonSerializerSettings { TypeNameHandling = TypeNameHandling.Auto })},
                                             {(byte)LoginResponseItem.InventoryDataString,JsonConvert.SerializeObject(player.inventory,new JsonSerializerSettings { TypeNameHandling = TypeNameHandling.Auto })},
                                             {(byte)LoginResponseItem.AppliancesDataString,JsonConvert.SerializeObject(player.appliances,new JsonSerializerSettings { TypeNameHandling = TypeNameHandling.Auto })},
@@ -72,6 +73,15 @@ namespace ResourceEmperorServer
                         };
                         SendOperationResponse(response, new SendParameters());
                     }
+                }
+                else if(server.version != version)
+                {
+                    OperationResponse response = new OperationResponse(operationRequest.OperationCode)
+                    {
+                        ReturnCode = (short)ErrorType.InvalidOperation,
+                        DebugMessage = "請下載最新的版本" + server.version
+                    };
+                    SendOperationResponse(response, new SendParameters());
                 }
                 else
                 {
@@ -540,7 +550,7 @@ namespace ResourceEmperorServer
                             OperationResponse response = new OperationResponse(operationRequest.OperationCode)
                             {
                                 ReturnCode = (short)ErrorType.InvalidOperation,
-                                DebugMessage = "you can't buy this"
+                                DebugMessage = "你不能買這個"
                             };
                             SendOperationResponse(response, new SendParameters());
                         }
@@ -567,7 +577,7 @@ namespace ResourceEmperorServer
                             OperationResponse response = new OperationResponse(operationRequest.OperationCode)
                             {
                                 ReturnCode = (short)ErrorType.InvalidOperation,
-                                DebugMessage = "you can't sell this"
+                                DebugMessage = "你不能賣這個"
                             };
                             SendOperationResponse(response, new SendParameters());
                         }

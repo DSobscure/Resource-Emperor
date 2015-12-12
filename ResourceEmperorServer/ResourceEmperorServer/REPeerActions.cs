@@ -121,7 +121,7 @@ namespace ResourceEmperorServer
                 OperationResponse response = new OperationResponse(operationCode)
                 {
                     ReturnCode = (short)ErrorType.Canceled,
-                    DebugMessage = ""
+                    DebugMessage = "工作已經消了"
                 };
                 SendOperationResponse(response, new SendParameters());
             }

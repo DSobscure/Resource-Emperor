@@ -2,7 +2,6 @@
 {
     public enum LoginResponseItem
     {
-        Version,
         PlayerDataString,
         InventoryDataString,
         AppliancesDataString,

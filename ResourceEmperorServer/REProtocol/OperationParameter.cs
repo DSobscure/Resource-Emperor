@@ -3,7 +3,8 @@
     public enum LoginParameterItem
     {
         Account,
-        Password
+        Password,
+        Version
     }
 
     public enum GetMaterialParameterItem

@@ -8,6 +8,7 @@ using log4net.Config;
 using REProtocol;
 using REStructure;
 using Newtonsoft.Json;
+using System.Linq;
 
 namespace ResourceEmperorServer
 {
@@ -75,6 +76,7 @@ namespace ResourceEmperorServer
                 {
                     ranking[player.account] = player.money;
                 }
+                ranking = ranking.OrderBy(x=>x.Value).Reverse().ToDictionary(x => x.Key, x => x.Value); ;
                 return true;
             }
             else
