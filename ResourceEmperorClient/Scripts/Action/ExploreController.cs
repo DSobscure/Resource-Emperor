@@ -10,11 +10,11 @@ public class ExploreController : MonoBehaviour
 
     void Start()
     {
-        PhotonGlobal.PS.ExploreEvent += ExploreEventAction;
+        PhotonGlobal.PS.OnExploreResponse += ExploreEventAction;
     }
     void OnDestroy()
     {
-        PhotonGlobal.PS.ExploreEvent -= ExploreEventAction;
+        PhotonGlobal.PS.OnExploreResponse -= ExploreEventAction;
     }
 
     public void Explorer()
@@ -25,7 +25,7 @@ public class ExploreController : MonoBehaviour
         }
     }
 
-    private void ExploreEventAction(bool status, string debugMessage, List<Pathway> paths)
+    private void ExploreEventAction(bool status, List<Pathway> paths)
     {
         if (status)
         {
@@ -42,7 +42,5 @@ public class ExploreController : MonoBehaviour
                 explorePanelController.ShowPathways();
             }
         }
-        else
-            Debug.Log(debugMessage);
     }
 }

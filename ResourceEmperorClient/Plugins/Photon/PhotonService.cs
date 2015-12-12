@@ -9,13 +9,12 @@ public partial class PhotonService : IPhotonPeerListener
 {
     public PhotonPeer peer { get; protected set; }
     public bool ServerConnected { get; protected set; }
-    public string DebugMessage { get; protected set; }
+    private string debugMessage;
 
     public PhotonService()
     {
         peer = null;
         ServerConnected = false;
-        DebugMessage = "";
     }
 
     public void Connect(string ip, int port, string serverNmae)
@@ -26,13 +25,14 @@ public partial class PhotonService : IPhotonPeerListener
             peer = new PhotonPeer(this, ConnectionProtocol.Udp);
             if (!peer.Connect(serverAddress, serverNmae))
             {
-                ConnectEvent(false);
+                OnConnectResponse(false);
             }
         }
-        catch (Exception EX)
+        catch (Exception ex)
         {
-            ConnectEvent(false);
-            throw EX;
+            OnConnectResponse(false);
+            DebugReturn(DebugLevel.ERROR, ex.Message);
+            DebugReturn(DebugLevel.ERROR, ex.StackTrace);
         }
     }
 
@@ -40,12 +40,12 @@ public partial class PhotonService : IPhotonPeerListener
     {
         try
         {
-            if (peer != null)
-                peer.Disconnect();
+            peer.Disconnect();
         }
-        catch (Exception EX)
+        catch (Exception ex)
         {
-            throw EX;
+            DebugReturn(DebugLevel.ERROR, ex.Message);
+            DebugReturn(DebugLevel.ERROR, ex.StackTrace);
         }
     }
 
@@ -53,19 +53,13 @@ public partial class PhotonService : IPhotonPeerListener
     {
         try
         {
-            if (peer != null)
-                peer.Service();
+            peer.Service();
         }
-        catch (Exception EX)
+        catch (Exception ex)
         {
-            throw EX;
+            DebugReturn(DebugLevel.ERROR, ex.Message);
+            DebugReturn(DebugLevel.ERROR, ex.StackTrace);
         }
-    }
-
-
-    public void DebugReturn(DebugLevel level, string message)
-    {
-        DebugMessage = message;
     }
 
     public void OnEvent(EventData eventData)
@@ -94,101 +88,53 @@ public partial class PhotonService : IPhotonPeerListener
     {
         switch (operationResponse.OperationCode)
         {
-            #region login
             case (byte)OperationType.Login:
-                {
-                    LoginTask(operationResponse);
-                }
+                LoginResponseTask(operationResponse);
                 break;
-            #endregion
 
-            #region produce
             case (byte)OperationType.Produce:
-                {
-                    ProduceTask(operationResponse);
-                }
+                ProduceResponseTask(operationResponse);
                 break;
-            #endregion
 
-            #region produce
             case (byte)OperationType.DiscardItem:
-                {
-                    DiscardItemTask(operationResponse);
-                }
+                DiscardItemResponseTask(operationResponse);
                 break;
-            #endregion
 
-            #region go to scene
             case (byte)OperationType.GoToScene:
-                {
-                    GoToSceneTask(operationResponse);
-                }
+                GoToSceneResponseTask(operationResponse);
                 break;
-            #endregion
 
-            #region walk path
             case (byte)OperationType.WalkPath:
-                {
-                    WalkPathTask(operationResponse);
-                }
+                WalkPathResponseTask(operationResponse);
                 break;
-            #endregion
 
-            #region explore
             case (byte)OperationType.Explore:
-                {
-                    ExploreTask(operationResponse);
-                }
+                ExploreResponseTask(operationResponse);
                 break;
-            #endregion
 
-            #region collect material
             case (byte)OperationType.CollectMaterial:
-                {
-                    CollectMaterialTask(operationResponse);
-                }
+                CollectMaterialResponseTask(operationResponse);
                 break;
-            #endregion
 
-            #region send message
             case (byte)OperationType.SendMessage:
-                {
-                    SendMessageTask(operationResponse);
-                }
+                SendMessageResponseTask(operationResponse);
                 break;
-            #endregion
 
-            #region get ranking
             case (byte)OperationType.GetRanking:
-                {
-                    GetRankingTask(operationResponse);
-                }
+                GetRankingResponseTask(operationResponse);
                 break;
-            #endregion
 
-            #region send message
             case (byte)OperationType.LeaveMessage:
-                {
-                    LeaveMessageTask(operationResponse);
-                }
+                LeaveMessageResponseTask(operationResponse);
                 break;
-            #endregion
 
-            #region trade commoduty
             case (byte)OperationType.TradeCommodity:
-                {
-                    TradeCommodityTask(operationResponse);
-                }
+                TradeCommodityResponseTask(operationResponse);
                 break;
-            #endregion
 
-            #region trade commoduty
             case (byte)OperationType.GetMarket:
-                {
-                    GetMarketTask(operationResponse);
-                }
+                GetMarketResponseTask(operationResponse);
                 break;
-            #endregion
         }
     }
 
@@ -202,12 +148,18 @@ public partial class PhotonService : IPhotonPeerListener
             case StatusCode.Disconnect:
                 peer = null;
                 ServerConnected = false;
-                ConnectEvent(false);
+                OnConnectResponse(false);
                 break;
             case StatusCode.EncryptionEstablished:
                 ServerConnected = true;
-                ConnectEvent(true);
+                OnConnectResponse(true);
                 break;
         }
+    }
+
+    public void DebugReturn(DebugLevel level, string message)
+    {
+        if (OnDebugReturn != null)
+            OnDebugReturn(message);
     }
 }

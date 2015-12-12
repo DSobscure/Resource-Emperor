@@ -4,193 +4,368 @@ using REProtocol;
 using REStructure;
 using Newtonsoft.Json;
 using REStructure.Scenes;
+using System;
 
 public partial class PhotonService : IPhotonPeerListener
 {
-    private void LoginTask(OperationResponse operationResponse)
+    private void LoginResponseTask(OperationResponse operationResponse)
     {
-        if (operationResponse.ReturnCode == (short)ErrorType.Correct)
+        try
         {
-            string version = (string)operationResponse.Parameters[(byte)LoginResponseItem.Version];
-            if(version != GameGlobal.version)
+            if (operationResponse.ReturnCode == (short)ErrorType.Correct)
             {
-                LoginEvent(false, "請下載最新版本: "+version, null, null, null);
-            }
-            LoginEvent
-            (
-                status: true,
-                debugMessage: "",
-                player: JsonConvert.DeserializeObject<Player>((string)operationResponse.Parameters[(byte)LoginResponseItem.PlayerDataString], new JsonSerializerSettings { TypeNameHandling = TypeNameHandling.Auto }),
-                inventory: JsonConvert.DeserializeObject<Inventory>((string)operationResponse.Parameters[(byte)LoginResponseItem.InventoryDataString], new JsonSerializerSettings { TypeNameHandling = TypeNameHandling.Auto }),
-                appliances: JsonConvert.DeserializeObject<Dictionary<ApplianceID, Appliance>>((string)operationResponse.Parameters[(byte)LoginResponseItem.AppliancesDataString], new JsonSerializerSettings { TypeNameHandling = TypeNameHandling.Auto })
-            );
-        }
-        else
-        {
-            DebugReturn(0, operationResponse.DebugMessage);
-            LoginEvent(false, operationResponse.DebugMessage, null, null, null);
-        }
-    }
-    private void ProduceTask(OperationResponse operationResponse)
-    {
-        if (operationResponse.ReturnCode == (short)ErrorType.Correct)
-        {
-            ApplianceID applianceID = (ApplianceID)operationResponse.Parameters[(byte)ProduceResponseItem.ApplianceID];
-            ProduceMethodID produceMethodID = (ProduceMethodID)operationResponse.Parameters[(byte)ProduceResponseItem.ProduceMethodID];
-            ProduceEvent(true, operationResponse.DebugMessage, applianceID, produceMethodID);
-        }
-        else if (operationResponse.ReturnCode == (short)ErrorType.Canceled)
-        {
-            ProduceEvent(false, operationResponse.DebugMessage, 0, 0);
-        }
-        else
-        {
-            DebugReturn(0, operationResponse.DebugMessage);
-            ProduceEvent(false, operationResponse.DebugMessage, 0, 0);
-        }
-    }
-    private void DiscardItemTask(OperationResponse operationResponse)
-    {
-        if (operationResponse.ReturnCode == (short)ErrorType.Correct)
-        {
-            ItemID itemID = (ItemID)operationResponse.Parameters[(byte)DiscardItemResponseItem.ItemID];
-            int itemCount = (int)operationResponse.Parameters[(byte)DiscardItemResponseItem.ItemCount];
-            DiscardItemEvent(true, operationResponse.DebugMessage, itemID, itemCount);
-        }
-        else
-        {
-            DebugReturn(0, operationResponse.DebugMessage);
-            DiscardItemEvent(false, operationResponse.DebugMessage, 0, 0);
-        }
-    }
-    private void GoToSceneTask(OperationResponse operationResponse)
-    {
-        if (operationResponse.ReturnCode == (short)ErrorType.Correct)
-        {
-            int targetSceneID = (int)operationResponse.Parameters[(byte)GoToSceneResponseItem.TargetSceneID];
-            if(GameGlobal.GlobalMap.scenes.ContainsKey(targetSceneID))
-            {
-                GoToSceneEvent(true, operationResponse.DebugMessage, GameGlobal.GlobalMap.scenes[targetSceneID]);
-            }
-            else if(targetSceneID == -1)
-            {
-                GoToSceneEvent(true, operationResponse.DebugMessage, new Room("WorkRoomScene"));
+                Player player = JsonConvert.DeserializeObject<Player>((string)operationResponse.Parameters[(byte)LoginResponseItem.PlayerDataString], new JsonSerializerSettings { TypeNameHandling = TypeNameHandling.Auto });
+                Inventory inventory = JsonConvert.DeserializeObject<Inventory>((string)operationResponse.Parameters[(byte)LoginResponseItem.InventoryDataString], new JsonSerializerSettings { TypeNameHandling = TypeNameHandling.Auto });
+                Dictionary<ApplianceID, Appliance> appliances = JsonConvert.DeserializeObject<Dictionary<ApplianceID, Appliance>>((string)operationResponse.Parameters[(byte)LoginResponseItem.AppliancesDataString], new JsonSerializerSettings { TypeNameHandling = TypeNameHandling.Auto });
+
+                GameGlobal.LoginStatus = true;
+                GameGlobal.Player = new ClientPlayer(player);
+                GameGlobal.Inventory = inventory;
+                GameGlobal.Appliances = appliances;
+                GameGlobal.GlobalMap = new GlobalMap();
+                GameGlobal.Player.Location = new Room("WorkRoomScene");
+                if (OnLoginResponse != null)
+                    OnLoginResponse(true);
             }
             else
             {
-                DebugReturn(0, operationResponse.DebugMessage);
-                GoToSceneEvent(false, "目標場景不存在", null);
+                GameGlobal.LoginStatus = false;
+                if (OnAlert != null)
+                    OnAlert(operationResponse.DebugMessage);
+                if (OnLoginResponse != null)
+                    OnLoginResponse(false);
             }
         }
-        else
+        catch(Exception ex)
         {
-            DebugReturn(0, operationResponse.DebugMessage);
-            GoToSceneEvent(false, operationResponse.DebugMessage,null);
+            throw ex;
         }
     }
-    private void WalkPathTask(OperationResponse operationResponse)
+    private void ProduceResponseTask(OperationResponse operationResponse)
     {
-        if (operationResponse.ReturnCode == (short)ErrorType.Correct)
+        try
         {
-            int pathID = (int)operationResponse.Parameters[(byte)WalkPathResponseItem.PathID];
-            int targetScene = (int)operationResponse.Parameters[(byte)WalkPathResponseItem.TargetSceneID];
-            if(GameGlobal.GlobalMap.paths.ContainsKey(pathID) && GameGlobal.GlobalMap.scenes.ContainsKey(targetScene))
+            GameGlobal.Player.IsWorking = false;
+            if (operationResponse.ReturnCode == (short)ErrorType.Correct)
             {
-                if(GameGlobal.GlobalMap.scenes[targetScene] is Wilderness)
+                ApplianceID applianceID = (ApplianceID)operationResponse.Parameters[(byte)ProduceResponseItem.ApplianceID];
+                ProduceMethodID produceMethodID = (ProduceMethodID)operationResponse.Parameters[(byte)ProduceResponseItem.ProduceMethodID];
+                ApplianceID selectedApplianceID = applianceID;
+                bool isNewAppliance = false;
+
+                if (GameGlobal.Appliances.ContainsKey(applianceID) && GameGlobal.Appliances[applianceID].methods.ContainsKey(produceMethodID))
                 {
-                    List<string> messages = JsonConvert.DeserializeObject<List<string>>((string)operationResponse.Parameters[(byte)WalkPathResponseItem.Messages]);
-                    WalkPathEvent(true, operationResponse.DebugMessage, GameGlobal.GlobalMap.paths[pathID], GameGlobal.GlobalMap.scenes[targetScene], messages);
+                    object[] results;
+                    Appliance appliance = GameGlobal.Appliances[applianceID];
+                    ProduceMethod produceMethod = appliance.methods[produceMethodID];
+                    
+                    if (produceMethod.Process(GameGlobal.Inventory, out results))
+                    {
+                        foreach (object result in results)
+                        {
+                            if (result is Item)
+                            {
+                                Item item = result as Item;
+                                GameGlobal.Inventory.Stack(item);
+                            }
+                            else if (result is Appliance)
+                            {
+                                Appliance newAppliance = result as Appliance;
+                                if (!GameGlobal.Appliances.ContainsKey(newAppliance.id))
+                                {
+                                    if (appliance is IUpgradable)
+                                    {
+                                        IUpgradable target = appliance as IUpgradable;
+                                        if (target.UpgradeCheck(newAppliance))
+                                        {
+                                            GameGlobal.Appliances.Remove(appliance.id);
+                                            GameGlobal.Appliances.Add(newAppliance.id, newAppliance);
+                                        }
+                                        else
+                                        {
+                                            GameGlobal.Appliances.Add(newAppliance.id, newAppliance);
+                                        }
+                                    }
+                                    else
+                                    {
+                                        GameGlobal.Appliances.Add(newAppliance.id, newAppliance);
+                                    }
+                                }
+                                selectedApplianceID = newAppliance.id;
+                                isNewAppliance = true;
+                            }
+                        }
+                    }
+                }
+
+                if (OnProduceResponse != null)
+                    OnProduceResponse(true, applianceID, produceMethodID, selectedApplianceID, isNewAppliance);
+            }
+            else
+            {
+                if (OnAlert != null)
+                    OnAlert(operationResponse.DebugMessage);
+                if (OnProduceResponse != null)
+                    OnProduceResponse(false, 0, 0, 0, false);
+            }
+        }
+        catch(Exception ex)
+        {
+            throw ex;
+        }
+    }
+    private void DiscardItemResponseTask(OperationResponse operationResponse)
+    {
+        try
+        {
+            if (operationResponse.ReturnCode == (short)ErrorType.Correct)
+            {
+                ItemID itemID = (ItemID)operationResponse.Parameters[(byte)DiscardItemResponseItem.ItemID];
+                int itemCount = (int)operationResponse.Parameters[(byte)DiscardItemResponseItem.ItemCount];
+                if(OnDiscardItemResponse != null)
+                    OnDiscardItemResponse(true, itemID, itemCount);
+            }
+            else
+            {
+                if (OnAlert != null)
+                    OnAlert(operationResponse.DebugMessage);
+                if (OnDiscardItemResponse != null)
+                    OnDiscardItemResponse(false, 0, 0);
+            }
+        }
+        catch (Exception ex)
+        {
+            DebugReturn(DebugLevel.ERROR, ex.Message);
+            DebugReturn(DebugLevel.ERROR, ex.StackTrace);
+        }
+    }
+    private void GoToSceneResponseTask(OperationResponse operationResponse)
+    {
+        try
+        {
+            if (operationResponse.ReturnCode == (short)ErrorType.Correct)
+            {
+                int targetSceneID = (int)operationResponse.Parameters[(byte)GoToSceneResponseItem.TargetSceneID];
+                if (GameGlobal.GlobalMap.scenes.ContainsKey(targetSceneID))
+                {
+                    if (OnGoToSceneResponse != null)
+                        OnGoToSceneResponse(true, GameGlobal.GlobalMap.scenes[targetSceneID]);
+                }
+                else if (targetSceneID == -1)
+                {
+                    if (OnGoToSceneResponse != null)
+                        OnGoToSceneResponse(true, new Room("WorkRoomScene"));
                 }
                 else
                 {
-                    WalkPathEvent(true, operationResponse.DebugMessage, GameGlobal.GlobalMap.paths[pathID], GameGlobal.GlobalMap.scenes[targetScene], null);
+                    if (OnAlert != null)
+                        OnAlert(operationResponse.DebugMessage);
+                    if (OnGoToSceneResponse != null)
+                        OnGoToSceneResponse(false, null);
                 }
             }
             else
             {
-                DebugReturn(0, operationResponse.DebugMessage);
-                WalkPathEvent(false, "target scene not in global map", null, null, null);
+                if (OnAlert != null)
+                    OnAlert(operationResponse.DebugMessage);
+                if (OnGoToSceneResponse != null)
+                    OnGoToSceneResponse(false, null);
             }
         }
-        else
+        catch (Exception ex)
         {
-            DebugReturn(0, operationResponse.DebugMessage);
-            WalkPathEvent(false, operationResponse.DebugMessage, null, null, null);
+            DebugReturn(DebugLevel.ERROR, ex.Message);
+            DebugReturn(DebugLevel.ERROR, ex.StackTrace);
         }
     }
-    private void ExploreTask(OperationResponse operationResponse)
+    private void WalkPathResponseTask(OperationResponse operationResponse)
     {
-        if (operationResponse.ReturnCode == (short)ErrorType.Correct)
+        try
         {
-            List<int> pathIDs = JsonConvert.DeserializeObject<List<int>>((string)operationResponse.Parameters[(byte)ExploreResponseItem.DiscoveredPathIDsDataString]);
-            List<Pathway> paths = new List<Pathway>();
-            foreach (int pathID in pathIDs)
+            if (operationResponse.ReturnCode == (short)ErrorType.Correct)
             {
-                if(GameGlobal.GlobalMap.paths.ContainsKey(pathID))
+                int pathID = (int)operationResponse.Parameters[(byte)WalkPathResponseItem.PathID];
+                int targetScene = (int)operationResponse.Parameters[(byte)WalkPathResponseItem.TargetSceneID];
+                if (GameGlobal.GlobalMap.paths.ContainsKey(pathID) && GameGlobal.GlobalMap.scenes.ContainsKey(targetScene))
                 {
-                    paths.Add(GameGlobal.GlobalMap.paths[pathID]);
+                    if (GameGlobal.GlobalMap.scenes[targetScene] is Wilderness)
+                    {
+                        List<string> messages = JsonConvert.DeserializeObject<List<string>>((string)operationResponse.Parameters[(byte)WalkPathResponseItem.Messages]);
+                        if (OnWalkPathResponse != null)
+                            OnWalkPathResponse(true, GameGlobal.GlobalMap.paths[pathID], GameGlobal.GlobalMap.scenes[targetScene], messages);
+                    }
+                    else
+                    {
+                        if (OnWalkPathResponse != null)
+                            OnWalkPathResponse(true, GameGlobal.GlobalMap.paths[pathID], GameGlobal.GlobalMap.scenes[targetScene], null);
+                    }
+                }
+                else
+                {
+                    if (OnAlert != null)
+                        OnAlert(operationResponse.DebugMessage);
+                    if (OnWalkPathResponse != null)
+                        OnWalkPathResponse(false, null, null, null);
                 }
             }
-            ExploreEvent(true, operationResponse.DebugMessage, paths);
+            else
+            {
+                if (OnAlert != null)
+                    OnAlert(operationResponse.DebugMessage);
+                if (OnWalkPathResponse != null)
+                    OnWalkPathResponse(false, null, null, null);
+            }
         }
-        else
+        catch (Exception ex)
         {
-            DebugReturn(0, operationResponse.DebugMessage);
-            ExploreEvent(false, operationResponse.DebugMessage, null);
-        }
-    }
-    private void CollectMaterialTask(OperationResponse operationResponse)
-    {
-        if (operationResponse.ReturnCode == (short)ErrorType.Correct)
-        {
-            GameGlobal.Inventory = JsonConvert.DeserializeObject<Inventory>((string)operationResponse.Parameters[(byte)CollectMaterialResponseItem.InventoryDataString], new JsonSerializerSettings { TypeNameHandling = TypeNameHandling.Auto });
-            CollectMaterialEvent(true, operationResponse.DebugMessage);
-        }
-        else
-        {
-            DebugReturn(0, operationResponse.DebugMessage);
-            CollectMaterialEvent(false, operationResponse.DebugMessage);
+            DebugReturn(DebugLevel.ERROR, ex.Message);
+            DebugReturn(DebugLevel.ERROR, ex.StackTrace);
         }
     }
-    private void SendMessageTask(OperationResponse operationResponse)
+    private void ExploreResponseTask(OperationResponse operationResponse)
     {
-        if (operationResponse.ReturnCode != (short)ErrorType.Correct)
+        try
         {
-            SendMessageEvent(false, operationResponse.DebugMessage, "system","error");
+            if (operationResponse.ReturnCode == (short)ErrorType.Correct)
+            {
+                List<int> pathIDs = JsonConvert.DeserializeObject<List<int>>((string)operationResponse.Parameters[(byte)ExploreResponseItem.DiscoveredPathIDsDataString]);
+                List<Pathway> paths = new List<Pathway>();
+                foreach (int pathID in pathIDs)
+                {
+                    if (GameGlobal.GlobalMap.paths.ContainsKey(pathID))
+                    {
+                        paths.Add(GameGlobal.GlobalMap.paths[pathID]);
+                    }
+                }
+                if (OnExploreResponse != null)
+                    OnExploreResponse(true, paths);
+            }
+            else
+            {
+                if (OnAlert != null)
+                    OnAlert(operationResponse.DebugMessage);
+                if (OnExploreResponse != null)
+                    OnExploreResponse(false, null);
+            }
+        }
+        catch (Exception ex)
+        {
+            DebugReturn(DebugLevel.ERROR, ex.Message);
+            DebugReturn(DebugLevel.ERROR, ex.StackTrace);
         }
     }
-    private void GetRankingTask(OperationResponse operationResponse)
+    private void CollectMaterialResponseTask(OperationResponse operationResponse)
     {
-        if (operationResponse.ReturnCode == (short)ErrorType.Correct)
+        try
         {
-            GetRankingEvent(true, operationResponse.DebugMessage, JsonConvert.DeserializeObject<Dictionary<string,int>>((string)operationResponse.Parameters[(byte)GetRankingResponseItem.RankingDataString]));
+            if (operationResponse.ReturnCode == (short)ErrorType.Correct)
+            {
+                GameGlobal.Inventory = JsonConvert.DeserializeObject<Inventory>((string)operationResponse.Parameters[(byte)CollectMaterialResponseItem.InventoryDataString], new JsonSerializerSettings { TypeNameHandling = TypeNameHandling.Auto });
+                if (OnCollectMaterialResponse != null)
+                    OnCollectMaterialResponse(true, operationResponse.DebugMessage);
+            }
+            else
+            {
+                if (OnCollectMaterialResponse != null)
+                    OnCollectMaterialResponse(false, operationResponse.DebugMessage);
+            }
         }
-        else
+        catch (Exception ex)
         {
-            GetRankingEvent(false, operationResponse.DebugMessage, null);
-        }
-    }
-    private void LeaveMessageTask(OperationResponse operationResponse)
-    {
-        if (operationResponse.ReturnCode != (short)ErrorType.Correct)
-        {
-            DebugReturn(DebugLevel.ERROR, operationResponse.DebugMessage);
-        }
-    }
-    private void TradeCommodityTask(OperationResponse operationResponse)
-    {
-        if (operationResponse.ReturnCode == (short)ErrorType.Correct)
-        {
-            GameGlobal.Inventory.Update(JsonConvert.DeserializeObject<Inventory>((string)operationResponse.Parameters[(byte)TradeCommodityResponseItem.InventoryDataString], new JsonSerializerSettings { TypeNameHandling = TypeNameHandling.Auto }));
-            GameGlobal.Player.money = (int)operationResponse.Parameters[(byte)TradeCommodityResponseItem.Money];
+            DebugReturn(DebugLevel.ERROR, ex.Message);
+            DebugReturn(DebugLevel.ERROR, ex.StackTrace);
         }
     }
-    private void GetMarketTask(OperationResponse operationResponse)
+    private void SendMessageResponseTask(OperationResponse operationResponse)
     {
-        if (operationResponse.ReturnCode == (short)ErrorType.Correct)
+        try
         {
-            if(GameGlobal.Player.Location is Town)
-                (GameGlobal.Player.Location as Town).market.Update(JsonConvert.DeserializeObject<Market>((string)operationResponse.Parameters[(byte)MarketChangeBroadcastItem.MarketDataString], new JsonSerializerSettings { TypeNameHandling = TypeNameHandling.Auto }));
+            if (operationResponse.ReturnCode != (short)ErrorType.Correct)
+            {
+                if (OnSendMessageResponse != null)
+                    OnSendMessageResponse(false, "system", "error");
+            }
+        }
+        catch (Exception ex)
+        {
+            DebugReturn(DebugLevel.ERROR, ex.Message);
+            DebugReturn(DebugLevel.ERROR, ex.StackTrace);
+        }
+    }
+    private void GetRankingResponseTask(OperationResponse operationResponse)
+    {
+        try
+        {
+            if (operationResponse.ReturnCode == (short)ErrorType.Correct)
+            {
+                if (OnGetRankingResponse != null)
+                    OnGetRankingResponse(true, JsonConvert.DeserializeObject<Dictionary<string, int>>((string)operationResponse.Parameters[(byte)GetRankingResponseItem.RankingDataString]));
+            }
+            else
+            {
+                if (OnAlert != null)
+                    OnAlert(operationResponse.DebugMessage);
+            }
+        }
+        catch (Exception ex)
+        {
+            DebugReturn(DebugLevel.ERROR, ex.Message);
+            DebugReturn(DebugLevel.ERROR, ex.StackTrace);
+        }
+    }
+    private void LeaveMessageResponseTask(OperationResponse operationResponse)
+    {
+        try
+        {
+            if (operationResponse.ReturnCode != (short)ErrorType.Correct)
+            {
+                if(OnAlert != null)
+                    OnAlert(operationResponse.DebugMessage);
+            }
+        }
+        catch (Exception ex)
+        {
+            DebugReturn(DebugLevel.ERROR, ex.Message);
+            DebugReturn(DebugLevel.ERROR, ex.StackTrace);
+        }
+    }
+    private void TradeCommodityResponseTask(OperationResponse operationResponse)
+    {
+        try
+        {
+            if (operationResponse.ReturnCode == (short)ErrorType.Correct)
+            {
+                GameGlobal.Inventory.Update(JsonConvert.DeserializeObject<Inventory>((string)operationResponse.Parameters[(byte)TradeCommodityResponseItem.InventoryDataString], new JsonSerializerSettings { TypeNameHandling = TypeNameHandling.Auto }));
+                GameGlobal.Player.money = (int)operationResponse.Parameters[(byte)TradeCommodityResponseItem.Money];
+            }
+            else
+            {
+                if (OnAlert != null)
+                    OnAlert(operationResponse.DebugMessage);
+            }
+        }
+        catch(Exception ex)
+        {
+            DebugReturn(DebugLevel.ERROR, ex.Message);
+            DebugReturn(DebugLevel.ERROR, ex.StackTrace);
+        }
+    }
+    private void GetMarketResponseTask(OperationResponse operationResponse)
+    {
+        try
+        {
+            if (operationResponse.ReturnCode == (short)ErrorType.Correct)
+            {
+                if (GameGlobal.Player.Location is Town)
+                {
+                    (GameGlobal.Player.Location as Town).market.Update(JsonConvert.DeserializeObject<Market>((string)operationResponse.Parameters[(byte)MarketChangeBroadcastItem.MarketDataString], new JsonSerializerSettings { TypeNameHandling = TypeNameHandling.Auto }));
+                }
+            }
+        }
+        catch (Exception ex)
+        {
+            DebugReturn(DebugLevel.ERROR, ex.Message);
+            DebugReturn(DebugLevel.ERROR, ex.StackTrace);
         }
     }
 }

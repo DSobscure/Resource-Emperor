@@ -1,36 +1,41 @@
 ﻿using System.Collections.Generic;
 using REProtocol;
 using REStructure;
+using System;
 
 public partial class PhotonService
 {
-    public delegate void ConnectEventHandler(bool status);
-    public event ConnectEventHandler ConnectEvent;
+    public event Action<string> OnDebugReturn;
 
-    public delegate void LoginEventHandler(bool status, string debugMessage, Player player, Inventory inventory, Dictionary<ApplianceID,Appliance> appliances);
-    public event LoginEventHandler LoginEvent;
+    public delegate void ConnectResponseEventHandler(bool status);
+    public event ConnectResponseEventHandler OnConnectResponse;
 
-    public delegate void ProduceEventHandler(bool status, string debugMessage, ApplianceID applianceID, ProduceMethodID produceMethodID);
-    public event ProduceEventHandler ProduceEvent;
+    public event Action<string> OnAlert;
 
-    public delegate void DiscardItemEventHandler(bool status, string debugMessage, ItemID itemid, int itemCount);
-    public event DiscardItemEventHandler DiscardItemEvent;
+    public delegate void LoginResponseEventHandler(bool status);
+    public event LoginResponseEventHandler OnLoginResponse;
 
-    public delegate void GoToSceneEventHandler(bool status, string debugMessage, Scene targetScene);
-    public event GoToSceneEventHandler GoToSceneEvent;
+    public delegate void ProduceResponseEventHandler(bool status, ApplianceID applianceID, ProduceMethodID produceMethodID, ApplianceID selectedApplianceID, bool isNewAppliance);
+    public event ProduceResponseEventHandler OnProduceResponse;
 
-    public delegate void WalkPathEventHandler(bool status, string debugMessage, Pathway path, Scene targetScene, List<string> messages);
-    public event WalkPathEventHandler WalkPathEvent;
+    public delegate void DiscardItemResponseEventHandler(bool status, ItemID itemid, int itemCount);
+    public event DiscardItemResponseEventHandler OnDiscardItemResponse;
 
-    public delegate void ExploreEventHandler(bool status, string debugMessage, List<Pathway> paths);
-    public event ExploreEventHandler ExploreEvent;
+    public delegate void GoToSceneResponseEventHandler(bool status, Scene targetScene);
+    public event GoToSceneResponseEventHandler OnGoToSceneResponse;
 
-    public delegate void CollectMaterialEventHandler(bool status, string debugMessage);
-    public event CollectMaterialEventHandler CollectMaterialEvent;
+    public delegate void WalkPathResponseEventHandler(bool status, Pathway path, Scene targetScene, List<string> messages);
+    public event WalkPathResponseEventHandler OnWalkPathResponse;
 
-    public delegate void SendMessageEventHandler(bool status, string debugMessage, string senderName, string message);
-    public event SendMessageEventHandler SendMessageEvent;
+    public delegate void ExploreResponseEventHandler(bool status, List<Pathway> paths);
+    public event ExploreResponseEventHandler OnExploreResponse;
 
-    public delegate void GetRankingEventHandler(bool status, string debugMessage, Dictionary<string, int> ranking);
-    public event GetRankingEventHandler GetRankingEvent;
+    public delegate void CollectMaterialResponseEventHandler(bool status, string resultMessage);
+    public event CollectMaterialResponseEventHandler OnCollectMaterialResponse;
+
+    public delegate void SendMessageResponseEventHandler(bool status, string senderName, string message);
+    public event SendMessageResponseEventHandler OnSendMessageResponse;
+
+    public delegate void GetRankingResponseEventHandler(bool status, Dictionary<string, int> ranking);
+    public event GetRankingResponseEventHandler OnGetRankingResponse;
 }

@@ -7,18 +7,20 @@ public class SceneController : MonoBehaviour
 {
     void Start()
     {
-        PhotonGlobal.PS.GoToSceneEvent += GoToSceneEventAction;
-        PhotonGlobal.PS.WalkPathEvent += WalkPathEventAction;
+        PhotonGlobal.PS.OnGoToSceneResponse += GoToSceneEventAction;
+        PhotonGlobal.PS.OnWalkPathResponse += WalkPathEventAction;
     }
 
     void OnDestroy()
     {
-        PhotonGlobal.PS.GoToSceneEvent -= GoToSceneEventAction;
-        PhotonGlobal.PS.WalkPathEvent -= WalkPathEventAction;
+        PhotonGlobal.PS.OnGoToSceneResponse -= GoToSceneEventAction;
+        PhotonGlobal.PS.OnWalkPathResponse -= WalkPathEventAction;
     }
 
     public void ToTown()
     {
+        if (GameGlobal.Player.IsWorking)
+            PhotonGlobal.PS.CancelProduce();
         PhotonGlobal.PS.GoToScene(GameGlobal.GlobalMap.towns[0].uniqueID);
     }
     public void ToRoom()
@@ -35,7 +37,7 @@ public class SceneController : MonoBehaviour
         }
     }
 
-    private void GoToSceneEventAction(bool status, string debugMessage, Scene targetScene)
+    private void GoToSceneEventAction(bool status, Scene targetScene)
     {
         if (status)
         {
@@ -58,7 +60,7 @@ public class SceneController : MonoBehaviour
             }
         }
     }
-    private void WalkPathEventAction(bool status, string debugMessage, Pathway path, Scene targetScene, List<string> messages)
+    private void WalkPathEventAction(bool status, Pathway path, Scene targetScene, List<string> messages)
     {
         if (status)
         {

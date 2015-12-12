@@ -14,12 +14,12 @@ public class CollectMaterialController : MonoBehaviour
 
     void Start()
     {
-        PhotonGlobal.PS.CollectMaterialEvent += CollectMaterialEventAction;
+        PhotonGlobal.PS.OnCollectMaterialResponse += CollectMaterialEventAction;
         GameGlobal.Player.SelectItemEvent += collectionButtonController.ShowCollectButtons;
     }
     void OnDestroy()
     {
-        PhotonGlobal.PS.CollectMaterialEvent -= CollectMaterialEventAction;
+        PhotonGlobal.PS.OnCollectMaterialResponse -= CollectMaterialEventAction;
         GameGlobal.Player.SelectItemEvent -= collectionButtonController.ShowCollectButtons;
     }
 
@@ -31,12 +31,12 @@ public class CollectMaterialController : MonoBehaviour
         }
     }
 
-    private void CollectMaterialEventAction(bool status, string debugMessage)
+    private void CollectMaterialEventAction(bool status, string resultMessage)
     {
         if (status)
         {
             inventoryPanelController.ShowInventory();
-            leaveMessageBoxController.AddMessage(debugMessage);
+            leaveMessageBoxController.AddMessage(resultMessage);
         }
     }
 }

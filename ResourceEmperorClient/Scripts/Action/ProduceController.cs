@@ -11,11 +11,11 @@ public class ProduceController : MonoBehaviour
 
     void Start ()
     {
-        PhotonGlobal.PS.ProduceEvent += ProduceEventAction;
+        PhotonGlobal.PS.OnProduceResponse += ProduceEventAction;
     }
     void OnDestroy()
     {
-        PhotonGlobal.PS.ProduceEvent -= ProduceEventAction;
+        PhotonGlobal.PS.OnProduceResponse -= ProduceEventAction;
     }
 
     public void StartProduce()
@@ -24,7 +24,6 @@ public class ProduceController : MonoBehaviour
         {
             if (applianceContentController.selectedProduceMethod.Sufficient(GameGlobal.Inventory))
             {
-                GameGlobal.Player.IsWorking = true;
                 applianceContentController.workingAnimation.SetActive(true);
                 applianceContentController.remainTime = applianceContentController.selectedProduceMethod.processTime;
                 applianceContentController.processSlider.maxValue = applianceContentController.selectedProduceMethod.processTime;
@@ -43,66 +42,26 @@ public class ProduceController : MonoBehaviour
         applianceContentController.cancelButton.image.color = Color.grey;
         PhotonGlobal.PS.CancelProduce();
     }
-    public void ProduceEventAction(bool produceStatus, string debugMessage, ApplianceID applianceID, ProduceMethodID produceMethodID)
+    public void ProduceEventAction(bool produceStatus, ApplianceID applianceID, ProduceMethodID produceMethodID, ApplianceID selectedApplianceID, bool isNewAppliance)
     {
         applianceContentController.workingAnimation.SetActive(false);
-        GameGlobal.Player.IsWorking = false;
         applianceContentController.remainTime = 0;
         if (produceStatus)
         {
             if (GameGlobal.Appliances.ContainsKey(applianceID) && GameGlobal.Appliances[applianceID].methods.ContainsKey(produceMethodID))
             {
-                object[] results;
-                applianceContentController.selectedAppliance = GameGlobal.Appliances[applianceID];
-                applianceContentController.selectedProduceMethod = applianceContentController.selectedAppliance.methods[produceMethodID];
-                if (applianceContentController.selectedProduceMethod.Process(GameGlobal.Inventory, out results))
+                if (isNewAppliance)
                 {
-                    foreach (object result in results)
-                    {
-                        if (result is Item)
-                        {
-                            Item item = result as Item;
-                            GameGlobal.Inventory.Stack(item);
-                        }
-                        else if (result is Appliance)
-                        {
-                            Appliance appliance = result as Appliance;
-                            if (!GameGlobal.Appliances.ContainsKey(appliance.id))
-                            {
-                                if (applianceContentController.selectedAppliance is IUpgradable)
-                                {
-                                    IUpgradable target = applianceContentController.selectedAppliance as IUpgradable;
-                                    if (target.UpgradeCheck(appliance))
-                                    {
-                                        GameGlobal.Appliances.Remove(applianceContentController.selectedAppliance.id);
-                                        Appliance upgraded = target.Upgrade() as Appliance;
-                                        GameGlobal.Appliances.Add(upgraded.id, upgraded);
-                                        applianceContentController.SelectAppliance(upgraded.id);
-                                    }
-                                    else
-                                    {
-                                        GameGlobal.Appliances.Add(appliance.id, appliance);
-                                    }
-                                }
-                                else
-                                {
-                                    GameGlobal.Appliances.Add(appliance.id, appliance);
-                                }
-                                applianceContentController.UpdateApplianceScelectPanel();
-                            }
-                        }
-                    }
+                    applianceContentController.SelectAppliance(selectedApplianceID);
+                    applianceContentController.UpdateApplianceScelectPanel();
+                }
+                else
+                {
                     applianceContentController.UpdateMethodMaterial();
-                    applianceContentController.processButton.enabled = applianceContentController.selectedProduceMethod.Sufficient(GameGlobal.Inventory);
-                    applianceContentController.processButton.image.color = (applianceContentController.processButton.enabled) ? Color.white : Color.grey;
-                    inventoryPanelController.ShowInventory();
                 }
             }
         }
-        else
-        {
-            applianceContentController.processButton.enabled = applianceContentController.selectedProduceMethod.Sufficient(GameGlobal.Inventory);
-            applianceContentController.processButton.image.color = (applianceContentController.processButton.enabled) ? Color.white : Color.grey;
-        }
+        applianceContentController.processButton.enabled = applianceContentController.selectedProduceMethod.Sufficient(GameGlobal.Inventory);
+        applianceContentController.processButton.image.color = (applianceContentController.processButton.enabled) ? Color.white : Color.grey;
     }
 }

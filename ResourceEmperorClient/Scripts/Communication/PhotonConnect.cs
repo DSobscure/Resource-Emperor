@@ -12,12 +12,12 @@ public class PhotonConnect : MonoBehaviour {
     {
         Application.targetFrameRate = 50;
     }
-    // Use this for initialization
+
     void Start()
     {
         if (!PhotonGlobal.PS.ServerConnected)
         {
-            PhotonGlobal.PS.ConnectEvent += ConnectEventAction;
+            PhotonGlobal.PS.OnConnectResponse += ConnectEventAction;
             PhotonGlobal.PS.Connect(ServerIP, ServerPort, ServerName);
         }
     }
@@ -38,7 +38,7 @@ public class PhotonConnect : MonoBehaviour {
 
     private void OnDestroy()
     {
-        PhotonGlobal.PS.ConnectEvent -= ConnectEventAction;
+        PhotonGlobal.PS.OnConnectResponse -= ConnectEventAction;
     }
 
     void OnGUI()

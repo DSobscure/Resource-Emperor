@@ -9,11 +9,11 @@ public class RankingController : MonoBehaviour
 
     void Start ()
     {
-        PhotonGlobal.PS.GetRankingEvent += GetRankingEvent;
+        PhotonGlobal.PS.OnGetRankingResponse += GetRankingEvent;
     }
     void OnDestroy()
     {
-        PhotonGlobal.PS.GetRankingEvent -= GetRankingEvent;
+        PhotonGlobal.PS.OnGetRankingResponse -= GetRankingEvent;
     }
 
     public void GetRanking()
@@ -21,17 +21,13 @@ public class RankingController : MonoBehaviour
         PhotonGlobal.PS.GetRanking();
     }
 
-    private void GetRankingEvent(bool status, string debugMessage, Dictionary<string, int> ranking)
+    private void GetRankingEvent(bool status, Dictionary<string, int> ranking)
     {
         if(status)
         {
             this.ranking = ranking;
             rankingPanelController.rankingFullPanel.gameObject.SetActive(true);
             rankingPanelController.Refresh();
-        }
-        else
-        {
-            Debug.Log(debugMessage);
         }
     }
 }

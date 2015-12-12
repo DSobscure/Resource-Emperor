@@ -11,26 +11,39 @@ public partial class PhotonService : IPhotonPeerListener
 {
     private void SendMessageEventTask(EventData eventData)
     {
-        if (eventData.Parameters.Count == 3)
+        try
         {
-            int sceneID = (int)eventData.Parameters[(byte)SendMessageBroadcastItem.SceneID];
-            string senderName = (string)eventData.Parameters[(byte)SendMessageBroadcastItem.PlayerName];
-            string message = (string)eventData.Parameters[(byte)SendMessageBroadcastItem.Message];
-            if(sceneID == GameGlobal.Player.Location.uniqueID)
+            if (eventData.Parameters.Count == 3)
             {
-                SendMessageEvent(true, "",senderName, message);
+                int sceneID = (int)eventData.Parameters[(byte)SendMessageBroadcastItem.SceneID];
+                string senderName = (string)eventData.Parameters[(byte)SendMessageBroadcastItem.PlayerName];
+                string message = (string)eventData.Parameters[(byte)SendMessageBroadcastItem.Message];
+                if (sceneID == GameGlobal.Player.Location.uniqueID)
+                {
+                    if (OnSendMessageResponse != null)
+                        OnSendMessageResponse(true, senderName, message);
+                }
             }
         }
-        else
+        catch (Exception ex)
         {
-            SendMessageEvent(false, "SendMessageEventTask parameter error", "", "");
+            DebugReturn(DebugLevel.ERROR, ex.Message);
+            DebugReturn(DebugLevel.ERROR, ex.StackTrace);
         }
     }
     private void MarketChangeEventTask(EventData eventData)
     {
-        if (GameGlobal.Player.Location is Town && eventData.Parameters.Count == 1)
+        try
         {
-            (GameGlobal.Player.Location as Town).market.Update(JsonConvert.DeserializeObject<Market>((string)eventData.Parameters[(byte)MarketChangeBroadcastItem.MarketDataString], new JsonSerializerSettings { TypeNameHandling = TypeNameHandling.Auto }));
+            if (GameGlobal.Player.Location is Town && eventData.Parameters.Count == 1)
+            {
+                (GameGlobal.Player.Location as Town).market.Update(JsonConvert.DeserializeObject<Market>((string)eventData.Parameters[(byte)MarketChangeBroadcastItem.MarketDataString], new JsonSerializerSettings { TypeNameHandling = TypeNameHandling.Auto }));
+            }
+        }
+        catch (Exception ex)
+        {
+            DebugReturn(DebugLevel.ERROR, ex.Message);
+            DebugReturn(DebugLevel.ERROR, ex.StackTrace);
         }
     }
 }

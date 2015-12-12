@@ -15,12 +15,12 @@ public class LoginController : MonoBehaviour
 
     void Start()
     {
-        PhotonGlobal.PS.LoginEvent += LoginEventAction;
+        PhotonGlobal.PS.OnLoginResponse += LoginEventAction;
     }
 
     void OnDestroy()
     {
-        PhotonGlobal.PS.LoginEvent -= LoginEventAction;
+        PhotonGlobal.PS.OnLoginResponse -= LoginEventAction;
     }
 
     public void SetAccount(string account)
@@ -37,22 +37,11 @@ public class LoginController : MonoBehaviour
             PhotonGlobal.PS.Login(_account, _password);
     }
 
-    private void LoginEventAction(bool loginStatus, string debugMessage, Player player, Inventory inventory, Dictionary<ApplianceID, Appliance> appliances)
+    private void LoginEventAction(bool loginStatus)
     {
         if (loginStatus)
         {
-            GameGlobal.LoginStatus = true;
-            GameGlobal.Player = new ClientPlayer(player);
-            GameGlobal.Inventory = inventory;
-            GameGlobal.Appliances = appliances;
-            GameGlobal.GlobalMap = new GlobalMap();
-            GameGlobal.Player.Location = new Room("WorkRoomScene");
             Application.LoadLevel("WorkRoomScene");
-        }
-        else
-        {
-            GameGlobal.LoginStatus = false;
-            loginResultText.text = debugMessage;
         }
     }
 }

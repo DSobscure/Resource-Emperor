@@ -8,12 +8,12 @@ public class MessageController : MonoBehaviour
 
     void Start()
     {
-        PhotonGlobal.PS.SendMessageEvent += SendMessageEventAction;
+        PhotonGlobal.PS.OnSendMessageResponse += SendMessageEventAction;
     }
 
     void OnDestroy()
     {
-        PhotonGlobal.PS.SendMessageEvent -= SendMessageEventAction;
+        PhotonGlobal.PS.OnSendMessageResponse -= SendMessageEventAction;
     }
 
     public void SendMessage()
@@ -25,16 +25,12 @@ public class MessageController : MonoBehaviour
         }
     }
 
-    private void SendMessageEventAction(bool status, string debugMessage, string senderName, string message)
+    private void SendMessageEventAction(bool status, string senderName, string message)
     {
         if(status)
         {
             messagePanelController.AppendMessage(senderName + ": " + message);
             messagePanelController.UpdateMessageBox();
-        }
-        else
-        {
-            Debug.Log(debugMessage);
         }
     }
 }

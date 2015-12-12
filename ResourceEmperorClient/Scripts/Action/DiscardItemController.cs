@@ -10,12 +10,12 @@ public class DiscardItemController : MonoBehaviour
 
     void Start()
     {
-        PhotonGlobal.PS.DiscardItemEvent += DiscardItemEventAction;
+        PhotonGlobal.PS.OnDiscardItemResponse += DiscardItemEventAction;
     }
 
     void OnDestroy()
     {
-        PhotonGlobal.PS.DiscardItemEvent -= DiscardItemEventAction;
+        PhotonGlobal.PS.OnDiscardItemResponse -= DiscardItemEventAction;
     }
 
     public void DiscardItem()
@@ -29,7 +29,7 @@ public class DiscardItemController : MonoBehaviour
         }
     }
 
-    private void DiscardItemEventAction(bool discardStatus, string debugMessage, ItemID itemID, int itemCount)
+    private void DiscardItemEventAction(bool discardStatus, ItemID itemID, int itemCount)
     {
         if (discardStatus && GameGlobal.Inventory.Any(x=>x.id == itemID))
         {
