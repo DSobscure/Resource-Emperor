@@ -23,7 +23,7 @@ namespace ResourceEmperorServer
                     ReturnCode = (short)ErrorType.InvalidParameter,
                     DebugMessage = "LoginTask Parameter Error"
                 };
-                this.SendOperationResponse(response, new SendParameters());
+                SendOperationResponse(response, new SendParameters());
             }
             else
             {
@@ -160,7 +160,7 @@ namespace ResourceEmperorServer
                     ReturnCode = (short)ErrorType.InvalidParameter,
                     DebugMessage = "DiscardItemTask Parameter Error"
                 };
-                this.SendOperationResponse(response, new SendParameters());
+                SendOperationResponse(response, new SendParameters());
             }
             else
             {
@@ -244,7 +244,7 @@ namespace ResourceEmperorServer
                     ReturnCode = (short)ErrorType.InvalidParameter,
                     DebugMessage = "WalkPathTask Parameter Error"
                 };
-                this.SendOperationResponse(response, new SendParameters());
+                SendOperationResponse(response, new SendParameters());
             }
             else
             {
@@ -293,7 +293,7 @@ namespace ResourceEmperorServer
                     ReturnCode = (short)ErrorType.InvalidParameter,
                     DebugMessage = "ExploreTask Parameter Error"
                 };
-                this.SendOperationResponse(response, new SendParameters());
+                SendOperationResponse(response, new SendParameters());
             }
             else
             {
@@ -333,7 +333,7 @@ namespace ResourceEmperorServer
                     ReturnCode = (short)ErrorType.InvalidParameter,
                     DebugMessage = "CollectMaterialTask Parameter Error"
                 };
-                this.SendOperationResponse(response, new SendParameters());
+                SendOperationResponse(response, new SendParameters());
             }
             else
             {
@@ -397,7 +397,7 @@ namespace ResourceEmperorServer
                     ReturnCode = (short)ErrorType.InvalidParameter,
                     DebugMessage = "SendMessageTask Parameter Error"
                 };
-                this.SendOperationResponse(response, new SendParameters());
+                SendOperationResponse(response, new SendParameters());
             }
             else
             {
@@ -433,7 +433,7 @@ namespace ResourceEmperorServer
                     ReturnCode = (short)ErrorType.InvalidParameter,
                     DebugMessage = "GetRankingTask Parameter Error"
                 };
-                this.SendOperationResponse(response, new SendParameters());
+                SendOperationResponse(response, new SendParameters());
             }
             else
             {
@@ -471,7 +471,7 @@ namespace ResourceEmperorServer
                     ReturnCode = (short)ErrorType.InvalidParameter,
                     DebugMessage = "LeaveMessageTask Parameter Error"
                 };
-                this.SendOperationResponse(response, new SendParameters());
+                SendOperationResponse(response, new SendParameters());
             }
             else
             {
@@ -504,7 +504,7 @@ namespace ResourceEmperorServer
                         ReturnCode = (short)ErrorType.InvalidOperation,
                         DebugMessage = "here can't leave message"
                     };
-                    this.SendOperationResponse(response, new SendParameters());
+                    SendOperationResponse(response, new SendParameters());
                 }
             }
         }
@@ -517,7 +517,7 @@ namespace ResourceEmperorServer
                     ReturnCode = (short)ErrorType.InvalidParameter,
                     DebugMessage = "TradeCommodityTask Parameter Error"
                 };
-                this.SendOperationResponse(response, new SendParameters());
+                SendOperationResponse(response, new SendParameters());
             }
             else
             {

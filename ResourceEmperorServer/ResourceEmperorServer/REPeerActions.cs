@@ -30,7 +30,7 @@ namespace ResourceEmperorServer
                 }
                 else
                 {
-                    player = new REPlayer(playerUniqueID, (string)returnData[0], this);
+                    player = new REPlayer(playerUniqueID, returnData[0], this);
                 }
                 workRoom = new Room("工作小屋");
                 server.PlayerOnline(player);

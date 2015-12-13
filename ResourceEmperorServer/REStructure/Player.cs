@@ -21,8 +21,7 @@ namespace REStructure
             set
             {
                 _money = value;
-                if (OnMoneyChange != null)
-                    OnMoneyChange();
+                OnMoneyChange?.Invoke();
             }
         }
         public event Action OnMoneyChange;

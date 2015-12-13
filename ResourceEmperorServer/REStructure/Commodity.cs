@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using Newtonsoft.Json;
 
 namespace REStructure
 {
@@ -9,22 +10,26 @@ namespace REStructure
     {
         public Item item { get; protected set; }
         public int stock { get; protected set; }
+        public int standardStock { get; protected set; }
         public int maxStock { get; protected set; }
         public int basicPrice { get; protected set; }
         public int price
         {
             get
             {
-                return basicPrice;
+                return (int)Math.Round(basicPrice*Math.Pow(1.0-((double)stock -standardStock)/maxStock,priceLevel));
             }
         }
+        public double priceLevel { get; protected set; }
 
-        public Commodity(Item item, int stock, int maxStock, int basicPrice)
+        public Commodity(Item item, int stock, int standardStock , int maxStock, int basicPrice, double priceLevel)
         {
             this.item = item;
+            this.standardStock = standardStock;
             this.stock = stock;
             this.maxStock = maxStock;
             this.basicPrice = basicPrice;
+            this.priceLevel = priceLevel;
         }
 
         public bool Purchase(int count, Player customer, Inventory inventory)

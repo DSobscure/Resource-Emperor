@@ -19,7 +19,7 @@ namespace ResourceEmperorServer
         public Dictionary<int, REPlayer> playerDictionary;
         public REDatabase database;
         public GlobalMap globalMap;
-        public string version = "0.0.3";
+        public string version = "0.0.4";
 
         protected override PeerBase CreatePeer(InitRequest initRequest)
         {
@@ -56,7 +56,7 @@ namespace ResourceEmperorServer
 
         protected override void TearDown()
         {
-            database.Dispose();
+            database?.Dispose();
         }
 
         public void Broadcast(REPeer[] peers, BroadcastType broadcastType, Dictionary<byte, object> parameter)

@@ -67,7 +67,7 @@ namespace REStructure
 
         public IScalable Instantiate(int value = 1)
         {
-            IScalable newObject = this.Clone() as IScalable;
+            IScalable newObject = Clone() as IScalable;
             newObject.Reset();
             newObject.Increase(value);
             return newObject;

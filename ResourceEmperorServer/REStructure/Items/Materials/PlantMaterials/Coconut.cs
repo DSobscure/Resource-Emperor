@@ -58,7 +58,7 @@ namespace REStructure.Items.Materials
 
         public override object Clone()
         {
-            return new RawRubber(itemCount);
+            return new Coconut(itemCount);
         }
     }
 }

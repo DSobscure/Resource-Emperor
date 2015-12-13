@@ -20,8 +20,7 @@ namespace REStructure
         {
             if (catalog.Find(x=>x.item.id == commodityID).Purchase(count, seller, inventory))
             {
-                if (OnCommodityChange != null)
-                    OnCommodityChange();
+                OnCommodityChange?.Invoke();
                 return true;
             }
             else
@@ -34,8 +33,7 @@ namespace REStructure
         {
             if (catalog.Find(x => x.item.id == commodityID).Sell(count, seller, inventory))
             {
-                if (OnCommodityChange != null)
-                    OnCommodityChange();
+                OnCommodityChange?.Invoke();
                 return true;
             }
             else
@@ -47,8 +45,7 @@ namespace REStructure
         public void Update(Market markey)
         {
             catalog = markey.catalog;
-            if (OnCommodityChange != null)
-                OnCommodityChange();
+            OnCommodityChange?.Invoke();
         }
     }
 }

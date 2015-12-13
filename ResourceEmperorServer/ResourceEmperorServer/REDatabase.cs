@@ -257,7 +257,7 @@ namespace ResourceEmperorServer
                 {
                     string passwordSHA512 = ToHexString(sha512.ComputeHash(Encoding.Default.GetBytes(password)));
 
-                    String sqlText = "SELECT UniqueID FROM player WHERE Account=@account and Password=@password";
+                    string sqlText = "SELECT UniqueID FROM player WHERE Account=@account and Password=@password";
                     using (MySqlCommand cmd = new MySqlCommand(sqlText, connection))
                     {
                         cmd.Parameters.AddWithValue("@account", account);
@@ -295,7 +295,7 @@ namespace ResourceEmperorServer
             {
                 if (connection.State == System.Data.ConnectionState.Closed)
                     connection.Open();
-                String sqlText = "SELECT Account, Money FROM player order by Money DESC";
+                string sqlText = "SELECT Account, Money FROM player order by Money DESC";
                 using (MySqlCommand cmd = new MySqlCommand(sqlText, connection))
                 {
                     using (MySqlDataReader reader = cmd.ExecuteReader())
